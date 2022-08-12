@@ -1,7 +1,11 @@
 package model
 
+import (
+	"github.com/UndertaIe/internal/db"
+)
+
 type User struct {
-	*BaseModel
+	*db.BaseModel
 	userId      int    `json:"user_id"`
 	userName    string `json:"user_name"`
 	password    string `json:"password"`
@@ -12,3 +16,10 @@ type User struct {
 	role        int    `json:"role"`
 }
 
+func (u User) TableName() string {
+	return "passwd_user"
+}
+
+func (u User) Insert() {
+
+}

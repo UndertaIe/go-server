@@ -1,7 +1,11 @@
 package model
 
+import (
+	"github.com/UndertaIe/internal/db"
+)
+
 type Platform struct {
-	*BaseModel
+	*db.BaseModel
 	platformId       int    `json:"platform_id"`
 	platformType     string `json:"platform_type"`
 	platformName     string `json:"platform_name"`
