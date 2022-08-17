@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/UndertaIe/passwd/database"
+	"github.com/UndertaIe/passwd/pkg/page"
 	"github.com/jinzhu/gorm"
 )
 
@@ -10,6 +11,7 @@ type Platform struct {
 	PlatformId       int    `json:"platform_id"`
 	PlatformType     string `json:"platform_type"`
 	PlatformName     string `json:"platform_name"`
+	PlatformAbbr     string `json:"platform_abbr"`
 	PlatformLoginUrl string `json:"platform_login_url"`
 	PlatformDomain   string `json:"platform_domain"`
 	PlatformDesc     string `json:"platform_desc"`
@@ -26,6 +28,20 @@ func (p Platform) Get(db *gorm.DB) (Platform, error) {
 		return pf, err
 	}
 	return pf, nil
+}
+
+func (p Platform) GetList(db *gorm.DB, pager *page.Pager) ([]Platform, error) {
+	var platforms []Platform
+	db = db.Offset(pager.Offset()).Limit(pager.Limit())
+	rows, err := db.Table(p.TableName()).Rows()
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var pl Platform
+		rows.Scan(&pl)
+	}
+	return platforms, nil
 }
 
 func (p Platform) Create(db *gorm.DB) (Platform, error) {

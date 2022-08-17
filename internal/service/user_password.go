@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/UndertaIe/passwd/internal/model"
+	"github.com/UndertaIe/passwd/pkg/page"
 )
 
 type UserAccountGetRequest struct {
@@ -17,7 +18,45 @@ type UserAccount struct {
 	PlatformDesc     string `json:"platform_desc"`
 }
 
-func (srv *Service) GetUserAccountList(params UserAccountGetRequest, pager *app.Pager) ([]UserAccount, error) {
+type UserAccountCreateRequest struct {
+	UserId     int    `json:"user_id"`
+	PlatformId int    `json:"platform_id"`
+	Password   string `json:"password"`
+}
+
+func (srv *Service) GetUserAccount(params UserAccountCreateRequest) (model.UserAccount, error) {
+	userAccount := model.UserAccount{UserId: params.UserId, PlatformId: params.PlatformId}
+	ua, err := userAccount.Get(srv.Db)
+	return ua, err
+}
+
+func (srv *Service) CreateUserAccount(params UserAccountCreateRequest) error {
+	userAccount := model.UserAccount{UserId: params.UserId, PlatformId: params.PlatformId, Password: params.Password}
+	userAccount, err := userAccount.Create(srv.Db)
+	return err
+}
+
+func (srv *Service) DeleteUserAccount(params UserAccountCreateRequest) error {
+	userAccount := model.UserAccount{UserId: params.UserId, PlatformId: params.PlatformId}
+	err := userAccount.Delete(srv.Db)
+	return err
+}
+
+func (srv *Service) DeleteUserAccountList(params UserAccountCreateRequest) error {
+	userAccount := model.UserAccount{UserId: params.UserId}
+	err := userAccount.DeleteList(srv.Db)
+	return err
+}
+
+func (srv *Service) UpdateUserAccount(params UserAccountCreateRequest) error {
+	userAccount := model.UserAccount{UserId: params.UserId, PlatformId: params.PlatformId, Password: params.Password}
+	var vals map[string]interface{}
+	vals["pasword"] = userAccount.Password
+	_, err := userAccount.Update(srv.Db, vals)
+	return err
+}
+
+func (srv *Service) GetUserAccountList(params UserAccountGetRequest, pager *page.Pager) ([]UserAccount, error) {
 	user := model.User{UserId: params.UserId}
 	rows, err := user.GetAccountsByUserID(srv.Db, pager)
 	if err != nil {

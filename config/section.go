@@ -6,7 +6,7 @@ import (
 
 type ServerSetting struct {
 	RunMode      string
-	HttpPort     string
+	HttpPort     int
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 }
