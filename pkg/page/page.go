@@ -10,14 +10,31 @@ type Pager struct {
 	PageNum  int `json:"page_num"`
 }
 
-func NewPager(c gin.Context) (*Pager, error) {
+func NewPager(c *gin.Context) *Pager {
 	p := Pager{}
 	err := c.ShouldBind(&p)
 	if err != nil {
-		return nil, err
+		p.PageNum = 0
+		p.PageSize = global.APPSettings.MaxPageSize
+		return &p
 	}
 	if p.PageSize > global.APPSettings.MaxPageSize {
 		p.PageSize = global.APPSettings.MaxPageSize
 	}
-	return &p, nil
+	if p.PageNum < 0 {
+		p.PageNum = 0
+	}
+	return &p
+}
+
+func (p Pager) Offset() int {
+	offset := 0
+	if p.PageNum > 0 {
+		offset = (p.PageNum - 1) * p.PageSize
+	}
+	return offset
+}
+
+func (p Pager) Limit() int {
+	return p.PageSize
 }
