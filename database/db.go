@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/UndertaIe/passwd/config"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
 
