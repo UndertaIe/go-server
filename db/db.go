@@ -6,6 +6,7 @@ import (
 
 	"github.com/UndertaIe/passwd/config"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 type BaseModel struct {
