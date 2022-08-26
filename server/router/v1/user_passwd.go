@@ -1,10 +1,10 @@
 package v1
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/UndertaIe/passwd/internal/service"
+	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/page"
 	"github.com/gin-gonic/gin"
 	"github.com/go-programming-tour-book/blog-service/pkg/errcode"
@@ -27,12 +27,14 @@ func (up UserPasswd) Get(c *gin.Context) {
 	}
 	pager := page.NewPager(c)
 	userAccounts, err := srv.GetUserAccountList(*params, pager)
+
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"list": userAccounts})
+	resp.ToList(userAccounts, pager)
 }
 
 func (up UserPasswd) List(c *gin.Context) {
@@ -44,13 +46,15 @@ func (up UserPasswd) List(c *gin.Context) {
 	}
 	params := service.UserAccountGetRequest{UserId: user_id}
 	pager := page.NewPager(c)
+
 	userAccounts, err := srv.GetUserAccountList(params, pager)
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"list": userAccounts})
+	resp.ToList(userAccounts, pager)
 }
 
 func (up UserPasswd) Create(c *gin.Context) {
@@ -62,11 +66,14 @@ func (up UserPasswd) Create(c *gin.Context) {
 		return
 	}
 	err = srv.CreateUserAccount(*params)
+
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	resp.Ok()
 
 }
 
@@ -79,12 +86,14 @@ func (up UserPasswd) Update(c *gin.Context) {
 		return
 	}
 	err = srv.UpdateUserAccount(*params)
+
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		nErr := errcode.ServerError.WithDetails(err.Error())
-		c.JSON(nErr.StatusCode(), gin.H{"code": nErr.Code(), "msg": nErr.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	resp.Ok()
 }
 
 func (up UserPasswd) Delete(c *gin.Context) {
@@ -96,12 +105,14 @@ func (up UserPasswd) Delete(c *gin.Context) {
 		return
 	}
 	err = srv.DeleteUserAccount(*params)
+
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		nErr := errcode.ServerError.WithDetails(err.Error())
-		c.JSON(nErr.StatusCode(), gin.H{"code": nErr.Code(), "msg": nErr.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	resp.Ok()
 }
 
 func (up UserPasswd) DeleteList(c *gin.Context) {
@@ -113,10 +124,12 @@ func (up UserPasswd) DeleteList(c *gin.Context) {
 		return
 	}
 	err = srv.DeleteUserAccountList(*params)
+
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		nErr := errcode.ServerError.WithDetails(err.Error())
-		c.JSON(nErr.StatusCode(), gin.H{"code": nErr.Code(), "msg": nErr.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	resp.Ok()
 }

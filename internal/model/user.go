@@ -3,7 +3,7 @@ package model
 import (
 	"github.com/UndertaIe/passwd/database"
 	"github.com/UndertaIe/passwd/pkg/page"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type User struct {
@@ -13,8 +13,8 @@ type User struct {
 	Password    string `json:"password"`
 	PhoneNumber string `json:"phone_number"`
 	ShareMode   int    `json:"share_mode"`
-	Sex         int    `json:"gender"`
-	Desc        string `json:"desc"`
+	Sex         int    `json:"sex"`
+	Description string `json:"description"`
 	Role        int    `json:"role"`
 }
 
@@ -47,27 +47,19 @@ type UserRow struct {
 	UserName    string `json:"user_name"`
 	PhoneNumber string `json:"phone_number"`
 	ShareMode   int    `json:"share_mode"`
-	Sex         int    `json:"gender"`
-	Desc        string `json:"desc"`
+	Sex         int    `json:"sex"`
+	Description string `json:"description"`
 	Role        int    `json:"role"`
 }
 
 func (u User) GetUserList(db *gorm.DB, pager *page.Pager) ([]UserRow, error) {
 	db = db.Offset(pager.PageNum).Limit(pager.PageSize)
-	rows, err := db.Where("is_deleted = ?", false).Select("user_id, user_name, phone_number, share_mode, gender, desc, role").Rows()
-	if err != nil {
-		return nil, err
-	}
 	var users []UserRow
-	for rows.Next() {
-		u := UserRow{}
-		err := rows.Scan(&u.UserId, &u.UserName, &u.PhoneNumber, &u.ShareMode, &u.Sex, &u.Desc, &u.Role)
-		if err != nil {
-			return nil, err
-		}
-		users = append(users, u)
+	tx := db.Model(&User{}).Where(map[string]interface{}{"is_deleted": false}).Find(&users)
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
-	return users, err
+	return users, nil
 }
 
 type UserAccountRow struct {

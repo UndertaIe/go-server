@@ -2,12 +2,11 @@ package database
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/UndertaIe/passwd/config"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 type BaseModel struct {
@@ -18,86 +17,19 @@ type BaseModel struct {
 }
 
 func NewDBEngine(dbSetting *config.DatabaseSetting) (*gorm.DB, error) {
-	s := "%s:%s@tcp(%s)/%s?charset=%s&parseTime=%t&loc=Local"
-	db, err := gorm.Open(dbSetting.DBType, fmt.Sprintf(s,
-		dbSetting.UserName,
-		dbSetting.Password,
-		dbSetting.Host,
-		dbSetting.DBName,
-		dbSetting.Charset,
-		dbSetting.ParseTime,
-	))
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=%s&parseTime=%t&loc=Local", dbSetting.UserName, dbSetting.DBType, dbSetting.Host, dbSetting.DBName, dbSetting.Charset, dbSetting.ParseTime)
+	db, err := gorm.Open(mysql.New(mysql.Config{
+		DSN:                       dsn,
+		DefaultStringSize:         256,   // string 类型字段的默认长度
+		DisableDatetimePrecision:  true,  // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
+		DontSupportRenameIndex:    true,  // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
+		DontSupportRenameColumn:   true,  // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
+		SkipInitializeWithVersion: false, // 根据版本自动配置
+	}), &gorm.Config{})
+
 	if err != nil {
 		return nil, err
 	}
 
-	db.SingularTable(true)
-	db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
-	db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
-	db.Callback().Delete().Replace("gorm:delete", deleteCallback)
-	db.DB().SetMaxIdleConns(dbSetting.MaxIdleConns)
-	db.DB().SetMaxOpenConns(dbSetting.MaxOpenConns)
-	return db, nil
-}
-
-func updateTimeStampForCreateCallback(scope *gorm.Scope) {
-	if !scope.HasError() {
-		nowTime := time.Now().Unix()
-		if createTimeField, ok := scope.FieldByName("CreatedAt"); ok {
-			if createTimeField.IsBlank {
-				_ = createTimeField.Set(nowTime)
-			}
-		}
-
-		if modifyTimeField, ok := scope.FieldByName("ModifiedAt"); ok {
-			if modifyTimeField.IsBlank {
-				_ = modifyTimeField.Set(nowTime)
-			}
-		}
-	}
-}
-
-func updateTimeStampForUpdateCallback(scope *gorm.Scope) {
-	if _, ok := scope.Get("gorm:update_column"); !ok {
-		_ = scope.SetColumn("ModifiedAt", time.Now().Unix())
-	}
-}
-
-func deleteCallback(scope *gorm.Scope) {
-	if !scope.HasError() {
-		var extraOption string
-		if str, ok := scope.Get("gorm:delete_option"); ok {
-			extraOption = fmt.Sprint(str)
-		}
-
-		deletedOnField, hasDeletedOnField := scope.FieldByName("DeletedAt")
-		isDelField, hasIsDelField := scope.FieldByName("IsDeleted")
-		if !scope.Search.Unscoped && hasDeletedOnField && hasIsDelField {
-			now := time.Now().Unix()
-			scope.Raw(fmt.Sprintf(
-				"UPDATE %v SET %v=%v,%v=%v%v%v",
-				scope.QuotedTableName(),
-				scope.Quote(deletedOnField.DBName),
-				scope.AddToVars(now),
-				scope.Quote(isDelField.DBName),
-				scope.AddToVars(1),
-				addExtraSpaceIfExist(scope.CombinedConditionSql()),
-				addExtraSpaceIfExist(extraOption),
-			)).Exec()
-		} else {
-			scope.Raw(fmt.Sprintf(
-				"DELETE FROM %v%v%v",
-				scope.QuotedTableName(),
-				addExtraSpaceIfExist(scope.CombinedConditionSql()),
-				addExtraSpaceIfExist(extraOption),
-			)).Exec()
-		}
-	}
-}
-
-func addExtraSpaceIfExist(str string) string {
-	if str != "" {
-		return " " + str
-	}
-	return ""
+	return db.Debug(), nil
 }

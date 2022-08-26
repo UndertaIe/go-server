@@ -9,8 +9,8 @@ type User struct {
 	UserId      int    `json:"user_id"`
 	UserName    string `json:"user_name"`
 	PhoneNumber string `json:"phone_number"`
-	Sex         int    `json:"gender"`
-	Desc        string `json:"desc"`
+	Sex         int    `json:"sex"`
+	Description string `json:"description"`
 }
 
 type UserGetRequest struct {
@@ -28,7 +28,7 @@ func (srv *Service) GetUser(params *UserGetRequest) (*User, error) {
 		UserName:    user.UserName,
 		PhoneNumber: user.PhoneNumber,
 		Sex:         user.Sex,
-		Desc:        user.Desc,
+		Description: user.Description,
 	}, nil
 }
 
@@ -45,7 +45,7 @@ func (srv *Service) GetUserList(params *UserGetRequest, pager *page.Pager) ([]Us
 			UserName:    ur.UserName,
 			PhoneNumber: ur.PhoneNumber,
 			Sex:         ur.Sex,
-			Desc:        ur.Desc,
+			Description: ur.Description,
 		}
 		users = append(users, u)
 	}
@@ -56,8 +56,8 @@ type UserCreateRequest struct {
 	UserName    string `json:"user_name"`
 	Password    string `json:"password"`
 	PhoneNumber string `json:"phone_number"`
-	Sex         int    `json:"gender"`
-	Desc        string `json:"desc"`
+	Sex         int    `json:"sex"`
+	Description string `json:"description"`
 	Role        int    `json:"role"`
 }
 
@@ -72,7 +72,7 @@ func (srv *Service) CreateUser(params *UserCreateRequest) (*User, error) {
 		UserName:    user.UserName,
 		PhoneNumber: user.PhoneNumber,
 		Sex:         user.Sex,
-		Desc:        user.Desc,
+		Description: user.Description,
 	}, nil
 }
 
@@ -80,8 +80,8 @@ type UserUpdateRequest struct {
 	UserId      int    `json:"user_id"`
 	UserName    string `json:"user_name"`
 	PhoneNumber string `json:"phone_number"`
-	Sex         int    `json:"gender"`
-	Desc        string `json:"desc"`
+	Sex         int    `json:"sex"`
+	Description string `json:"description"`
 }
 
 func (srv *Service) UpdateUser(params *UserUpdateRequest) error {
@@ -96,8 +96,8 @@ func (srv *Service) UpdateUser(params *UserUpdateRequest) error {
 	if params.Sex != 0 {
 		vals["gender"] = params.Sex
 	}
-	if params.Desc != "" {
-		vals["desc"] = params.Desc
+	if params.Description != "" {
+		vals["desc"] = params.Description
 	}
 	return user.Update(srv.Db, vals)
 }

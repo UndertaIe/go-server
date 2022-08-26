@@ -1,9 +1,8 @@
 package v1
 
 import (
-	"net/http"
-
 	"github.com/UndertaIe/passwd/internal/service"
+	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/page"
 	"github.com/gin-gonic/gin"
 	"github.com/go-programming-tour-book/blog-service/pkg/errcode"
@@ -25,17 +24,18 @@ func (up Platform) Get(c *gin.Context) {
 		return
 	}
 	platform, err := srv.GetPlatform(*params)
+
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-
-	c.JSON(http.StatusOK, platform)
+	resp.To(platform)
 }
 
 func (up Platform) List(c *gin.Context) {
 	srv := service.NewService(c)
-
 	params := new(service.Platform)
 	err := c.Bind(params)
 	if err != nil {
@@ -43,13 +43,15 @@ func (up Platform) List(c *gin.Context) {
 		return
 	}
 	pager := page.NewPager(c)
-	platform, err := srv.GetPlatformList(*params, pager)
+	platforms, err := srv.GetPlatformList(*params, pager)
+
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-
-	c.JSON(http.StatusOK, platform)
+	resp.ToList(platforms, pager)
 }
 
 func (up Platform) Create(c *gin.Context) {
@@ -62,12 +64,14 @@ func (up Platform) Create(c *gin.Context) {
 		return
 	}
 	_, err = srv.CreatePlatform(*params)
+
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{})
+	resp.Ok()
 }
 
 func (up Platform) Update(c *gin.Context) {
@@ -80,12 +84,14 @@ func (up Platform) Update(c *gin.Context) {
 		return
 	}
 	_, err = srv.UpdatePlatform(*params)
+
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{})
+	resp.Ok()
 }
 
 func (up Platform) Delete(c *gin.Context) {
@@ -98,10 +104,11 @@ func (up Platform) Delete(c *gin.Context) {
 		return
 	}
 	err = srv.DeletePlatform(*params)
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{})
+	resp.Ok()
 }

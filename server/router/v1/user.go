@@ -1,10 +1,10 @@
 package v1
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/UndertaIe/passwd/internal/service"
+	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/page"
 	"github.com/gin-gonic/gin"
 	"github.com/go-programming-tour-book/blog-service/pkg/errcode"
@@ -28,12 +28,13 @@ func (u User) Get(c *gin.Context) {
 
 	user, err := srv.GetUser(&param)
 
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-	c.JSON(http.StatusOK, user)
-	return
+	resp.To(user)
 }
 
 func (u User) List(c *gin.Context) {
@@ -41,15 +42,15 @@ func (u User) List(c *gin.Context) {
 
 	param := service.UserGetRequest{}
 	pager := page.NewPager(c)
-
 	user, err := srv.GetUserList(&param, pager)
 
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"list": user})
-	return
+	resp.ToList(user, pager)
 }
 
 func (u User) Create(c *gin.Context) {
@@ -63,12 +64,13 @@ func (u User) Create(c *gin.Context) {
 
 	_, err = srv.CreateUser(param)
 
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
-	return
+	resp.Ok()
 }
 
 func (u User) Update(c *gin.Context) {
@@ -81,12 +83,13 @@ func (u User) Update(c *gin.Context) {
 	srv := service.NewService(c.Request.Context())
 	err = srv.UpdateUser(params)
 
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
-	return
+	resp.Ok()
 }
 
 func (u User) Delete(c *gin.Context) {
@@ -100,10 +103,11 @@ func (u User) Delete(c *gin.Context) {
 
 	user, err := srv.GetUser(&param)
 
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.ServerError.StatusCode(), gin.H{"code": errcode.ServerError.Code(), "msg": errcode.ServerError.Msg()})
+		newErr := errcode.ServerError.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-	c.JSON(http.StatusOK, user)
-	return
+	resp.To(user)
 }

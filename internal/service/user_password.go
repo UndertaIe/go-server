@@ -50,8 +50,7 @@ func (srv *Service) DeleteUserAccountList(params UserAccountCreateRequest) error
 
 func (srv *Service) UpdateUserAccount(params UserAccountCreateRequest) error {
 	userAccount := model.UserAccount{UserId: params.UserId, PlatformId: params.PlatformId, Password: params.Password}
-	var vals map[string]interface{}
-	vals["pasword"] = userAccount.Password
+	vals := map[string]interface{}{"pasword": userAccount.Password}
 	_, err := userAccount.Update(srv.Db, vals)
 	return err
 }

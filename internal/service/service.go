@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/UndertaIe/passwd/global"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type Service struct {

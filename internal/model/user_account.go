@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/UndertaIe/passwd/database"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type UserAccount struct {

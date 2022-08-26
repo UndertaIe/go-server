@@ -3,18 +3,18 @@ package model
 import (
 	"github.com/UndertaIe/passwd/database"
 	"github.com/UndertaIe/passwd/pkg/page"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type Platform struct {
 	*database.BaseModel
 	PlatformId       int    `json:"platform_id"`
-	PlatformType     string `json:"platform_type"`
-	PlatformName     string `json:"platform_name"`
-	PlatformAbbr     string `json:"platform_abbr"`
-	PlatformLoginUrl string `json:"platform_login_url"`
-	PlatformDomain   string `json:"platform_domain"`
-	PlatformDesc     string `json:"platform_desc"`
+	PlatformType     string `json:"type"`
+	PlatformName     string `json:"name"`
+	PlatformAbbr     string `json:"abbr"`
+	PlatformLoginUrl string `json:"login_url"`
+	PlatformDomain   string `json:"domain"`
+	PlatformDesc     string `json:"description"`
 }
 
 func (p Platform) TableName() string {

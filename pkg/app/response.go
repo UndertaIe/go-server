@@ -9,7 +9,11 @@ import (
 )
 
 type Response struct {
-	Ctx gin.Context
+	Ctx *gin.Context
+}
+
+func (resp *Response) Ok() {
+	resp.Ctx.JSON(http.StatusOK, gin.H{})
 }
 
 func (resp *Response) To(data interface{}) {
@@ -19,7 +23,7 @@ func (resp *Response) To(data interface{}) {
 	resp.Ctx.JSON(http.StatusOK, data)
 }
 
-func (resp *Response) ToList(data []interface{}, pager page.Pager) {
+func (resp *Response) ToList(data interface{}, pager *page.Pager) {
 	if data == nil {
 		data = make([]interface{}, 0)
 	}
@@ -29,7 +33,7 @@ func (resp *Response) ToList(data []interface{}, pager page.Pager) {
 	})
 }
 
-func (resp *Response) ToError(err errcode.Error) {
+func (resp *Response) ToError(err *errcode.Error) {
 	response := gin.H{"code": err.Code(), "msg": err.Msg()}
 	details := err.Details()
 	if len(details) > 0 {

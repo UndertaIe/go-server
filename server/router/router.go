@@ -7,7 +7,7 @@ import (
 
 func NewRouter() *gin.Engine {
 	r := gin.Default()
-	setMiddlewares(r)
+	// setMiddlewares(r)
 	apiv1 := r.Group("api/v1")
 	{
 		user := v1.User{}
