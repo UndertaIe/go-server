@@ -3,6 +3,7 @@ package page
 import (
 	"github.com/UndertaIe/passwd/global"
 	"github.com/gin-gonic/gin"
+	"github.com/go-programming-tour-book/blog-service/pkg/convert"
 )
 
 type Pager struct {
@@ -12,17 +13,18 @@ type Pager struct {
 
 func NewPager(c *gin.Context) *Pager {
 	p := Pager{}
-	err := c.ShouldBind(&p)
-	if err != nil {
+	page_num, err := convert.StrTo(c.Query("page_num")).Int()
+	if err != nil || page_num < 0 {
 		p.PageNum = 0
-		p.PageSize = global.APPSettings.MaxPageSize
-		return &p
+	}
+	page_size, err := convert.StrTo(c.Query("page_size")).Int()
+	if err != nil {
+		p.PageSize = global.APPSettings.DefaultPageSize
+	} else {
+		p.PageSize = page_size
 	}
 	if p.PageSize > global.APPSettings.MaxPageSize {
 		p.PageSize = global.APPSettings.MaxPageSize
-	}
-	if p.PageNum < 0 {
-		p.PageNum = 0
 	}
 	return &p
 }
