@@ -7,7 +7,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "root",
+	Use:   "",
 	Short: "个人密码管理工具",
 	Long:  "个人密码管理工具",
 }
@@ -15,13 +15,13 @@ var rootCmd = &cobra.Command{
 func Run() {
 	var runServeCmd = &cobra.Command{
 		Use:   "serve",
-		Short: "",
+		Short: "服务模式",
 		Long:  "",
 		Run:   server.RunServe,
 	}
 	var runLocalCmd = &cobra.Command{
 		Use:   "local",
-		Short: "",
+		Short: "命令行页面模式",
 		Long:  "",
 		Run:   local.RunLocal,
 	}
