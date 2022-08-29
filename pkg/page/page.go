@@ -13,8 +13,8 @@ type Pager struct {
 
 func NewPager(c *gin.Context) *Pager {
 	page_num, err := convert.StrTo(c.Query("page_num")).Int()
-	if err != nil || page_num < 0 {
-		page_num = 0
+	if err != nil || page_num <= 0 {
+		page_num = 1
 	}
 	page_size, err := convert.StrTo(c.Query("page_size")).Int()
 	if err != nil {

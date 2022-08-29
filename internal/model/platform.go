@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+
 	"github.com/UndertaIe/passwd/database"
 	"github.com/UndertaIe/passwd/pkg/page"
 	"gorm.io/gorm"
@@ -8,13 +10,14 @@ import (
 
 type Platform struct {
 	*database.BaseModel
-	PlatformId       int    `json:"platform_id"`
-	PlatformType     string `json:"type"`
-	PlatformName     string `json:"name"`
-	PlatformAbbr     string `json:"abbr"`
-	PlatformLoginUrl string `json:"login_url"`
-	PlatformDomain   string `json:"domain"`
-	PlatformDesc     string `json:"description"`
+	PlatformId       int    `gorm:"column:platform_id"`
+	PlatformName     string `gorm:"column:name"`
+	PlatformAbbr     string `gorm:"column:abbr"`
+	PlatformType     string `gorm:"column:type"`
+	PlatformDesc     string `gorm:"column:description"`
+	PlatformDomain   string `gorm:"column:domain"`
+	PlatformImgUrl   string `gorm:"column:img_url"`
+	PlatformLoginUrl string `gorm:"column:login_url"`
 }
 
 func (p Platform) TableName() string {
@@ -23,23 +26,17 @@ func (p Platform) TableName() string {
 
 func (p Platform) Get(db *gorm.DB) (Platform, error) {
 	var pf Platform
-	err := db.Where("platform_id = ? AND is_deleted = ?", pf.PlatformId, false).First(&pf).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return pf, err
-	}
-	return pf, nil
+	err := db.Where("platform_id = ? AND is_deleted = ?", p.PlatformId, false).Take(&pf).Error
+	fmt.Println(err)
+	return pf, err
 }
 
 func (p Platform) GetList(db *gorm.DB, pager *page.Pager) ([]Platform, error) {
 	var platforms []Platform
 	db = db.Offset(pager.Offset()).Limit(pager.Limit())
-	rows, err := db.Table(p.TableName()).Rows()
+	err := db.Find(&platforms).Error
 	if err != nil {
 		return nil, err
-	}
-	for rows.Next() {
-		var pl Platform
-		rows.Scan(&pl)
 	}
 	return platforms, nil
 }
@@ -55,6 +52,6 @@ func (p Platform) Update(db *gorm.DB, values interface{}) error {
 }
 
 func (p Platform) Delete(db *gorm.DB) (*Platform, error) {
-	err := db.Where("platform_id=? and is_deleted=?", p.PlatformId, false).Delete(&p).Error
+	err := db.Model(&p).Where("platform_id = ? AND is_deleted = ?", p.PlatformId, false).Update("is_deleted", true).Error
 	return &p, err
 }

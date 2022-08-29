@@ -2,9 +2,7 @@ package service
 
 import (
 	"github.com/UndertaIe/passwd/internal/model"
-	"github.com/UndertaIe/passwd/pkg/errcode"
 	"github.com/UndertaIe/passwd/pkg/page"
-	"gorm.io/gorm"
 )
 
 type User struct {
@@ -23,9 +21,6 @@ func (srv *Service) GetUser(params *UserGetRequest) (*User, error) {
 	user := model.User{UserId: params.UserId}
 	user, err := user.Get(srv.Db)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, errcode.ErrorRecordNotFound
-		}
 		return nil, err
 	}
 	return &User{
@@ -103,17 +98,17 @@ func (srv *Service) UpdateUser(params *UserUpdateRequest) error {
 		vals["gender"] = params.Sex
 	}
 	if params.Description != "" {
-		vals["desc"] = params.Description
+		vals["description"] = params.Description
 	}
 	return user.Update(srv.Db, vals)
 }
 
 type UserDeleteRequest struct {
-	UserID int
+	UserId int
 }
 
 func (srv *Service) DeleteUser(params *UserDeleteRequest) error {
-	user := model.User{UserId: params.UserID}
+	user := model.User{UserId: params.UserId}
 	err := user.Delete(srv.Db)
 	return err
 }

@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"strconv"
+
 	"github.com/UndertaIe/passwd/internal/service"
 	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/errcode"
@@ -16,18 +18,18 @@ func NewPlatform() Platform {
 
 func (up Platform) Get(c *gin.Context) {
 	srv := service.NewService(c)
-
-	params := new(service.Platform)
-	err := c.Bind(params)
+	resp := app.Response{Ctx: c}
+	pId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
-	platform, err := srv.GetPlatform(*params)
+	params := service.Platform{PlatformId: pId}
+	platform, err := srv.GetPlatform(params)
 
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -36,18 +38,20 @@ func (up Platform) Get(c *gin.Context) {
 
 func (up Platform) List(c *gin.Context) {
 	srv := service.NewService(c)
+	resp := app.Response{Ctx: c}
 	params := new(service.Platform)
 	err := c.Bind(params)
+
 	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
 	pager := page.NewPager(c)
 	platforms, err := srv.GetPlatformList(*params, pager)
 
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -56,18 +60,18 @@ func (up Platform) List(c *gin.Context) {
 
 func (up Platform) Create(c *gin.Context) {
 	srv := service.NewService(c)
-
+	resp := app.Response{Ctx: c}
 	params := new(service.Platform)
 	err := c.Bind(params)
 	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
 	_, err = srv.CreatePlatform(*params)
 
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -76,18 +80,17 @@ func (up Platform) Create(c *gin.Context) {
 
 func (up Platform) Update(c *gin.Context) {
 	srv := service.NewService(c)
-
+	resp := app.Response{Ctx: c}
 	params := new(service.Platform)
 	err := c.Bind(params)
 	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
 	_, err = srv.UpdatePlatform(*params)
-
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -96,17 +99,18 @@ func (up Platform) Update(c *gin.Context) {
 
 func (up Platform) Delete(c *gin.Context) {
 	srv := service.NewService(c)
-
-	params := new(service.Platform)
-	err := c.Bind(params)
-	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
-		return
-	}
-	err = srv.DeletePlatform(*params)
+	pId, err := strconv.Atoi(c.Param("id"))
 	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
+		return
+	}
+	params := &service.Platform{PlatformId: pId}
+	err = srv.DeletePlatform(*params)
+
+	if err != nil {
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}

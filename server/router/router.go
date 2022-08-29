@@ -7,7 +7,7 @@ import (
 
 func NewRouter() *gin.Engine {
 	r := gin.Default()
-	// setMiddlewares(r)
+	setMiddlewares(r)
 	apiv1 := r.Group("api/v1")
 	{
 		user := v1.User{}
@@ -18,7 +18,16 @@ func NewRouter() *gin.Engine {
 		apiv1.PUT("/user/:id", user.Update)
 	}
 	{
+		platform := v1.Platform{}
+		apiv1.GET("/platform/:id", platform.Get)
+		apiv1.GET("/platform", platform.List)
+		apiv1.POST("/platform", platform.Create)
+		apiv1.DELETE("/platform/:id", platform.Delete)
+		apiv1.PUT("/platform/:id", platform.Update)
+	}
+	{
 		userPasswd := v1.UserPasswd{}
+		apiv1.GET("/userpasswd", userPasswd.All)
 		apiv1.GET("/userpasswd/:user_id", userPasswd.List)
 		apiv1.GET("/userpasswd/:user_id/:platform_id", userPasswd.Get)
 		apiv1.POST("/userpasswd", userPasswd.Create)
@@ -26,18 +35,11 @@ func NewRouter() *gin.Engine {
 		apiv1.DELETE("/userpasswd/:user_id", userPasswd.DeleteList)
 		apiv1.PUT("/userpasswd/:user_id/:platform_id", userPasswd.Update)
 	}
-	{
-		platform := v1.Platform{}
-		apiv1.GET("/platform/:platform_id", platform.Get)
-		apiv1.GET("/platform", platform.List)
-		apiv1.POST("/platform", platform.Create)
-		apiv1.DELETE("/platform/:platform_id", platform.Delete)
-		apiv1.PUT("/platform/:platform_id", platform.Update)
-	}
+
 	return r
 }
 
 func setMiddlewares(r *gin.Engine) {
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
+	// r.Use(gin.Logger())
+	// r.Use(gin.Recovery())
 }

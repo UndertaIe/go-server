@@ -16,41 +16,63 @@ func NewUserPasswd() UserPasswd {
 	return UserPasswd{}
 }
 
-func (up UserPasswd) Get(c *gin.Context) {
+func (up UserPasswd) All(c *gin.Context) {
 	srv := service.NewService(c)
-
-	params := new(service.UserAccountGetRequest)
-	err := c.Bind(params)
-	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
-		return
-	}
 	pager := page.NewPager(c)
-	userAccounts, err := srv.GetUserAccountList(*params, pager)
+	userAccounts, err := srv.GetAllUserAccount(pager)
 
 	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
 	resp.ToList(userAccounts, pager)
 }
 
+func (up UserPasswd) Get(c *gin.Context) {
+	srv := service.NewService(c)
+
+	uId, err0 := strconv.Atoi(c.Param("user_id"))
+	pId, err1 := strconv.Atoi(c.Param("platform_id"))
+	resp := app.Response{Ctx: c}
+	if err0 != nil || err1 != nil {
+		newErr := errcode.InvalidParams
+		if err0 != nil {
+			newErr = newErr.WithDetails(err0.Error())
+		}
+		if err1 != nil {
+			newErr = newErr.WithDetails(err1.Error())
+		}
+		resp.ToError(newErr)
+		return
+	}
+	params := &service.UserAccountGetRequest{UserId: uId, PlatformId: pId}
+	userAccount, err := srv.GetUserAccount(*params)
+
+	if err != nil {
+		newErr := errcode.ErrorService.WithDetails(err.Error())
+		resp.ToError(newErr)
+		return
+	}
+	resp.To(userAccount)
+}
+
 func (up UserPasswd) List(c *gin.Context) {
 	srv := service.NewService(c)
 	user_id, err := strconv.Atoi(c.Param("user_id"))
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
 	params := service.UserAccountGetRequest{UserId: user_id}
 	pager := page.NewPager(c)
 
 	userAccounts, err := srv.GetUserAccountList(params, pager)
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -61,15 +83,16 @@ func (up UserPasswd) Create(c *gin.Context) {
 	srv := service.NewService(c)
 	params := new(service.UserAccountCreateRequest)
 	err := c.Bind(params)
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
 	err = srv.CreateUserAccount(*params)
 
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -79,17 +102,32 @@ func (up UserPasswd) Create(c *gin.Context) {
 
 func (up UserPasswd) Update(c *gin.Context) {
 	srv := service.NewService(c)
-	params := new(service.UserAccountCreateRequest)
-	err := c.Bind(params)
-	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+
+	uId, err0 := strconv.Atoi(c.Param("user_id"))
+	pId, err1 := strconv.Atoi(c.Param("platform_id"))
+	params := &service.UserAccountCreateRequest{}
+	err := c.Bind(&params)
+	resp := app.Response{Ctx: c}
+	if err0 != nil || err1 != nil || err != nil {
+		newErr := errcode.InvalidParams
+		if err0 != nil {
+			newErr = newErr.WithDetails(err0.Error())
+		}
+		if err1 != nil {
+			newErr = newErr.WithDetails(err1.Error())
+		}
+		if err != nil {
+			newErr = newErr.WithDetails(err.Error())
+		}
+		resp.ToError(newErr)
 		return
 	}
+	params.UserId = uId
+	params.PlatformId = pId
 	err = srv.UpdateUserAccount(*params)
 
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -98,17 +136,25 @@ func (up UserPasswd) Update(c *gin.Context) {
 
 func (up UserPasswd) Delete(c *gin.Context) {
 	srv := service.NewService(c)
-	params := new(service.UserAccountCreateRequest)
-	err := c.Bind(params)
-	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+	uId, err0 := strconv.Atoi(c.Param("user_id"))
+	pId, err1 := strconv.Atoi(c.Param("platform_id"))
+	resp := app.Response{Ctx: c}
+	if err0 != nil || err1 != nil {
+		newErr := errcode.InvalidParams
+		if err0 != nil {
+			newErr = newErr.WithDetails(err0.Error())
+		}
+		if err1 != nil {
+			newErr = newErr.WithDetails(err1.Error())
+		}
+		resp.ToError(newErr)
 		return
 	}
-	err = srv.DeleteUserAccount(*params)
+	params := &service.UserAccountGetRequest{UserId: uId, PlatformId: pId}
+	err := srv.DeleteUserAccount(*params)
 
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -117,17 +163,18 @@ func (up UserPasswd) Delete(c *gin.Context) {
 
 func (up UserPasswd) DeleteList(c *gin.Context) {
 	srv := service.NewService(c)
-	params := new(service.UserAccountCreateRequest)
-	err := c.Bind(params)
-	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
-		return
-	}
-	err = srv.DeleteUserAccountList(*params)
-
+	uId, err := strconv.Atoi(c.Param("user_id"))
 	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
+		return
+	}
+	params := &service.UserAccountGetRequest{UserId: uId}
+	err = srv.DeleteUserAccountList(*params)
+
+	if err != nil {
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}

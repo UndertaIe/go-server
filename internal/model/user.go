@@ -32,12 +32,12 @@ func (u User) Create(db *gorm.DB) error {
 }
 
 func (u User) Update(db *gorm.DB, values interface{}) error {
-	err := db.Model(&u).Where("user_id = ? AND is_deleted = ?", u.UserId, false).Updates(values).Error // 待测试
+	err := db.Model(&u).Where("user_id = ? AND is_deleted = ?", u.UserId, false).Updates(values).Error
 	return err
 }
 
 func (u User) Delete(db *gorm.DB) error {
-	err := db.Where("user_id = ? AND is_deleted = ?", u.UserId, false).Delete(&u).Error
+	err := db.Model(&u).Where("user_id = ? AND is_deleted = ?", u.UserId, false).Update("is_deleted", true).Error
 	return err
 }
 
@@ -52,42 +52,11 @@ type UserRow struct {
 }
 
 func (u User) GetUserList(db *gorm.DB, pager *page.Pager) ([]UserRow, error) {
-	db = db.Offset(pager.PageNum).Limit(pager.PageSize)
+	db = db.Offset(pager.Offset()).Limit(pager.Limit())
 	var users []UserRow
 	tx := db.Model(&User{}).Where(map[string]interface{}{"is_deleted": false}).Find(&users)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
 	return users, nil
-}
-
-type UserAccountRow struct {
-	PlatformType,
-	PlatformName,
-	Password,
-	PlatformDomain,
-	PlatformLoginUrl,
-	PlatformDesc string
-}
-
-func (u User) GetAccountsByUserID(db *gorm.DB, pager *page.Pager) ([]*UserAccountRow, error) {
-	var resp []*UserAccountRow
-	db = db.Offset(pager.PageNum).Limit(pager.PageSize)
-	rows, err := db.Where(
-		"user_id = ?", u.UserId).Joins(
-		"JOIN passwd_platform p ON passwd_user_account.platform_id = p.platform_id AND passwd_user_account.user_id = ?", u.UserId).Select(
-		"p.PlatformType, p.PlatformName, passwd_user_account.Password, p.PlatformDomain, p.PlatformLoginUrl, p.PlatformDesc").Rows()
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		uar := &UserAccountRow{}
-		err = rows.Scan(&uar.PlatformType, &uar.PlatformName, &uar.Password, &uar.PlatformDomain, &uar.PlatformLoginUrl, &uar.PlatformDesc)
-		if err != nil {
-			return nil, err
-		}
-
-		resp = append(resp, uar)
-	}
-	return resp, err
 }

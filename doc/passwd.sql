@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS `passwd_user` (
   `sex` tinyint,
   `created_at` datetime NOT NULL,
   `modified_at` datetime NOT NULL,
-  `deleted_at`  datetime,
   `is_deleted` boolean NOT NULL,
   PRIMARY KEY (`user_id`)
 ) CHARSET=utf8;
@@ -32,7 +31,6 @@ CREATE TABLE IF NOT EXISTS `passwd_platform` (
   `created_at` datetime NOT NULL,
   `modified_at` datetime NOT NULL,
   `is_deleted` boolean NOT NULL,
-  `deleted_at`  datetime,
   PRIMARY KEY (`platform_id`)
 ) CHARSET=utf8;
 
@@ -44,6 +42,5 @@ CREATE TABLE IF NOT EXISTS `passwd_user_account` (
   `created_at` datetime NOT NULL,
   `modified_at` datetime NOT NULL,
   `is_deleted` boolean NOT NULL,
-  `deleted_at`  datetime,
   PRIMARY KEY (`user_account_id`)
 ) CHARSET=utf8;

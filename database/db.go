@@ -14,7 +14,6 @@ import (
 type BaseModel struct {
 	CreatedAt  string `gorm:"column:created_at"`
 	ModifiedAt string `gorm:"column:modified_at"`
-	DeletedAt  string `gorm:"column:deleted_at"`
 	IsDeleted  bool   `gorm:"column:is_deleted"`
 }
 
@@ -38,7 +37,6 @@ func NewDBEngine(dbSetting *config.DatabaseSetting) (*gorm.DB, error) {
 
 	db.Callback().Create().Replace("gorm:before_create", createCallback) //替换gorm的全局钩子函数
 	db.Callback().Update().Replace("gorm:before_update", updateCallback)
-	db.Callback().Delete().Replace("gorm:before_delete", deleteCallback)
 	return db, nil
 }
 
@@ -54,7 +52,3 @@ func updateCallback(db *gorm.DB) {
 	db.Statement.SetColumn("modified_at", now)
 }
 
-func deleteCallback(db *gorm.DB) {
-	now := time.Now().Format("2006-01-02 15:04:05")
-	db.Statement.SetColumn("deleted_at", now)
-}

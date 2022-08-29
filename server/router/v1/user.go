@@ -20,8 +20,10 @@ func NewUser() User {
 // @params user_id int
 func (u User) Get(c *gin.Context) {
 	user_id, err := strconv.Atoi(c.Param("id"))
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
 	param := service.UserGetRequest{UserId: user_id}
@@ -29,9 +31,8 @@ func (u User) Get(c *gin.Context) {
 
 	user, err := srv.GetUser(&param)
 
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.NotFound.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -47,7 +48,7 @@ func (u User) List(c *gin.Context) {
 
 	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -58,17 +59,18 @@ func (u User) Create(c *gin.Context) {
 	param := new(service.UserCreateRequest)
 	err := c.ShouldBind(param)
 	fmt.Println(param)
+	resp := app.Response{Ctx: c}
 	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
 		return
 	}
 	srv := service.NewService(c.Request.Context())
 
 	err = srv.CreateUser(param)
 
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -77,17 +79,20 @@ func (u User) Create(c *gin.Context) {
 
 func (u User) Update(c *gin.Context) {
 	params := new(service.UserUpdateRequest)
-	err := c.ShouldBind(params)
-	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
+	user_id, err0 := strconv.Atoi(c.Param("id"))
+	params.UserId = user_id
+	err1 := c.ShouldBind(params)
+	resp := app.Response{Ctx: c}
+	if err0 != nil || err1 != nil {
+		newErr := errcode.InvalidParams.WithDetails(err0.Error()).WithDetails(err1.Error())
+		resp.ToError(newErr)
 		return
 	}
 	srv := service.NewService(c.Request.Context())
-	err = srv.UpdateUser(params)
+	err := srv.UpdateUser(params)
 
-	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.ErrorService.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -95,21 +100,21 @@ func (u User) Update(c *gin.Context) {
 }
 
 func (u User) Delete(c *gin.Context) {
-	user_id, err := strconv.Atoi(c.Param("user_id"))
-	if err != nil {
-		c.JSON(errcode.InvalidParams.StatusCode(), gin.H{"code": errcode.InvalidParams.Code(), "msg": errcode.InvalidParams.Msg()})
-		return
-	}
-	param := service.UserGetRequest{UserId: user_id}
-	srv := service.NewService(c.Request.Context())
-
-	user, err := srv.GetUser(&param)
-
+	user_id, err := strconv.Atoi(c.Param("id"))
 	resp := app.Response{Ctx: c}
 	if err != nil {
-		newErr := errcode.ServerError.WithDetails(err.Error())
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
 		resp.ToError(newErr)
 		return
 	}
-	resp.To(user)
+	param := service.UserDeleteRequest{UserId: user_id}
+	srv := service.NewService(c.Request.Context())
+
+	err = srv.DeleteUser(&param)
+	if err != nil {
+		newErr := errcode.ErrorService.WithDetails(err.Error())
+		resp.ToError(newErr)
+		return
+	}
+	resp.Ok()
 }
