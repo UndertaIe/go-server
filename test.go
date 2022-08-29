@@ -3,15 +3,14 @@ package main
 import (
 	"fmt"
 	"reflect"
-
-	"github.com/gin-gonic/gin"
+	"testing"
 )
 
 type S struct {
 	A string
 }
 
-func main() {
+func test_main(Tt testing.T) {
 	var arr []S
 	if arr == nil {
 		fmt.Println("arr is nil")
@@ -20,6 +19,7 @@ func main() {
 	var x any = arr
 	fmt.Println(x)
 	v := tran(x)
+	fmt.Println(v)
 }
 
 func tran(x any) any {
@@ -34,5 +34,4 @@ func tran(x any) any {
 		data = append(data, v.Index(i).Interface())
 	}
 	return data
-
 }
