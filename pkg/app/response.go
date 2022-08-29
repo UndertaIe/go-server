@@ -2,6 +2,7 @@ package app
 
 import (
 	"net/http"
+	"reflect"
 
 	"github.com/UndertaIe/passwd/pkg/page"
 	"github.com/gin-gonic/gin"
@@ -23,9 +24,17 @@ func (resp *Response) To(data interface{}) {
 	resp.Ctx.JSON(http.StatusOK, data)
 }
 
-func (resp *Response) ToList(data interface{}, pager *page.Pager) {
-	if data == nil {
-		data = make([]interface{}, 0)
+func (resp *Response) ToList(x interface{}, pager *page.Pager) {
+	t := reflect.TypeOf(x)
+	if t.Kind() != reflect.Slice {
+		panic("x type must be slice")
+	}
+
+	v := reflect.ValueOf(x)
+	data := make([]any, 0)
+	len := v.Len()
+	for i := 0; i < len; i++ {
+		data = append(data, v.Index(i).Interface())
 	}
 	resp.Ctx.JSON(http.StatusOK, gin.H{
 		"list": data,

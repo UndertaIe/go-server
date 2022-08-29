@@ -12,21 +12,21 @@ type Pager struct {
 }
 
 func NewPager(c *gin.Context) *Pager {
-	p := Pager{}
 	page_num, err := convert.StrTo(c.Query("page_num")).Int()
 	if err != nil || page_num < 0 {
-		p.PageNum = 0
+		page_num = 0
 	}
 	page_size, err := convert.StrTo(c.Query("page_size")).Int()
 	if err != nil {
-		p.PageSize = global.APPSettings.DefaultPageSize
-	} else {
-		p.PageSize = page_size
+		page_size = global.APPSettings.DefaultPageSize
 	}
-	if p.PageSize > global.APPSettings.MaxPageSize {
-		p.PageSize = global.APPSettings.MaxPageSize
+	if page_size > global.APPSettings.MaxPageSize {
+		page_size = global.APPSettings.MaxPageSize
 	}
-	return &p
+	return &Pager{
+		PageSize: page_size,
+		PageNum: page_num,
+	}
 }
 
 func (p Pager) Offset() int {
