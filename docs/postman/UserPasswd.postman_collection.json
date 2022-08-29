@@ -1,0 +1,168 @@
+{
+	"info": {
+		"_postman_id": "728d1529-4bee-429c-b6bb-d59daece147e",
+		"name": "UserPasswd",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "获取单用户单平台密码",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/userpasswd/5/3",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"userpasswd",
+						"5",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "更新单用户单平台密码",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"password\": \"new pwd\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/userpasswd/6/4",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"userpasswd",
+						"6",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取所有用户平台密码",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/userpasswd",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"userpasswd"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取单用户平台密码",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/userpasswd/5",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"userpasswd",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "删除单个平台密码",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/userpasswd/6/4",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"userpasswd",
+						"6",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "删除单用户所有平台密码",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/userpasswd/5",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"userpasswd",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "添加平台账号密码",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"user_id\":6, \"platform_id\": 4, \"password\": \"user6's password\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/userpasswd",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"userpasswd"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
