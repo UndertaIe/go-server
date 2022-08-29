@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/UndertaIe/passwd/config"
+	"github.com/UndertaIe/passwd/global"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -30,6 +31,8 @@ func NewDBEngine(dbSetting *config.DatabaseSetting) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return db.Debug(), nil
+	if global.ServerSettings.RunMode == config.Debug {
+		db = db.Debug()
+	}
+	return db, nil
 }
