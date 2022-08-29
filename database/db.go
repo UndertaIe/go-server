@@ -12,10 +12,10 @@ import (
 )
 
 type BaseModel struct {
-	CreatedAt  string `json:"created_at"`
-	ModifiedAt string `json:"modified_at"`
-	DeletedAt  string `json:"deleted_at"`
-	IsDeleted  bool   `json:"is_deleted"`
+	CreatedAt  string `gorm:"column:created_at"`
+	ModifiedAt string `gorm:"column:modified_at"`
+	DeletedAt  string `gorm:"column:deleted_at"`
+	IsDeleted  bool   `gorm:"column:is_deleted"`
 }
 
 func NewDBEngine(dbSetting *config.DatabaseSetting) (*gorm.DB, error) {
@@ -36,21 +36,25 @@ func NewDBEngine(dbSetting *config.DatabaseSetting) (*gorm.DB, error) {
 		db = db.Debug()
 	}
 
-	db.Callback().Create().Before("create_timestamp").Register("create_timestamp", createCallback)
-	db.Callback().Update().Before("update_timestamp").Register("update_timestamp", updateCallback)
-	db.Callback().Delete().Before("delete_timestamp").Register("delete_timestamp", deleteCallback)
+	db.Callback().Create().Replace("gorm:before_create", createCallback) //替换gorm的全局钩子函数
+	db.Callback().Update().Replace("gorm:before_update", updateCallback)
+	db.Callback().Delete().Replace("gorm:before_delete", deleteCallback)
 	return db, nil
 }
 
 func createCallback(db *gorm.DB) {
-	db.Statement.SetColumn("CreatedAt", time.Now().Unix())
-	db.Statement.SetColumn("ModifiedAt", time.Now().Unix())
+	fmt.Println("Now():", time.Now().GoString())
+	now := time.Now().Format("2006-01-02 15:04:05")
+	db.Statement.SetColumn("created_at", now)
+	db.Statement.SetColumn("modified_at", now)
 }
 
 func updateCallback(db *gorm.DB) {
-	db.Statement.SetColumn("ModifiedAt", time.Now().Unix())
+	now := time.Now().Format("2006-01-02 15:04:05")
+	db.Statement.SetColumn("modified_at", now)
 }
 
 func deleteCallback(db *gorm.DB) {
-	db.Statement.SetColumn("DeletedAt", time.Now().Unix())
+	now := time.Now().Format("2006-01-02 15:04:05")
+	db.Statement.SetColumn("deleted_at", now)
 }
