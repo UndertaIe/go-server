@@ -8,6 +8,7 @@ import (
 	"github.com/UndertaIe/passwd/pkg/page"
 	"github.com/gin-gonic/gin"
 	"github.com/go-programming-tour-book/blog-service/pkg/errcode"
+	"gorm.io/gorm"
 )
 
 type User struct{}
@@ -29,6 +30,9 @@ func (u User) Get(c *gin.Context) {
 	user, err := srv.GetUser(&param)
 
 	resp := app.Response{Ctx: c}
+	if err == gorm.ErrRecordNotFound {
+		resp.Ok()
+	}
 	if err != nil {
 		newErr := errcode.ServerError.WithDetails(err.Error())
 		resp.ToError(newErr)

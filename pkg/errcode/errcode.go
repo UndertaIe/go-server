@@ -47,7 +47,6 @@ func (e *Error) Details() []string {
 func (e *Error) WithDetails(details ...string) *Error {
 	newError := *e
 	newError.details = append(newError.details, details...)
-
 	return &newError
 }
 
