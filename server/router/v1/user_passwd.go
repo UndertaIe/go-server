@@ -5,9 +5,9 @@ import (
 
 	"github.com/UndertaIe/passwd/internal/service"
 	"github.com/UndertaIe/passwd/pkg/app"
+	"github.com/UndertaIe/passwd/pkg/errcode"
 	"github.com/UndertaIe/passwd/pkg/page"
 	"github.com/gin-gonic/gin"
-	"github.com/go-programming-tour-book/blog-service/pkg/errcode"
 )
 
 type UserPasswd struct{}

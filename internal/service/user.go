@@ -2,7 +2,9 @@ package service
 
 import (
 	"github.com/UndertaIe/passwd/internal/model"
+	"github.com/UndertaIe/passwd/pkg/errcode"
 	"github.com/UndertaIe/passwd/pkg/page"
+	"gorm.io/gorm"
 )
 
 type User struct {
@@ -21,6 +23,9 @@ func (srv *Service) GetUser(params *UserGetRequest) (*User, error) {
 	user := model.User{UserId: params.UserId}
 	user, err := user.Get(srv.Db)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errcode.ErrorRecordNotFound
+		}
 		return nil, err
 	}
 	return &User{
@@ -61,19 +66,20 @@ type UserCreateRequest struct {
 	Role        int    `json:"role"`
 }
 
-func (srv *Service) CreateUser(params *UserCreateRequest) (*User, error) {
-	user := model.User{}
-	user, err := user.Create(srv.Db)
-	if err != nil {
-		return nil, err
+func (srv *Service) CreateUser(params *UserCreateRequest) error {
+	user := model.User{
+		UserName:    params.UserName,
+		Password:    params.Password,
+		PhoneNumber: params.PhoneNumber,
+		Sex:         params.Sex,
+		Description: params.Description,
+		Role:        params.Role,
 	}
-	return &User{
-		UserId:      user.UserId,
-		UserName:    user.UserName,
-		PhoneNumber: user.PhoneNumber,
-		Sex:         user.Sex,
-		Description: user.Description,
-	}, nil
+	err := user.Create(srv.Db)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 type UserUpdateRequest struct {

@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/UndertaIe/passwd/pkg/errcode"
 	"github.com/UndertaIe/passwd/pkg/page"
 	"github.com/gin-gonic/gin"
-	"github.com/go-programming-tour-book/blog-service/pkg/errcode"
 )
 
 type Response struct {
@@ -45,9 +45,6 @@ func (resp *Response) ToList(x interface{}, pager *page.Pager) {
 func (resp *Response) ToError(err *errcode.Error) {
 	response := gin.H{"code": err.Code(), "msg": err.Msg()}
 	details := err.Details()
-	if len(details) > 0 {
-		response["details"] = details
-	}
-
+	response["details"] = details
 	resp.Ctx.JSON(err.StatusCode(), response)
 }

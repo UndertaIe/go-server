@@ -1,5 +1,5 @@
 package errcode
 
 var (
-	ErrorGetUserRecordFail = NewError(2001, "获取用户失败")
+	ErrorRecordNotFound = NewError(20001, "查询用户不存在")
 )

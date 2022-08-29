@@ -3,7 +3,6 @@ package model
 import (
 	"github.com/UndertaIe/passwd/database"
 	"github.com/UndertaIe/passwd/pkg/page"
-	"github.com/UndertaIe/passwd/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -25,15 +24,11 @@ func (u User) TableName() string {
 
 func (u User) Get(db *gorm.DB) (User, error) {
 	err := db.Where("user_id = ? AND is_deleted = ?", u.UserId, false).Take(&u).Error
-	if err == gorm.ErrRecordNotFound {
-		reurn u, nil
-	}
 	return u, err
 }
-
-func (u User) Create(db *gorm.DB) (User, error) {
+func (u User) Create(db *gorm.DB) error {
 	err := db.Create(&u).Error
-	return u, err
+	return err
 }
 
 func (u User) Update(db *gorm.DB, values interface{}) error {

@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/UndertaIe/passwd/config"
 	"github.com/UndertaIe/passwd/global"
@@ -34,5 +35,22 @@ func NewDBEngine(dbSetting *config.DatabaseSetting) (*gorm.DB, error) {
 	if global.ServerSettings.RunMode == config.Debug {
 		db = db.Debug()
 	}
+
+	db.Callback().Create().Before("create_timestamp").Register("create_timestamp", createCallback)
+	db.Callback().Update().Before("update_timestamp").Register("update_timestamp", updateCallback)
+	db.Callback().Delete().Before("delete_timestamp").Register("delete_timestamp", deleteCallback)
 	return db, nil
+}
+
+func createCallback(db *gorm.DB) {
+	db.Statement.SetColumn("CreatedAt", time.Now().Unix())
+	db.Statement.SetColumn("ModifiedAt", time.Now().Unix())
+}
+
+func updateCallback(db *gorm.DB) {
+	db.Statement.SetColumn("ModifiedAt", time.Now().Unix())
+}
+
+func deleteCallback(db *gorm.DB) {
+	db.Statement.SetColumn("DeletedAt", time.Now().Unix())
 }
