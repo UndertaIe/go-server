@@ -4,8 +4,15 @@ import (
 	"time"
 )
 
+type Mode string
+
+const (
+	Debug      Mode = "debug"
+	Production Mode = "prod"
+)
+
 type ServerSetting struct {
-	RunMode      string
+	RunMode      Mode // debug or prod; default: debug
 	HttpPort     int
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
