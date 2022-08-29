@@ -21,7 +21,7 @@ func Run() {
 	}
 	var runLocalCmd = &cobra.Command{
 		Use:   "local",
-		Short: "命令行页面模式",
+		Short: "命令行模式",
 		Long:  "",
 		Run:   local.RunLocal,
 	}

@@ -10,7 +10,7 @@ type S struct {
 	A string
 }
 
-func test_main(Tt testing.T) {
+func TestMain(t *testing.T) {
 	var arr []S
 	if arr == nil {
 		fmt.Println("arr is nil")

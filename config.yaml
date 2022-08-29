@@ -19,14 +19,14 @@ App:
     - .png
 SQLITE3:
   UserName: root
-  Password: mysql
-  Host: 127.0.0.1:3306
+  Password: sqlite3
   DBName: passwd
   TablePrefix: passwd_
   Charset: utf8
   ParseTime: True
   MaxIdleConns: 10
   MaxOpenConns: 30
+  FilePath: ~/.passwd/
 MySQL:
   DBType: mysql
   UserName: root
