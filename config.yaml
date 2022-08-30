@@ -38,6 +38,9 @@ MySQL:
   ParseTime: True
   MaxIdleConns: 10
   MaxOpenConns: 30
+Redis:
+  UserName: root
+  Password: mysql
 Email:
   Host: smtp.qq.com
   Port: 465
