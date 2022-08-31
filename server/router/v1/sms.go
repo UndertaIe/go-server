@@ -19,7 +19,7 @@ func (up Sms) Get(c *gin.Context) {
 		PhoneNumbers:  "15837811850",
 		SignName:      "阿里云短信测试",
 		TemplateCode:  "SMS_154950909",
-		TemplateParam: "{\"code\":\"1234\"}",
+		TemplateParam: "{\"code\":\"123456\"}",
 	}
 	resp := app.Response{Ctx: c}
 	err := global.SmsClient.Send(req)

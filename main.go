@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"strings"
 
@@ -96,7 +95,6 @@ func setupDBEngine() error {
 
 func setupSmsClient() error {
 	cli, err := alibaba.NewClient(global.SmsSettings.AccessKey, global.SmsSettings.AccessSecret)
-	fmt.Println(global.SmsSettings.AccessKey)
 	global.SmsClient = cli
 	return err
 }
