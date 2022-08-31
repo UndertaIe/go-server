@@ -12,10 +12,10 @@ type Client struct {
 }
 
 type SmsRequest struct {
-	PhoneNumbers  string `手机号`
-	SignName      string `头部名称` // 阿里云短信测试
-	TemplateCode  string `模板代码` // SMS_154950909
-	TemplateParam string `模板参数` // {\"code\":\"1234\"}
+	PhoneNumbers  string // 手机号
+	SignName      string // 头部名称 // 阿里云短信测试
+	TemplateCode  string // 模板代码 // SMS_154950909
+	TemplateParam string // 模板参数 // {\"code\":\"1234\"}
 }
 
 func NewClient(accessKeyId string, accessKeySecret string) (*Client, error) {
