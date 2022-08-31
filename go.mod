@@ -3,6 +3,10 @@ module github.com/UndertaIe/passwd
 go 1.18
 
 require (
+	github.com/alibabacloud-go/darabonba-openapi v0.1.18
+	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
+	github.com/alibabacloud-go/tea v1.1.17
+	github.com/alibabacloud-go/tea-utils v1.4.5
 	github.com/fsnotify/fsnotify v1.5.4
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-programming-tour-book/blog-service v0.0.0-20211007070625-fc62a2672eb7
@@ -16,6 +20,13 @@ require (
 
 require (
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
+	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.4 // indirect
+	github.com/alibabacloud-go/debug v0.0.0-20190504072949-9472017b5c68 // indirect
+	github.com/alibabacloud-go/endpoint-util v1.1.0 // indirect
+	github.com/alibabacloud-go/openapi-util v0.0.11 // indirect
+	github.com/alibabacloud-go/tea-xml v1.1.2 // indirect
+	github.com/aliyun/credentials-go v1.1.2 // indirect
+	github.com/clbanning/mxj/v2 v2.5.6 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
@@ -41,6 +52,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.3.0 // indirect
+	github.com/tjfoc/gmsm v1.3.2 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	go.uber.org/atomic v1.7.0 // indirect

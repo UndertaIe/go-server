@@ -9,4 +9,5 @@ var (
 	APPSettings      *config.AppSetting
 	ServerSettings   *config.ServerSetting
 	EmailSettings    *config.EmailSetting
+	SmsSettings      *config.SmsSetting
 )

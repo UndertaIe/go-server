@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"strings"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/UndertaIe/passwd/config"
 	"github.com/UndertaIe/passwd/database"
 	"github.com/UndertaIe/passwd/global"
+	"github.com/UndertaIe/passwd/pkg/com/alibaba"
 	"github.com/UndertaIe/passwd/pkg/tracer"
 )
 
@@ -30,6 +32,10 @@ func init() { // 初始化工作
 	err = setupDBEngine()
 	if err != nil {
 		log.Fatalf("init.setupDBEngine err: %v", err)
+	}
+	err = setupSmsClient()
+	if err != nil {
+		log.Fatalf("init.setupSmsClient err: %v", err)
 	}
 	err = setupTracer()
 	if err != nil {
@@ -75,12 +81,23 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+	err = s.ReadSection("Sms", &global.SmsSettings)
+	if err != nil {
+		return err
+	}
 	return err
 }
 
 func setupDBEngine() error {
 	var err error
 	global.DBEngine, err = database.NewDBEngine(global.DatabaseSettings) // 在对全局变量赋值时不要使用 :=, 否则会导致左侧变量变为nil
+	return err
+}
+
+func setupSmsClient() error {
+	cli, err := alibaba.NewClient(global.SmsSettings.AccessKey, global.SmsSettings.AccessSecret)
+	fmt.Println(global.SmsSettings.AccessKey)
+	global.SmsClient = cli
 	return err
 }
 

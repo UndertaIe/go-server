@@ -41,6 +41,12 @@ type EmailSetting struct {
 	To       []string
 }
 
+type SmsSetting struct {
+	Source       string
+	AccessKey    string
+	AccessSecret string
+}
+
 type JWTSetting struct {
 	Secret string
 	Issuer string

@@ -35,6 +35,11 @@ func NewRouter() *gin.Engine {
 		apiv1.DELETE("/userpasswd/:user_id", userPasswd.DeleteList)
 		apiv1.PUT("/userpasswd/:user_id/:platform_id", userPasswd.Update)
 	}
+	{
+		sms := v1.NewSms()
+		apiv1.GET("/sms", sms.Get) // demo
+
+	}
 
 	return r
 }
