@@ -12,9 +12,9 @@ import (
 )
 
 type BaseModel struct {
-	CreatedAt  string `gorm:"column:created_at"`
-	ModifiedAt string `gorm:"column:modified_at"`
-	IsDeleted  bool   `gorm:"column:is_deleted"`
+	CreatedAt  string `json:"created_at" gorm:"column:created_at"`
+	ModifiedAt string `json:"modified_at" gorm:"column:modified_at"`
+	IsDeleted  bool   `json:"is_deleted" gorm:"column:is_deleted"`
 }
 
 func NewDBEngine(dbSetting *config.DatabaseSetting) (*gorm.DB, error) {
@@ -41,7 +41,6 @@ func NewDBEngine(dbSetting *config.DatabaseSetting) (*gorm.DB, error) {
 }
 
 func createCallback(db *gorm.DB) {
-	fmt.Println("Now():", time.Now().GoString())
 	now := time.Now().Format("2006-01-02 15:04:05")
 	db.Statement.SetColumn("created_at", now)
 	db.Statement.SetColumn("modified_at", now)
@@ -51,4 +50,3 @@ func updateCallback(db *gorm.DB) {
 	now := time.Now().Format("2006-01-02 15:04:05")
 	db.Statement.SetColumn("modified_at", now)
 }
-

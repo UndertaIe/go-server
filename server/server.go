@@ -16,14 +16,12 @@ import (
 )
 
 func NewServer() *http.Server {
-	ReadTimeout := global.ServerSettings.ReadTimeout * time.Second
-	WriteTimeout := global.ServerSettings.WriteTimeout * time.Second
 	handlers := router.NewRouter()
 	s := &http.Server{
 		Addr:           ":" + strconv.Itoa(global.ServerSettings.HttpPort),
 		Handler:        handlers,
-		ReadTimeout:    ReadTimeout,
-		WriteTimeout:   WriteTimeout,
+		ReadTimeout:    global.ServerSettings.ReadTimeout,
+		WriteTimeout:   global.ServerSettings.WriteTimeout,
 		MaxHeaderBytes: 1 << 20,
 	}
 	return s

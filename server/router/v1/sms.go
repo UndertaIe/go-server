@@ -4,7 +4,6 @@ import (
 	"github.com/UndertaIe/passwd/global"
 	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/com/alibaba"
-	"github.com/UndertaIe/passwd/pkg/errcode"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,11 +21,6 @@ func (up Sms) Get(c *gin.Context) {
 		TemplateParam: "{\"code\":\"123456\"}",
 	}
 	resp := app.Response{Ctx: c}
-	err := global.SmsClient.Send(req)
-	if err != nil {
-		nErr := errcode.ServerError.WithDetails(err.Error())
-		resp.ToError(nErr)
-		return
-	}
+	go global.SmsClient.Send(req)
 	resp.Ok()
 }

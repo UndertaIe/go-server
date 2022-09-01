@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/UndertaIe/passwd/cmd"
 	"github.com/UndertaIe/passwd/config"
@@ -84,6 +86,16 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+	err = s.ReadSection("JWT", &global.JwtSettings)
+	fmt.Println(global.JwtSettings)
+	if err != nil {
+		return err
+	}
+	global.APPSettings.DefaultContextTimeout *= time.Second
+	global.ServerSettings.ReadTimeout *= time.Second
+	global.ServerSettings.WriteTimeout *= time.Second
+	global.JwtSettings.Expire *= time.Second // 将时间单位ns转化为s
+
 	return err
 }
 

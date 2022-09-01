@@ -1,6 +1,9 @@
 package router
 
 import (
+	"net/http"
+
+	"github.com/UndertaIe/passwd/server/middleware"
 	v1 "github.com/UndertaIe/passwd/server/router/v1"
 	"github.com/gin-gonic/gin"
 )
@@ -16,9 +19,14 @@ func NewRouter() *gin.Engine {
 		apiv1.POST("/user", user.Create)
 		apiv1.DELETE("/user/:id", user.Delete)
 		apiv1.PUT("/user/:id", user.Update)
+
+		userSignup := v1.NewUserSignUp()
+		apiv1.POST("/user/phone", userSignup.PhoneExists)
+		apiv1.POST("/user/email", userSignup.EmailExists)
+		apiv1.POST("/user/name", userSignup.UserNameExists)
 	}
 	{
-		platform := v1.Platform{}
+		platform := v1.NewPlatform()
 		apiv1.GET("/platform/:id", platform.Get)
 		apiv1.GET("/platform", platform.List)
 		apiv1.POST("/platform", platform.Create)
@@ -26,7 +34,7 @@ func NewRouter() *gin.Engine {
 		apiv1.PUT("/platform/:id", platform.Update)
 	}
 	{
-		userPasswd := v1.UserPasswd{}
+		userPasswd := v1.NewUserPasswd()
 		apiv1.GET("/userpasswd", userPasswd.All)
 		apiv1.GET("/userpasswd/:user_id", userPasswd.List)
 		apiv1.GET("/userpasswd/:user_id/:platform_id", userPasswd.Get)
@@ -38,7 +46,14 @@ func NewRouter() *gin.Engine {
 	{
 		sms := v1.NewSms()
 		apiv1.GET("/sms", sms.Get) // demo
+	}
 
+	r.POST("/auth", Auth) // 使用app_key,app_secret从服务端获取token
+	admin := r.Group("/admin/")
+	admin.Use(middleware.JWT()) // 使用jwt鉴权如下接口
+	{
+		admin.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"msg": "通过鉴权"}) })
+		admin.POST("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"msg": "通过鉴权"}) })
 	}
 
 	return r

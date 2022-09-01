@@ -47,5 +47,10 @@ func (resp *Response) ToList(x interface{}, pager *page.Pager) {
 }
 
 func (resp *Response) ToError(err *errcode.Error) {
-	resp.Ctx.JSON(err.StatusCode(), err)
+	data := gin.H{"code": err.Code(), "msg": err.Msg()}
+	details := err.Details()
+	if len(details) > 0 {
+		data["details"] = details
+	}
+	resp.Ctx.JSON(err.StatusCode(), data)
 }

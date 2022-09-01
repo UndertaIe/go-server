@@ -54,6 +54,8 @@ func (e *Error) StatusCode() int {
 	switch e.Code() {
 	case Success.Code():
 		return http.StatusOK
+	case OK.Code():
+		return http.StatusOK
 	case ServerError.Code():
 		return http.StatusInternalServerError
 	case InvalidParams.Code():
