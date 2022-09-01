@@ -7,11 +7,11 @@ import (
 
 type Error struct {
 	// 错误码
-	code int `json:"code"`
+	code int // `json:"code"`
 	// 错误消息
-	msg string `json:"msg"`
+	msg string //`json:"msg"`
 	// 详细信息
-	details []string `json:"details"`
+	details []string //`json:"details"`
 }
 
 var codes = map[int]string{}
