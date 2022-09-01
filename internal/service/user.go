@@ -9,6 +9,7 @@ type User struct {
 	UserId      int    `json:"user_id"`
 	UserName    string `json:"user_name"`
 	PhoneNumber string `json:"phone_number"`
+	Email       string `json:"email"`
 	Sex         int    `json:"sex"`
 	Description string `json:"description"`
 }
@@ -27,6 +28,7 @@ func (srv *Service) GetUser(params *UserGetRequest) (*User, error) {
 		UserId:      user.UserId,
 		UserName:    user.UserName,
 		PhoneNumber: user.PhoneNumber,
+		Email:       user.Email,
 		Sex:         user.Sex,
 		Description: user.Description,
 	}, nil
@@ -44,6 +46,7 @@ func (srv *Service) GetUserList(params *UserGetRequest, pager *page.Pager) ([]Us
 			UserId:      ur.UserId,
 			UserName:    ur.UserName,
 			PhoneNumber: ur.PhoneNumber,
+			Email:       ur.Email,
 			Sex:         ur.Sex,
 			Description: ur.Description,
 		}
@@ -56,6 +59,7 @@ type UserCreateRequest struct {
 	UserName    string `json:"user_name"`
 	Password    string `json:"password"`
 	PhoneNumber string `json:"phone_number"`
+	Email       string `json:"email"`
 	Sex         int    `json:"sex"`
 	Description string `json:"description"`
 	Role        int    `json:"role"`
@@ -66,6 +70,7 @@ func (srv *Service) CreateUser(params *UserCreateRequest) error {
 		UserName:    params.UserName,
 		Password:    params.Password,
 		PhoneNumber: params.PhoneNumber,
+		Email:       params.Email,
 		Sex:         params.Sex,
 		Description: params.Description,
 		Role:        params.Role,
@@ -81,6 +86,7 @@ type UserUpdateRequest struct {
 	UserId      int    `json:"user_id"`
 	UserName    string `json:"user_name"`
 	PhoneNumber string `json:"phone_number"`
+	Email       string `json:"email"`
 	Sex         int    `json:"sex"`
 	Description string `json:"description"`
 }
@@ -93,6 +99,9 @@ func (srv *Service) UpdateUser(params *UserUpdateRequest) error {
 	}
 	if params.PhoneNumber != "" {
 		vals["phone_number"] = params.PhoneNumber
+	}
+	if params.Email != "" {
+		vals["email"] = params.Email
 	}
 	if params.Sex != 0 {
 		vals["gender"] = params.Sex
