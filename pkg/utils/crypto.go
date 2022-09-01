@@ -14,15 +14,13 @@ func NewHasher(ha crypto.Hash) *Hasher {
 	return &Hasher{ha: ha}
 }
 
-func (h Hasher) hash(data string) (s string, err error) {
+func (h Hasher) Hash(data string) string {
 	w := h.ha.New()
-	_, err = io.WriteString(w, data)
-	s = fmt.Sprintf("%x", w.Sum(nil))
-	return
+	io.WriteString(w, data)
+	return fmt.Sprintf("%x", w.Sum(nil))
 }
 
-func Hash(ha crypto.Hash, data string) (s string, err error) {
+func Hash(ha crypto.Hash, data string) string {
 	h := NewHasher(ha)
-	s, err = h.hash(data)
-	return
+	return h.Hash(data)
 }
