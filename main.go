@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -87,7 +86,6 @@ func setupSetting() error {
 		return err
 	}
 	err = s.ReadSection("JWT", &global.JwtSettings)
-	fmt.Println(global.JwtSettings)
 	if err != nil {
 		return err
 	}

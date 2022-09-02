@@ -27,7 +27,6 @@ func (p Platform) TableName() string {
 func (p Platform) Get(db *gorm.DB) (Platform, error) {
 	var pf Platform
 	err := db.Where("platform_id = ? AND is_deleted = ?", p.PlatformId, false).Take(&pf).Error
-	fmt.Println(err)
 	return pf, err
 }
 

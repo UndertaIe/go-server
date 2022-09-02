@@ -46,12 +46,20 @@ func NewRouter() *gin.Engine {
 		apiv1.GET("/sms", sms.Get)
 	}
 
-	r.POST("/jwt/auth", Auth)
+	r.POST("/jwt/auth", Auth) // appkey,appsecret获取token
 	admin := r.Group("/jwt/")
 	admin.Use(middleware.JWT()) // 使用jwt鉴权如下接口
 	{
-		admin.GET("/admin", AuthPass)
-		admin.POST("/admin", AuthPass)
+		admin.GET("/admin", PassAuth)
+		admin.POST("/admin", PassAuth)
+	}
+
+	uAuth := r.Group("/jwt/")
+	r.POST("/user/auth", UserAuth)  // 使用user_id password获取token
+	uAuth.Use(middleware.UserJwt()) // 使用jwt鉴权并在ctx中设置 user_id值
+	{
+		uAuth.GET("/user/secret", PassUserAuth)
+		uAuth.POST("/user/secret", PassUserAuth)
 	}
 
 	return r

@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/UndertaIe/passwd/internal/service"
@@ -58,7 +57,6 @@ func (u User) List(c *gin.Context) {
 func (u User) Create(c *gin.Context) {
 	param := new(service.UserCreateRequest)
 	err := c.ShouldBind(param)
-	fmt.Println(param)
 	resp := app.Response{Ctx: c}
 	if err != nil {
 		newErr := errcode.InvalidParams.WithDetails(err.Error())

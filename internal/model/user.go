@@ -7,16 +7,18 @@ import (
 )
 
 type User struct {
+	UserId        int    `json:"user_id" gorm:"column:user_id"`
+	UserName      string `json:"user_name" gorm:"column:user_name"`
+	Password      string `json:"password" gorm:"column:password"`
+	Salt          string `json:"salt" gorm:"column:salt"`
+	PhoneNumber   string `json:"phone_number" gorm:"column:phone_number"`
+	Email         string `json:"email" gorm:"column:email; default:null"`
+	ShareMode     int    `json:"share_mode" gorm:"column:share_mode; default:0"`
+	Role          int    `json:"role" gorm:"column:role"`
+	ProfileImgUrl string `json:"profile_img_url" gorm:"column:profile_img_url; default:''"`
+	Description   string `json:"description" gorm:"column:description; default:''"`
+	Sex           int    `json:"sex" gorm:"column:sex; default:0"`
 	*database.BaseModel
-	UserId      int    `json:"user_id" gorm:"column:user_id"`
-	UserName    string `json:"user_name" gorm:"column:user_name"`
-	Password    string `json:"password" gorm:"column:password"`
-	PhoneNumber string `json:"phone_number" gorm:"column:phone_number"`
-	Email       string `json:"email" gorm:"column:email"`
-	ShareMode   int    `json:"share_mode" gorm:"column:share_mode"`
-	Sex         int    `json:"sex" gorm:"column:sex"`
-	Description string `json:"description" gorm:"column:description"`
-	Role        int    `json:"role" gorm:"column:role"`
 }
 
 func (u User) TableName() string {
@@ -44,7 +46,7 @@ func (u User) GetUserByName(db *gorm.DB) (User, error) {
 }
 
 func (u User) Create(db *gorm.DB) error {
-	err := db.Create(&u).Error
+	err := db.Omit("user_id").Create(&u).Error
 	return err
 }
 

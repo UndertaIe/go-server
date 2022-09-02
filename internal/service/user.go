@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/UndertaIe/passwd/internal/model"
 	"github.com/UndertaIe/passwd/pkg/page"
+	"github.com/UndertaIe/passwd/pkg/utils"
 )
 
 type User struct {
@@ -56,24 +57,24 @@ func (srv *Service) GetUserList(params *UserGetRequest, pager *page.Pager) ([]Us
 }
 
 type UserCreateRequest struct {
-	UserName    string `json:"user_name"`
-	Password    string `json:"password"`
-	PhoneNumber string `json:"phone_number"`
+	UserName    string `json:"user_name" binding:"required"`
+	Password    string `json:"password" binding:"required"`
+	PhoneNumber string `json:"phone_number" binding:"required"`
 	Email       string `json:"email"`
 	Sex         int    `json:"sex"`
 	Description string `json:"description"`
-	Role        int    `json:"role"`
 }
 
 func (srv *Service) CreateUser(params *UserCreateRequest) error {
+	pwd, salt := utils.GetPassword(params.Password)
 	user := model.User{
 		UserName:    params.UserName,
-		Password:    params.Password,
+		Password:    pwd,
+		Salt:        salt,
 		PhoneNumber: params.PhoneNumber,
 		Email:       params.Email,
 		Sex:         params.Sex,
 		Description: params.Description,
-		Role:        params.Role,
 	}
 	err := user.Create(srv.Db)
 	if err != nil {
