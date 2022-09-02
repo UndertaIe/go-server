@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/UndertaIe/passwd/database"
 	"github.com/UndertaIe/passwd/pkg/page"
 	"gorm.io/gorm"
