@@ -64,7 +64,6 @@ func UserJwt() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
 		c.Set("user_id", uClaims.UserId)
 		c.Next()
 	}

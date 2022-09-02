@@ -53,14 +53,13 @@ func ParseToken(token string, i ClaimsInterface) (*Claims, error) {
 
 // TODO: 待优化
 type UserClaims struct {
-	UserId string `json:"user_id"`
+	UserId int `json:"user_id"`
 	jwt.StandardClaims
 }
 
-func GenerateUserToken(user_id string, i ClaimsInterface) (string, error) {
-	md5 := utils.NewHasher(crypto.MD5)
+func GenerateUserToken(user_id int, i ClaimsInterface) (string, error) {
 	claims := UserClaims{
-		UserId: md5.Hash(user_id),
+		UserId: user_id,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: i.GetJWTExpireTime(),
 			Issuer:    i.GetJWTIssuer(),
@@ -81,6 +80,9 @@ func ParseUserToken(token string, i ClaimsInterface) (*UserClaims, error) {
 	if tokenClaims != nil {
 		claims, ok := tokenClaims.Claims.(*UserClaims)
 		if ok && tokenClaims.Valid {
+			if claims.UserId == 0 {
+				return nil, &jwt.ValidationError{}
+			}
 			return claims, nil
 		}
 	}

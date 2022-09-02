@@ -8,4 +8,5 @@ var (
 	ErrorUserEmailExists        = NewError(20004, "当前邮箱已绑定账户")
 	ErrorUserNameExists         = NewError(20005, "当前用户名已绑定账户")
 	ErrorUserAuth               = NewError(20006, "用户验证失败, 请输入正确的账号和密码")
+	ErrorUnknownService         = NewError(29999, "未知的服务异常，请联系负责人排查异常")
 )

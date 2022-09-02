@@ -2,7 +2,6 @@ package router
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/UndertaIe/passwd/global"
 	"github.com/UndertaIe/passwd/internal/service"
@@ -51,28 +50,17 @@ func UserAuth(c *gin.Context) {
 		return
 	}
 
-	right, err := srv.UserAuth(&param)
-	if err != nil { // 找不到user_id对应的记录
-		resp.ToError(errcode.ErrorUserRecordNotFound.WithDetails(err.Error()))
+	token, nErr := srv.UserAuth(&param)
+	if err != nil {
+		resp.ToError(nErr)
 		return
 	}
 
-	var token string
-	if right {
-		token, err = auth.GenerateUserToken(strconv.Itoa(param.UserId), global.NewGlobal())
-		if err != nil {
-			resp.ToError(errcode.UnauthorizedTokenGenerate.WithDetails(err.Error()))
-			return
-		}
-	} else {
-		resp.ToError(errcode.ErrorUserAuth)
-		return
-	}
 	resp.To(gin.H{"token": token})
 }
 
 func PassUserAuth(c *gin.Context) {
 	resp := app.NewResponse(c)
-	msg := fmt.Sprintf("用户认证通过, 用户ID:%d", c.GetInt("user_id"))
+	msg := fmt.Sprintf("用户认证通过, 用户ID:) %d", c.GetInt("user_id"))
 	resp.To((gin.H{"msg": msg}))
 }
