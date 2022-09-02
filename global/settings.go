@@ -1,7 +1,6 @@
 package global
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/UndertaIe/passwd/config"
@@ -32,6 +31,5 @@ func (g Globals) GetJWTIssuer() string {
 
 func (g Globals) GetJWTExpireTime() int64 {
 	now := time.Now()
-	fmt.Println(now.Add(JwtSettings.Expire))
 	return now.Add(JwtSettings.Expire).Unix()
 }

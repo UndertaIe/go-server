@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// jwt鉴权:
+// 使用app_key,app_secret从服务端获取token
 func Auth(c *gin.Context) {
 	resp := app.NewResponse(c)
 	srv := service.NewService(c)
@@ -29,4 +31,9 @@ func Auth(c *gin.Context) {
 		return
 	}
 	resp.To(gin.H{"token": token})
+}
+
+func AuthPass(c *gin.Context) {
+	resp := app.NewResponse(c)
+	resp.To((gin.H{"msg": "通过鉴权"}))
 }

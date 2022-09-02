@@ -1,8 +1,6 @@
 package router
 
 import (
-	"net/http"
-
 	"github.com/UndertaIe/passwd/server/middleware"
 	v1 "github.com/UndertaIe/passwd/server/router/v1"
 	"github.com/gin-gonic/gin"
@@ -44,16 +42,16 @@ func NewRouter() *gin.Engine {
 		apiv1.PUT("/userpasswd/:user_id/:platform_id", userPasswd.Update)
 	}
 	{
-		sms := v1.NewSms()
-		apiv1.GET("/sms", sms.Get) // demo
+		sms := v1.NewSMS()
+		apiv1.GET("/sms", sms.Get)
 	}
 
-	r.POST("/auth", Auth) // 使用app_key,app_secret从服务端获取token
-	admin := r.Group("/admin/")
+	r.POST("/jwt/auth", Auth)
+	admin := r.Group("/jwt/")
 	admin.Use(middleware.JWT()) // 使用jwt鉴权如下接口
 	{
-		admin.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"msg": "通过鉴权"}) })
-		admin.POST("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"msg": "通过鉴权"}) })
+		admin.GET("/admin", AuthPass)
+		admin.POST("/admin", AuthPass)
 	}
 
 	return r

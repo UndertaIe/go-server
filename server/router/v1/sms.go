@@ -7,13 +7,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Sms struct{}
+type SMS struct{}
 
-func NewSms() Sms {
-	return Sms{}
+func NewSMS() SMS {
+	return SMS{}
 }
 
-func (up Sms) Get(c *gin.Context) {
+// 接入短信服务
+func (up SMS) Get(c *gin.Context) {
 	req := &alibaba.SmsRequest{
 		PhoneNumbers:  "15837811850",
 		SignName:      "阿里云短信测试",
