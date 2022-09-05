@@ -14,7 +14,7 @@ type RedisCache struct {
 
 func NewRedisCache(cc CacheConfig) (*RedisCache, error) {
 	var err error
-	var rc *RedisCache
+	rc := &RedisCache{}
 	rc.setup(cc)
 	return rc, err
 }
