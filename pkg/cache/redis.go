@@ -41,9 +41,9 @@ func defaultRedisConfig() *RedisConfig {
 // https://github.com/gin-gonic/contrib/blob/master/cache/redis.go
 
 func (rc *RedisCache) setup(cc CacheConfig) {
-	m := cc()
 	var cfg *RedisConfig
-	if m != nil {
+	if cc != nil {
+		m := cc()
 		cfg = &RedisConfig{}
 		cfg.db = m["db"].(int)
 		cfg.host = m["host"].(string)
