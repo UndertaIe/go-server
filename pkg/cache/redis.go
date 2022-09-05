@@ -31,7 +31,7 @@ type RedisConfig struct {
 func defaultRedisConfig() *RedisConfig {
 	return &RedisConfig{
 		db:                0,
-		host:              "127.0.0.1:3306",
+		host:              "127.0.0.1:6379",
 		password:          "",
 		defaultExpireTime: defaultExpire * time.Second,
 		cc:                nil,
