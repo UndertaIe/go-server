@@ -22,6 +22,6 @@ func (up SMS) Get(c *gin.Context) {
 		TemplateParam: "{\"code\":\"123456\"}",
 	}
 	resp := app.Response{Ctx: c}
-	go global.SmsClient.Send(req)
+	go global.SmsClient.SendSms(req)
 	resp.Ok()
 }

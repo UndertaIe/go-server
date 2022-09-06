@@ -13,6 +13,7 @@ var (
 	EmailSettings    *config.EmailSetting
 	SmsSettings      *config.SmsSetting
 	JwtSettings      *config.JWTSetting
+	RedisSettings    *config.RedisSetting
 )
 
 type Globals struct{}

@@ -66,6 +66,13 @@ type DatabaseSetting struct {
 	MaxOpenConns int
 }
 
+type RedisSetting struct {
+	Host              string
+	Db                int
+	Password          string
+	DefaultExpireTime int
+}
+
 var sections = make(map[string]interface{})
 
 func (s *Setting) ReadSection(k string, v interface{}) error {

@@ -7,8 +7,8 @@ import (
 )
 
 type RedisCache struct {
-	pool   *redis.Pool
-	config *RedisConfig
+	pool *redis.Pool
+	cfg  *RedisConfig
 	Cache
 }
 
@@ -40,33 +40,43 @@ func defaultRedisConfig() *RedisConfig {
 
 // https://github.com/gin-gonic/contrib/blob/master/cache/redis.go
 
-func (rc *RedisCache) setup(cc CacheConfig) {
-	var cfg *RedisConfig
-	if cc != nil {
-		m := cc()
-		cfg = &RedisConfig{}
-		cfg.db = m["db"].(int)
-		cfg.host = m["host"].(string)
-		cfg.password = m["password"].(string)
-		cfg.defaultExpireTime = defaultExpire * time.Second
-		cfg.cc = cc
-	} else {
-		cfg = defaultRedisConfig()
+func (rc *RedisCache) setConfig(cc CacheConfig) {
+	m := cc()
+	cfg := &RedisConfig{}
+	if db, ok := m["db"]; ok {
+		cfg.db = db.(int)
 	}
+	cfg.host = m["host"].(string)
+	if pwd, ok := m["password"]; ok {
+		cfg.password = pwd.(string)
+	}
+	if ex, ok := m["defaultExpireTime"]; ok {
+		cfg.defaultExpireTime = time.Second * time.Duration(ex.(int))
+	} else {
+		cfg.defaultExpireTime = time.Second * defaultExpire
+	}
+	cfg.cc = cc
+	rc.cfg = cfg
+}
 
-	rc.config = cfg
+func (rc *RedisCache) setup(cc CacheConfig) {
+	if cc != nil {
+		rc.setConfig(cc)
+	} else {
+		rc.cfg = defaultRedisConfig()
+	}
 	rc.pool = &redis.Pool{
 		MaxIdle:     10,
 		MaxActive:   512,
 		Wait:        false,
 		IdleTimeout: defaultIdle * time.Second,
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", cfg.host)
+			c, err := redis.Dial("tcp", rc.cfg.host)
 			if err != nil {
 				return nil, err
 			}
-			if len(cfg.password) > 0 {
-				if _, err := c.Do("AUTH", cfg.password); err != nil {
+			if len(rc.cfg.password) > 0 {
+				if _, err := c.Do("AUTH", rc.cfg.password); err != nil {
 					c.Close()
 					return nil, err
 				}
@@ -77,7 +87,7 @@ func (rc *RedisCache) setup(cc CacheConfig) {
 					return nil, err
 				}
 			}
-			if _, err := c.Do("SELECT", cfg.db); err != nil {
+			if _, err := c.Do("SELECT", rc.cfg.db); err != nil {
 				c.Close()
 				return nil, err
 			}
@@ -181,7 +191,7 @@ func (rc *RedisCache) exists(do func(string, ...interface{}) (interface{}, error
 
 func (rc *RedisCache) set(do func(string, ...interface{}) (interface{}, error), key string, value interface{}, expires time.Duration) error {
 	if expires == DEFAULT {
-		expires = rc.config.defaultExpireTime
+		expires = rc.cfg.defaultExpireTime
 	}
 
 	b, err := serialize(value)

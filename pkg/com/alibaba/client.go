@@ -29,7 +29,7 @@ func NewClient(accessKeyId string, accessKeySecret string) (*Client, error) {
 	return &Client{cli}, err
 }
 
-func (c Client) Send(req *SmsRequest) error {
+func (c Client) SendSms(req *SmsRequest) error {
 	body := &dysmsapi20170525.SendSmsRequest{
 		SignName:      tea.String(req.SignName),
 		TemplateCode:  tea.String(req.TemplateCode),

@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	defaultExpire = 3600
+	defaultExpire = 600
 	defaultIdle   = 3
 
 	DEFAULT = time.Duration(0)

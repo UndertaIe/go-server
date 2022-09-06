@@ -10,6 +10,7 @@ import (
 	"github.com/UndertaIe/passwd/config"
 	"github.com/UndertaIe/passwd/database"
 	"github.com/UndertaIe/passwd/global"
+	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/pkg/com/alibaba"
 	"github.com/UndertaIe/passwd/pkg/tracer"
 )
@@ -40,6 +41,10 @@ func init() { // 初始化工作
 	err = setupTracer()
 	if err != nil {
 		log.Fatalf("init.setupTracer err: %v", err)
+	}
+	err = setupCacher()
+	if err != nil {
+		log.Fatalf("init.setupCacher err: %v", err)
 	}
 }
 
@@ -89,6 +94,14 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+	err = s.ReadSection("JWT", &global.JwtSettings)
+	if err != nil {
+		return err
+	}
+	err = s.ReadSection("Redis", &global.RedisSettings)
+	if err != nil {
+		return err
+	}
 	global.APPSettings.DefaultContextTimeout *= time.Second
 	global.ServerSettings.ReadTimeout *= time.Second
 	global.ServerSettings.WriteTimeout *= time.Second
@@ -112,5 +125,20 @@ func setupSmsClient() error {
 func setupTracer() error {
 	tracer, _, err := tracer.NewJaegerTracer("passwd-service", "127.0.0.1:6831")
 	global.Tracer = tracer
+	return err
+}
+
+func setupCacher() error {
+	// cc := func() map[string]any {
+	// 	return map[string]any{``
+	// 		"host": global.RedisSettings.Host,
+	// 		"db":   global.RedisSettings.Db,
+	// 		// "password":          global.RedisSettings.Password,
+	// 		"defaultExpireTime": global.RedisSettings.DefaultExpireTime,
+	// 	}
+	// }
+	// cacher, err := cache.NewCache(cache.RedisT, cc)
+	cacher, err := cache.NewCache(cache.RedisT, nil) //使用默认配置       
+	global.Cacher = cacher
 	return err
 }

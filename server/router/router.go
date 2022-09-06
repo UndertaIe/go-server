@@ -1,6 +1,8 @@
 package router
 
 import (
+	"github.com/UndertaIe/passwd/global"
+	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/server/middleware"
 	v1 "github.com/UndertaIe/passwd/server/router/v1"
 	"github.com/gin-gonic/gin"
@@ -62,6 +64,16 @@ func NewRouter() *gin.Engine {
 		uAuth.POST("/user/secret", PassUserAuth)
 	}
 
+	c := r.Group("/cache/api/")
+	c.Use(cache.GinCache(global.Cacher)) // c.Keys["cache"] = global.Cacher
+	// c.Use(cache.SiteCache())
+	{
+		c.GET("/now", v1.Now)
+		c.GET("/cnow", cache.CachePage(global.Cacher, cache.DEFAULT, v1.CacheNow))
+		c.GET("/user/:id", cache.CachePage(global.Cacher, cache.DEFAULT, v1.GetUser))
+		c.DELETE("/user/:id", v1.DeleteUser)
+		c.PUT("/user/:id", v1.UpdateUser)
+	}
 	return r
 }
 

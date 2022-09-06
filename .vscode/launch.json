@@ -10,7 +10,8 @@
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}",
-            "args": ["serve"]
+            "args": ["serve"] // 服务调试
+            // "args": ["local"] // local 调试
         }
     ]
 }
