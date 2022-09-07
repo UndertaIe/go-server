@@ -46,6 +46,15 @@ func init() { // 初始化工作
 	if err != nil {
 		log.Fatalf("init.setupCacher err: %v", err)
 	}
+	err = setupMemoryInCacher()
+	if err != nil {
+		log.Fatalf("init.setupMemoryInCacher err: %v", err)
+	}
+	// err = setupMemCacher()
+	// if err != nil {
+	// 	log.Fatalf("init.setupMemCacher err: %v", err)
+	// }
+
 }
 
 func main() {
@@ -102,6 +111,10 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+	err = s.ReadSection("MemoryInCache", &global.MemoryInCacheSettings)
+	if err != nil {
+		return err
+	}
 	global.APPSettings.DefaultContextTimeout *= time.Second
 	global.ServerSettings.ReadTimeout *= time.Second
 	global.ServerSettings.WriteTimeout *= time.Second
@@ -138,7 +151,34 @@ func setupCacher() error {
 	// 	}
 	// }
 	// cacher, err := cache.NewCache(cache.RedisT, cc)
-	cacher, err := cache.NewCache(cache.RedisT, nil) //使用默认配置       
+	cacher, err := cache.NewCache(cache.RedisT, nil) //使用默认配置
 	global.Cacher = cacher
+	return err
+}
+
+func setupMemoryInCacher() error {
+	// cc := func() map[string]any {
+	// 	return map[string]any{
+	// 		"defaultExpireTime": global.RedisSettings.DefaultExpireTime,
+	// 	}
+	// }
+	// cacher, err := cache.NewCache(cache.RedisT, cc)
+	cacher, err := cache.NewCache(cache.MemoryInT, nil) //使用默认配置
+	global.MemInCacher = cacher
+	return err
+}
+
+func setupMemCacher() error {
+	// cc := func() map[string]any {
+	// 	return map[string]any{``
+	// 		"host": global.RedisSettings.Host,
+	// 		"db":   global.RedisSettings.Db,
+	// 		// "password":          global.RedisSettings.Password,
+	// 		"defaultExpireTime": global.RedisSettings.DefaultExpireTime,
+	// 	}
+	// }
+	// cacher, err := cache.NewCache(cache.RedisT, cc)
+	cacher, err := cache.NewCache(cache.MemCacheT, nil) //使用默认配置
+	global.MemCacher = cacher
 	return err
 }

@@ -7,7 +7,15 @@ import (
 	"gorm.io/gorm"
 )
 
-var DBEngine *gorm.DB
-var Tracer opentracing.Tracer
-var SmsClient *alibaba.Client
-var Cacher cache.Cache
+var (
+	DBEngine  *gorm.DB
+	Tracer    opentracing.Tracer
+	SmsClient *alibaba.Client
+)
+
+//: cache
+var (
+	Cacher      cache.Cache
+	MemInCacher cache.Cache
+	MemCacher   cache.Cache
+)

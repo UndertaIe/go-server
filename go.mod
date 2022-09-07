@@ -7,12 +7,15 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/tea v1.1.17
 	github.com/alibabacloud-go/tea-utils v1.4.5
+	github.com/bradfitz/gomemcache v0.0.0-20220106215444-fb4bf637b56d
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.5.4
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-programming-tour-book/blog-service v0.0.0-20211007070625-fc62a2672eb7
 	github.com/gomodule/redigo v1.8.9
 	github.com/opentracing/opentracing-go v1.2.0
+	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/robfig/go-cache v0.0.0-20130306151617-9fc39e0dbf62
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible

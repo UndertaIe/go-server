@@ -74,6 +74,17 @@ func NewRouter() *gin.Engine {
 		c.DELETE("/user/:id", v1.DeleteUser)
 		c.PUT("/user/:id", v1.UpdateUser)
 	}
+
+	c2 := r.Group("/memcache/api/")
+	c2.Use(cache.GinCache(global.MemInCacher)) // c.Keys["cache"] = global.Cacher
+	// c.Use(cache.SiteCache())
+	{
+		c2.GET("/now", v1.Now)
+		c2.GET("/cnow", cache.CachePage(global.MemInCacher, cache.DEFAULT, v1.CacheNow))
+		c2.GET("/user/:id", cache.CachePage(global.MemInCacher, cache.DEFAULT, v1.GetUser))
+		c2.DELETE("/user/:id", v1.DeleteUser)
+		c2.PUT("/user/:id", v1.UpdateUser)
+	}
 	return r
 }
 

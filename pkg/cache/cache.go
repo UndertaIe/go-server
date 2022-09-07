@@ -12,8 +12,6 @@ const (
 	MemCacheT cacheType = "memcache"
 )
 
-var supportedCacheType = []string{string(MemoryInT), string(RedisT), string(MemCacheT)}
-
 type Cache interface {
 	Get(key string, value interface{}) error
 	Set(key string, value interface{}, expire time.Duration) error
@@ -25,6 +23,8 @@ type Cache interface {
 }
 
 type CacheConfig func() map[string]interface{}
+
+var supportedCacheType = []string{string(MemoryInT), string(RedisT), string(MemCacheT)}
 
 // supported cache type: Redis，MemCache，MemoryIn
 func NewCache(c cacheType, cc CacheConfig) (Cache, error) {

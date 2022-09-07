@@ -7,13 +7,14 @@ import (
 )
 
 var (
-	DatabaseSettings *config.DatabaseSetting
-	APPSettings      *config.AppSetting
-	ServerSettings   *config.ServerSetting
-	EmailSettings    *config.EmailSetting
-	SmsSettings      *config.SmsSetting
-	JwtSettings      *config.JWTSetting
-	RedisSettings    *config.RedisSetting
+	DatabaseSettings      *config.DatabaseSetting
+	APPSettings           *config.AppSetting
+	ServerSettings        *config.ServerSetting
+	EmailSettings         *config.EmailSetting
+	SmsSettings           *config.SmsSetting
+	JwtSettings           *config.JWTSetting
+	RedisSettings         *config.RedisSetting
+	MemoryInCacheSettings *config.MemoryInCacheSetting
 )
 
 type Globals struct{}
