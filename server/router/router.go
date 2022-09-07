@@ -10,7 +10,7 @@ import (
 
 func NewRouter() *gin.Engine {
 	r := gin.Default()
-	setMiddlewares(r)
+	SetMiddlewares(r)
 	apiv1 := r.Group("api/v1")
 	{
 		user := v1.User{}
@@ -48,47 +48,57 @@ func NewRouter() *gin.Engine {
 		apiv1.GET("/sms", sms.Get)
 	}
 
-	r.POST("/jwt/auth", Auth) // appkey,appsecret获取token
-	admin := r.Group("/jwt/")
-	admin.Use(middleware.JWT()) // 使用jwt鉴权如下接口
+	AuthRouters(r)
+	CacheRouters(r)
+
+	return r
+}
+
+func AuthRouters(r *gin.Engine) {
 	{
+		r.POST("/jwt/auth", Auth) // appkey,appsecret获取token
+		admin := r.Group("/jwt/")
+		admin.Use(middleware.JWT()) // 使用jwt鉴权如下接口
 		admin.GET("/admin", PassAuth)
 		admin.POST("/admin", PassAuth)
 	}
-
-	uAuth := r.Group("/jwt/")
-	r.POST("/user/auth", UserAuth)  // 使用user_id password获取token
-	uAuth.Use(middleware.UserJwt()) // 使用jwt鉴权并在ctx中设置 user_id值
 	{
+		uAuth := r.Group("/jwt/")
+		r.POST("/user/auth", UserAuth)  // 使用user_id password获取token
+		uAuth.Use(middleware.UserJwt()) // 使用jwt鉴权并在ctx中设置 user_id值
 		uAuth.GET("/user/secret", PassUserAuth)
 		uAuth.POST("/user/secret", PassUserAuth)
 	}
+}
 
-	c := r.Group("/cache/api/")
-	c.Use(cache.GinCache(global.Cacher)) // c.Keys["cache"] = global.Cacher
-	// c.Use(cache.SiteCache())
-	{
+// 集成redis，memory-in，memcached缓存中间件
+func CacheRouters(r *gin.Engine) {
+	{ // redis cache
+		c := r.Group("/cache/api/")
+		c.Use(cache.GinCache(global.Cacher)) // c.Keys["cache"] = global.Cacher
+		// c.Use(cache.SiteCache())
 		c.GET("/now", v1.Now)
 		c.GET("/cnow", cache.CachePage(global.Cacher, cache.DEFAULT, v1.CacheNow))
 		c.GET("/user/:id", cache.CachePage(global.Cacher, cache.DEFAULT, v1.GetUser))
 		c.DELETE("/user/:id", v1.DeleteUser)
 		c.PUT("/user/:id", v1.UpdateUser)
 	}
-
-	c2 := r.Group("/memcache/api/")
-	c2.Use(cache.GinCache(global.MemInCacher)) // c.Keys["cache"] = global.Cacher
-	// c.Use(cache.SiteCache())
-	{
+	{ // memory-in cache
+		c2 := r.Group("/memorycache/api/")
+		c2.Use(cache.GinCache(global.MemInCacher))
 		c2.GET("/now", v1.Now)
 		c2.GET("/cnow", cache.CachePage(global.MemInCacher, cache.DEFAULT, v1.CacheNow))
 		c2.GET("/user/:id", cache.CachePage(global.MemInCacher, cache.DEFAULT, v1.GetUser))
 		c2.DELETE("/user/:id", v1.DeleteUser)
 		c2.PUT("/user/:id", v1.UpdateUser)
 	}
-	return r
-}
-
-func setMiddlewares(r *gin.Engine) {
-	// r.Use(gin.Logger())
-	// r.Use(gin.Recovery())
+	{ // memcached cache
+		c3 := r.Group("/memcached/api/")
+		c3.Use(cache.GinCache(global.MemCacher))
+		c3.GET("/now", v1.Now)
+		c3.GET("/cnow", cache.CachePage(global.MemCacher, cache.DEFAULT, v1.CacheNow))
+		c3.GET("/user/:id", cache.CachePage(global.MemCacher, cache.DEFAULT, v1.GetUser))
+		c3.DELETE("/user/:id", v1.DeleteUser)
+		c3.PUT("/user/:id", v1.UpdateUser)
+	}
 }

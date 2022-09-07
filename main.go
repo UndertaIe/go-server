@@ -50,10 +50,10 @@ func init() { // 初始化工作
 	if err != nil {
 		log.Fatalf("init.setupMemoryInCacher err: %v", err)
 	}
-	// err = setupMemCacher()
-	// if err != nil {
-	// 	log.Fatalf("init.setupMemCacher err: %v", err)
-	// }
+	err = setupMemCacher()
+	if err != nil {
+		log.Fatalf("init.setupMemCacher err: %v", err)
+	}
 
 }
 
@@ -112,6 +112,11 @@ func setupSetting() error {
 		return err
 	}
 	err = s.ReadSection("MemoryInCache", &global.MemoryInCacheSettings)
+	if err != nil {
+		return err
+	}
+
+	err = s.ReadSection("MemCache", &global.MemCacheSettings)
 	if err != nil {
 		return err
 	}

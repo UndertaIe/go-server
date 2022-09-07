@@ -77,6 +77,11 @@ type MemoryInCacheSetting struct {
 	DefaultExpireTime int
 }
 
+type MemCacheSetting struct {
+	Hosts             []string
+	DefaultExpireTime int
+}
+
 var sections = make(map[string]interface{})
 
 func (s *Setting) ReadSection(k string, v interface{}) error {

@@ -26,4 +26,7 @@ var (
 	IncrError                 = NewCacheError(11008, "incr error")
 	ReplaceError              = NewCacheError(11009, "replace error")
 	AddError                  = NewCacheError(11010, "add error")
+	HostsTypeError            = NewCacheError(11011, "host type must be []string")
+	HostsNoNilError           = NewCacheError(11012, "field hosts must be set, not nil")
+	NotSupportError           = NewCacheError(11013, "not support error")
 )

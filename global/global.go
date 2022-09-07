@@ -15,7 +15,7 @@ var (
 
 //: cache
 var (
-	Cacher      cache.Cache
-	MemInCacher cache.Cache
-	MemCacher   cache.Cache
+	Cacher      cache.Cache // redis
+	MemInCacher cache.Cache // memory-in
+	MemCacher   cache.Cache // memcached
 )

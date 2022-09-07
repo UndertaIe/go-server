@@ -15,6 +15,7 @@ var (
 	JwtSettings           *config.JWTSetting
 	RedisSettings         *config.RedisSetting
 	MemoryInCacheSettings *config.MemoryInCacheSetting
+	MemCacheSettings      *config.MemCacheSetting
 )
 
 type Globals struct{}
