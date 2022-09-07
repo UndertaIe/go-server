@@ -12,6 +12,7 @@ import (
 	"github.com/UndertaIe/passwd/global"
 	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/pkg/com/alibaba"
+	"github.com/UndertaIe/passwd/pkg/sms"
 	"github.com/UndertaIe/passwd/pkg/tracer"
 )
 
@@ -34,10 +35,6 @@ func init() { // 初始化工作
 	if err != nil {
 		log.Fatalf("init.setupDBEngine err: %v", err)
 	}
-	err = setupSmsClient()
-	if err != nil {
-		log.Fatalf("init.setupSmsClient err: %v", err)
-	}
 	err = setupTracer()
 	if err != nil {
 		log.Fatalf("init.setupTracer err: %v", err)
@@ -53,6 +50,10 @@ func init() { // 初始化工作
 	err = setupMemCacher()
 	if err != nil {
 		log.Fatalf("init.setupMemCacher err: %v", err)
+	}
+	err = setupSmsService()
+	if err != nil {
+		log.Fatalf("init.setupSmsService err: %v", err)
 	}
 
 }
@@ -95,7 +96,7 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
-	err = s.ReadSection("Sms", &global.SmsSettings)
+	err = s.ReadSection("SmsService", &global.SmsServiceSettings)
 	if err != nil {
 		return err
 	}
@@ -120,10 +121,13 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+
+	// 将时间单位ns转化为s
 	global.APPSettings.DefaultContextTimeout *= time.Second
 	global.ServerSettings.ReadTimeout *= time.Second
 	global.ServerSettings.WriteTimeout *= time.Second
-	global.JwtSettings.Expire *= time.Second // 将时间单位ns转化为s
+	global.JwtSettings.Expire *= time.Second
+	global.SmsServiceSettings.DefaultExpireTime *= time.Second
 
 	return err
 }
@@ -131,12 +135,6 @@ func setupSetting() error {
 func setupDBEngine() error {
 	var err error
 	global.DBEngine, err = database.NewDBEngine(global.DatabaseSettings) // 在对全局变量赋值时不要使用 :=, 否则会导致左侧变量变为nil
-	return err
-}
-
-func setupSmsClient() error {
-	cli, err := alibaba.NewClient(global.SmsSettings.AccessKey, global.SmsSettings.AccessSecret)
-	global.SmsClient = cli
 	return err
 }
 
@@ -185,5 +183,16 @@ func setupMemCacher() error {
 	// cacher, err := cache.NewCache(cache.RedisT, cc)
 	cacher, err := cache.NewCache(cache.MemCacheT, nil) //使用默认配置
 	global.MemCacher = cacher
+	return err
+}
+
+func setupSmsService() error {
+	ls := global.SmsServiceSettings
+	cli, err := alibaba.NewClient(ls.AccessKey, ls.AccessSecret)
+	if err != nil {
+		return err
+	}
+	srv, err := sms.NewSmsCodeService(global.Cacher, cli, ls.DefaultExpireTime, ls.Prefix, ls.CodeLen)
+	global.SmsService = srv
 	return err
 }

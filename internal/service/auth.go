@@ -43,7 +43,7 @@ func (srv *Service) UserAuth(param *UserAuthRequest) (token string, err *errcode
 			err = errcode.UnauthorizedTokenGenerate.WithDetails(nErr.Error())
 		}
 	} else {
-		err = errcode.ErrorUserAuth
+		err = errcode.ErrorUserAuthFailed
 	}
 	if token == "" {
 		err = errcode.ErrorUnknownService

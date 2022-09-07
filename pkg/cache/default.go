@@ -28,5 +28,6 @@ var (
 	AddError                  = NewCacheError(11010, "add error")
 	HostsTypeError            = NewCacheError(11011, "host type must be []string")
 	HostsNoNilError           = NewCacheError(11012, "field hosts must be set, not nil")
-	NotSupportError           = NewCacheError(11013, "not support error")
+	KeyExistsError            = NewCacheError(11013, "existed key error")
+	NotSupportError           = NewCacheError(11100, "not support error")
 )

@@ -41,10 +41,13 @@ type EmailSetting struct {
 	To       []string
 }
 
-type SmsSetting struct {
-	Source       string
-	AccessKey    string
-	AccessSecret string
+type SmsServiceSetting struct {
+	Origin            string
+	AccessKey         string
+	AccessSecret      string
+	DefaultExpireTime time.Duration
+	Prefix            string
+	CodeLen           int
 }
 
 type JWTSetting struct {

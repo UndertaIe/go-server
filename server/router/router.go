@@ -45,7 +45,8 @@ func NewRouter() *gin.Engine {
 	}
 	{
 		sms := v1.NewSMS()
-		apiv1.GET("/sms", sms.Get)
+		apiv1.GET("/sms/code/:phone", sms.PhoneCode)
+		apiv1.POST("/sms/auth", sms.PhoneAuth)
 	}
 
 	AuthRouters(r)

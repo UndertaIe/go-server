@@ -3,7 +3,7 @@ package v1
 import (
 	"github.com/UndertaIe/passwd/global"
 	"github.com/UndertaIe/passwd/pkg/app"
-	"github.com/UndertaIe/passwd/pkg/com/alibaba"
+	"github.com/UndertaIe/passwd/pkg/errcode"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,14 +14,47 @@ func NewSMS() SMS {
 }
 
 // 接入短信服务
-func (up SMS) Get(c *gin.Context) {
-	req := &alibaba.SmsRequest{
-		PhoneNumbers:  "15837811850",
-		SignName:      "阿里云短信测试",
-		TemplateCode:  "SMS_154950909",
-		TemplateParam: "{\"code\":\"123456\"}",
-	}
+func (s SMS) PhoneCode(c *gin.Context) {
 	resp := app.Response{Ctx: c}
-	go global.SmsClient.SendSms(req)
+	phone, exists := c.Params.Get("phone")
+	if !exists {
+		resp.ToError(errcode.ErrorVerifyCodeNoPhoneNumbers)
+		return
+	}
+	req, err := global.SmsService.SmsRequest(phone)
+	if err != nil {
+		resp.ToError(errcode.ErrorGenerateVerifyCode.WithDetails(err.Error()))
+		return
+	}
+	err = global.SmsService.Send(req)
+	if err != nil {
+		resp.ToError(errcode.ErrorSendVerifyCode.WithDetails(err.Error()))
+		return
+	}
+	resp.Ok()
+}
+
+type SmsUserRequest struct {
+	Phone string `json:"phone" binding:"required"`
+	Code  string `json:"code" binding:"required"`
+}
+
+func (s SMS) PhoneAuth(c *gin.Context) {
+	resp := app.Response{Ctx: c}
+	params := new(SmsUserRequest)
+	err := c.Bind(params)
+	if err != nil {
+		resp.ToError(errcode.InvalidParams.WithDetails(err.Error()))
+		return
+	}
+	verified, err := global.SmsService.Check(params.Phone, params.Code)
+	if err != nil {
+		resp.ToError(errcode.ErrorCheckCode.WithDetails(err.Error()))
+		return
+	}
+	if !verified {
+		resp.ToError(errcode.ErrorVerifyCodeFailed)
+		return
+	}
 	resp.Ok()
 }

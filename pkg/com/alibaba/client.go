@@ -1,6 +1,9 @@
 package alibaba
 
 import (
+	"fmt"
+
+	"github.com/UndertaIe/passwd/pkg/sms"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	dysmsapi20170525 "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
 	util "github.com/alibabacloud-go/tea-utils/service"
@@ -9,13 +12,7 @@ import (
 
 type Client struct {
 	cli *dysmsapi20170525.Client
-}
-
-type SmsRequest struct {
-	PhoneNumbers  string // 手机号
-	SignName      string // 头部名称 // 阿里云短信测试
-	TemplateCode  string // 模板代码 // SMS_154950909
-	TemplateParam string // 模板参数 // {\"code\":\"1234\"}
+	sms.SmsClient
 }
 
 func NewClient(accessKeyId string, accessKeySecret string) (*Client, error) {
@@ -26,10 +23,21 @@ func NewClient(accessKeyId string, accessKeySecret string) (*Client, error) {
 	}
 
 	cli, err := dysmsapi20170525.NewClient(config)
-	return &Client{cli}, err
+	return &Client{cli: cli}, err
 }
 
-func (c Client) SendSms(req *SmsRequest) error {
+func (c Client) GeneratSmsRequest(phone string, code string) (*sms.SmsRequest, error) {
+	param := fmt.Sprintf("{\"code\":\"%s\"}", code)
+	req := &sms.SmsRequest{
+		PhoneNumbers:  phone,
+		SignName:      "阿里云短信测试",
+		TemplateCode:  "SMS_154950909",
+		TemplateParam: param,
+	}
+	return req, nil
+}
+
+func (c Client) SendSms(req *sms.SmsRequest) error {
 	body := &dysmsapi20170525.SendSmsRequest{
 		SignName:      tea.String(req.SignName),
 		TemplateCode:  tea.String(req.TemplateCode),
@@ -43,12 +51,10 @@ func (c Client) SendSms(req *SmsRequest) error {
 				_e = r
 			}
 		}()
-		// 复制代码运行请自行打印 API 的返回值
 		_, _err := c.cli.SendSmsWithOptions(body, runtime)
 		if _err != nil {
 			return _err
 		}
-
 		return nil
 	}()
 
@@ -59,7 +65,6 @@ func (c Client) SendSms(req *SmsRequest) error {
 		} else {
 			error.Message = tea.String(tryErr.Error())
 		}
-		// 如有需要，请打印 error
 		util.AssertAsString(error.Message)
 	}
 	return tryErr

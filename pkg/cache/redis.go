@@ -129,8 +129,8 @@ func (rc *RedisCache) Set(key string, value interface{}, expire time.Duration) e
 func (rc *RedisCache) Add(key string, value interface{}, expire time.Duration) error {
 	conn := rc.Conn()
 	defer conn.Close()
-	if !rc.exists(conn.Do, key) {
-		return NoKeyCacheError
+	if rc.exists(conn.Do, key) {
+		return KeyExistsError
 	}
 	return rc.set(conn.Do, key, value, expire)
 }

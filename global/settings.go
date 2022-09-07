@@ -11,7 +11,7 @@ var (
 	APPSettings           *config.AppSetting
 	ServerSettings        *config.ServerSetting
 	EmailSettings         *config.EmailSetting
-	SmsSettings           *config.SmsSetting
+	SmsServiceSettings    *config.SmsServiceSetting
 	JwtSettings           *config.JWTSetting
 	RedisSettings         *config.RedisSetting
 	MemoryInCacheSettings *config.MemoryInCacheSetting
