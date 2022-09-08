@@ -9,7 +9,7 @@ import (
 )
 
 func NewRouter() *gin.Engine {
-	r := gin.Default()
+	r := gin.New()
 	SetMiddlewares(r)
 	apiv1 := r.Group("api/v1")
 	{
