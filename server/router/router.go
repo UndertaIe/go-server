@@ -48,16 +48,19 @@ func NewRouter() *gin.Engine {
 	SmsRouters(r)
 	AuthRouters(r)
 	CacheRouters(r)
+	SentryRouters(r)
 
 	return r
 }
 
+func SentryRouters(r *gin.Engine) {
+	r.GET("/sentry", demo.Sentry)
+}
+
 func SmsRouters(r *gin.Engine) {
-	{
-		sms := demo.NewSMS()
-		r.GET("/sms/code/:phone", sms.PhoneCode)
-		r.POST("/sms/auth", sms.PhoneAuth)
-	}
+	sms := demo.NewSMS()
+	r.GET("/sms/code/:phone", sms.PhoneCode)
+	r.POST("/sms/auth", sms.PhoneAuth)
 }
 
 func AuthRouters(r *gin.Engine) {
