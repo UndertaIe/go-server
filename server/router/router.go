@@ -4,6 +4,7 @@ import (
 	"github.com/UndertaIe/passwd/global"
 	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/server/middleware"
+	"github.com/UndertaIe/passwd/server/router/demo"
 	v1 "github.com/UndertaIe/passwd/server/router/v1"
 	"github.com/gin-gonic/gin"
 )
@@ -43,32 +44,36 @@ func NewRouter() *gin.Engine {
 		apiv1.DELETE("/userpasswd/:user_id", userPasswd.DeleteList)
 		apiv1.PUT("/userpasswd/:user_id/:platform_id", userPasswd.Update)
 	}
-	{
-		sms := v1.NewSMS()
-		apiv1.GET("/sms/code/:phone", sms.PhoneCode)
-		apiv1.POST("/sms/auth", sms.PhoneAuth)
-	}
 
+	SmsRouters(r)
 	AuthRouters(r)
 	CacheRouters(r)
 
 	return r
 }
 
+func SmsRouters(r *gin.Engine) {
+	{
+		sms := demo.NewSMS()
+		r.GET("/sms/code/:phone", sms.PhoneCode)
+		r.POST("/sms/auth", sms.PhoneAuth)
+	}
+}
+
 func AuthRouters(r *gin.Engine) {
 	{
-		r.POST("/jwt/auth", Auth) // appkey,appsecret获取token
+		r.POST("/jwt/auth", demo.Auth) // appkey,appsecret获取token
 		admin := r.Group("/jwt/")
 		admin.Use(middleware.JWT()) // 使用jwt鉴权如下接口
-		admin.GET("/admin", PassAuth)
-		admin.POST("/admin", PassAuth)
+		admin.GET("/admin", demo.PassAuth)
+		admin.POST("/admin", demo.PassAuth)
 	}
 	{
 		uAuth := r.Group("/jwt/")
-		r.POST("/user/auth", UserAuth)  // 使用user_id password获取token
-		uAuth.Use(middleware.UserJwt()) // 使用jwt鉴权并在ctx中设置 user_id值
-		uAuth.GET("/user/secret", PassUserAuth)
-		uAuth.POST("/user/secret", PassUserAuth)
+		r.POST("/user/auth", demo.UserAuth) // 使用user_id password获取token
+		uAuth.Use(middleware.UserJwt())     // 使用jwt鉴权并在ctx中设置 user_id值
+		uAuth.GET("/user/secret", demo.PassUserAuth)
+		uAuth.POST("/user/secret", demo.PassUserAuth)
 	}
 }
 
@@ -78,28 +83,28 @@ func CacheRouters(r *gin.Engine) {
 		c := r.Group("/cache/api/")
 		c.Use(cache.GinCache(global.Cacher)) // c.Keys["cache"] = global.Cacher
 		// c.Use(cache.SiteCache())
-		c.GET("/now", v1.Now)
-		c.GET("/cnow", cache.CachePage(global.Cacher, cache.DEFAULT, v1.CacheNow))
-		c.GET("/user/:id", cache.CachePage(global.Cacher, cache.DEFAULT, v1.GetUser))
-		c.DELETE("/user/:id", v1.DeleteUser)
-		c.PUT("/user/:id", v1.UpdateUser)
+		c.GET("/now", demo.Now)
+		c.GET("/cnow", cache.CachePage(global.Cacher, cache.DEFAULT, demo.CacheNow))
+		c.GET("/user/:id", cache.CachePage(global.Cacher, cache.DEFAULT, demo.GetUser))
+		c.DELETE("/user/:id", demo.DeleteUser)
+		c.PUT("/user/:id", demo.UpdateUser)
 	}
 	{ // memory-in cache
 		c2 := r.Group("/memorycache/api/")
 		c2.Use(cache.GinCache(global.MemInCacher))
-		c2.GET("/now", v1.Now)
-		c2.GET("/cnow", cache.CachePage(global.MemInCacher, cache.DEFAULT, v1.CacheNow))
-		c2.GET("/user/:id", cache.CachePage(global.MemInCacher, cache.DEFAULT, v1.GetUser))
-		c2.DELETE("/user/:id", v1.DeleteUser)
-		c2.PUT("/user/:id", v1.UpdateUser)
+		c2.GET("/now", demo.Now)
+		c2.GET("/cnow", cache.CachePage(global.MemInCacher, cache.DEFAULT, demo.CacheNow))
+		c2.GET("/user/:id", cache.CachePage(global.MemInCacher, cache.DEFAULT, demo.GetUser))
+		c2.DELETE("/user/:id", demo.DeleteUser)
+		c2.PUT("/user/:id", demo.UpdateUser)
 	}
 	{ // memcached cache
 		c3 := r.Group("/memcached/api/")
 		c3.Use(cache.GinCache(global.MemCacher))
-		c3.GET("/now", v1.Now)
-		c3.GET("/cnow", cache.CachePage(global.MemCacher, cache.DEFAULT, v1.CacheNow))
-		c3.GET("/user/:id", cache.CachePage(global.MemCacher, cache.DEFAULT, v1.GetUser))
-		c3.DELETE("/user/:id", v1.DeleteUser)
-		c3.PUT("/user/:id", v1.UpdateUser)
+		c3.GET("/now", demo.Now)
+		c3.GET("/cnow", cache.CachePage(global.MemCacher, cache.DEFAULT, demo.CacheNow))
+		c3.GET("/user/:id", cache.CachePage(global.MemCacher, cache.DEFAULT, demo.GetUser))
+		c3.DELETE("/user/:id", demo.DeleteUser)
+		c3.PUT("/user/:id", demo.UpdateUser)
 	}
 }
