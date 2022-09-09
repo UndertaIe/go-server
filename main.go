@@ -104,10 +104,6 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
-	err = s.ReadSection("JWT", &global.JwtSettings)
-	if err != nil {
-		return err
-	}
 	err = s.ReadSection("Redis", &global.RedisSettings)
 	if err != nil {
 		return err
