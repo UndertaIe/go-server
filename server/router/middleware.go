@@ -16,6 +16,6 @@ func SetMiddlewares(r *gin.Engine) {
 		r.Use(gin.Recovery())
 	case gin.ReleaseMode:
 		r.Use(ginrus.Ginrus(logrus.StandardLogger(), time.RFC3339, true))
-		r.Use(sentrygin.New(sentrygin.Options{}))
+		r.Use(sentrygin.New(sentrygin.Options{Repanic: true}))
 	}
 }

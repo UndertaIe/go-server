@@ -14,6 +14,7 @@ import (
 	"github.com/UndertaIe/passwd/pkg/com/alibaba"
 	"github.com/UndertaIe/passwd/pkg/sms"
 	"github.com/UndertaIe/passwd/pkg/tracer"
+	"github.com/getsentry/sentry-go"
 )
 
 var (
@@ -54,6 +55,10 @@ func init() { // 初始化工作
 	err = setupSmsService()
 	if err != nil {
 		log.Fatalf("init.setupSmsService err: %v", err)
+	}
+	err = setupSentry()
+	if err != nil {
+		log.Fatalf("init.setupSentry err: %v", err)
 	}
 
 }
@@ -190,5 +195,16 @@ func setupSmsService() error {
 	}
 	srv, err := sms.NewSmsCodeService(global.Cacher, cli, ls.DefaultExpireTime, ls.Prefix, ls.CodeLen)
 	global.SmsService = srv
+	return err
+}
+
+func setupSentry() error {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn: "https://8a5adff2f48d407da9992ce08c1254ec@o1401849.ingest.sentry.io/6733237", // TODO: 需要初始化
+		// Set TracesSampleRate to 1.0 to capture 100%
+		// of transactions for performance monitoring.
+		// We recommend adjusting this value in production,
+		TracesSampleRate: 1.0,
+	})
 	return err
 }
