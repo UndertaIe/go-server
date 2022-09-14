@@ -87,8 +87,8 @@ func CacheRouters(r *gin.Engine) {
 		c.Use(cache.GinCache(global.Cacher)) // c.Keys["cache"] = global.Cacher
 		// c.Use(cache.SiteCache())
 		c.GET("/now", demo.Now)
-		c.GET("/cnow", cache.CachePage(global.Cacher, cache.DEFAULT, demo.CacheNow))
-		c.GET("/user/:id", cache.CachePage(global.Cacher, cache.DEFAULT, demo.GetUser))
+		c.GET("/cnow", middleware.CachePage(global.Cacher, cache.DEFAULT, demo.CacheNow))
+		c.GET("/user/:id", middleware.CachePage(global.Cacher, cache.DEFAULT, demo.GetUser))
 		c.DELETE("/user/:id", demo.DeleteUser)
 		c.PUT("/user/:id", demo.UpdateUser)
 	}
@@ -96,8 +96,8 @@ func CacheRouters(r *gin.Engine) {
 		c2 := r.Group("/memorycache/api/")
 		c2.Use(cache.GinCache(global.MemInCacher))
 		c2.GET("/now", demo.Now)
-		c2.GET("/cnow", cache.CachePage(global.MemInCacher, cache.DEFAULT, demo.CacheNow))
-		c2.GET("/user/:id", cache.CachePage(global.MemInCacher, cache.DEFAULT, demo.GetUser))
+		c2.GET("/cnow", middleware.CachePage(global.MemInCacher, cache.DEFAULT, demo.CacheNow))
+		c2.GET("/user/:id", middleware.CachePage(global.MemInCacher, cache.DEFAULT, demo.GetUser))
 		c2.DELETE("/user/:id", demo.DeleteUser)
 		c2.PUT("/user/:id", demo.UpdateUser)
 	}
@@ -105,8 +105,8 @@ func CacheRouters(r *gin.Engine) {
 		c3 := r.Group("/memcached/api/")
 		c3.Use(cache.GinCache(global.MemCacher))
 		c3.GET("/now", demo.Now)
-		c3.GET("/cnow", cache.CachePage(global.MemCacher, cache.DEFAULT, demo.CacheNow))
-		c3.GET("/user/:id", cache.CachePage(global.MemCacher, cache.DEFAULT, demo.GetUser))
+		c3.GET("/cnow", middleware.CachePage(global.MemCacher, cache.DEFAULT, demo.CacheNow))
+		c3.GET("/user/:id", middleware.CachePage(global.MemCacher, cache.DEFAULT, demo.GetUser))
 		c3.DELETE("/user/:id", demo.DeleteUser)
 		c3.PUT("/user/:id", demo.UpdateUser)
 	}

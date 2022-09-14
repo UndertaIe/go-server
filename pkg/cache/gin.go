@@ -6,8 +6,10 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sync"
 	"time"
 
+	"github.com/UndertaIe/passwd/pkg/logger"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,6 +22,28 @@ type responseCache struct {
 	Data   []byte
 }
 
+type cacheWritePool struct {
+	pool *sync.Pool
+}
+
+func newCacheWritePool() *cacheWritePool {
+	p := &sync.Pool{New: func() any {
+		return newCachedWriter()
+	}}
+	return &cacheWritePool{p}
+}
+
+func (p *cacheWritePool) Get() *cachedWriter {
+	c, _ := p.pool.Get().(*cachedWriter)
+	return c
+}
+
+func (p *cacheWritePool) Put(cw *cachedWriter) {
+	p.pool.Put(cw)
+}
+
+var writerPool = newCacheWritePool()
+
 type cachedWriter struct {
 	gin.ResponseWriter
 	status  int
@@ -27,6 +51,7 @@ type cachedWriter struct {
 	store   Cache
 	expire  time.Duration
 	key     string
+	log     logger.Log
 }
 
 func urlEscape(prefix string, u string) string {
@@ -43,8 +68,8 @@ func urlEscape(prefix string, u string) string {
 	return buffer.String()
 }
 
-func newCachedWriter(store Cache, expire time.Duration, writer gin.ResponseWriter, key string) *cachedWriter {
-	return &cachedWriter{writer, 0, false, store, expire, key}
+func newCachedWriter() *cachedWriter {
+	return &cachedWriter{}
 }
 
 func (w *cachedWriter) WriteHeader(code int) {
@@ -55,6 +80,17 @@ func (w *cachedWriter) WriteHeader(code int) {
 
 func (w *cachedWriter) Status() int {
 	return w.status
+}
+
+func (w *cachedWriter) Reset(store Cache, expire time.Duration, writer gin.ResponseWriter, key string, log logger.Log) {
+	w.status = 0
+	w.written = false
+
+	w.store = store
+	w.expire = expire
+	w.ResponseWriter = writer
+	w.key = key
+	w.log = log
 }
 
 func (w *cachedWriter) Written() bool {
@@ -72,9 +108,9 @@ func (w *cachedWriter) Write(data []byte) (int, error) {
 			data,
 		}
 		err = store.Set(w.key, val, w.expire)
-		// if err != nil {
-		// 	need logger
-		// }
+		if err != nil {
+			w.log.Error("set cache error")
+		}
 	}
 	return ret, err
 }
@@ -129,14 +165,14 @@ func DeleteCache(c *gin.Context, cacheName ...string) error {
 }
 
 // Cache Decorator
-func CachePage(store Cache, expire time.Duration, handle gin.HandlerFunc) gin.HandlerFunc {
+func CachePage(store Cache, expire time.Duration, log logger.Log, handle gin.HandlerFunc) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		var cache responseCache
 		key := CacheKey(c)
 		if err := store.Get(key, &cache); err != nil {
-			// replace writer
-			writer := newCachedWriter(store, expire, c.Writer, key)
+			writer := writerPool.Get()
+			writer.Reset(store, expire, c.Writer, key, log)
 			c.Writer = writer // 将responseWriter替换。write方法实现了写入client fd后写入缓存
 			handle(c)
 		} else {

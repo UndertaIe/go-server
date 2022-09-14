@@ -22,9 +22,15 @@ type AppSetting struct {
 	DefaultPageSize       int
 	MaxPageSize           int
 	DefaultContextTimeout time.Duration
+	LocalTime             bool
 	LogSavePath           string
 	LogFileName           string
 	LogFileExt            string
+	LogFormat             string
+	LogMaxSize            int
+	LogMaxBackup          int
+	LogMaxAge             int
+	LogCompress           bool
 	UploadSavePath        string
 	UploadServerUrl       string
 	UploadImageMaxSize    int
@@ -87,6 +93,8 @@ type MemCacheSetting struct {
 
 var sections = make(map[string]interface{})
 
+type Hook func()
+
 func (s *Setting) ReadSection(k string, v interface{}) error {
 	err := s.vp.UnmarshalKey(k, v)
 	if err != nil {
@@ -95,6 +103,20 @@ func (s *Setting) ReadSection(k string, v interface{}) error {
 
 	if _, ok := sections[k]; !ok {
 		sections[k] = v
+	}
+	return nil
+}
+
+func (s *Setting) ReadSections(m map[string]interface{}, hooks ...Hook) error {
+	var err error
+	for k, p := range m {
+		err = s.ReadSection(k, p)
+		if err != nil {
+			return err
+		}
+	}
+	for _, hook := range hooks {
+		hook()
 	}
 	return nil
 }

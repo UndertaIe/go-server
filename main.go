@@ -15,6 +15,8 @@ import (
 	"github.com/UndertaIe/passwd/pkg/sms"
 	"github.com/UndertaIe/passwd/pkg/tracer"
 	"github.com/getsentry/sentry-go"
+	"github.com/sirupsen/logrus"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 var (
@@ -24,10 +26,8 @@ var (
 )
 
 func init() { // 初始化工作
-	err := setupFlag()
-	if err != nil {
-		log.Fatalf("init.setupFlag err: %v", err)
-	}
+	var err error
+
 	err = setupSetting()
 	if err != nil {
 		log.Fatalf("init.setupSetting err: %v", err)
@@ -60,76 +60,47 @@ func init() { // 初始化工作
 	if err != nil {
 		log.Fatalf("init.setupSentry err: %v", err)
 	}
-
+	err = setupLogger()
+	if err != nil {
+		log.Fatalf("init.setupLogger err: %v", err)
+	}
 }
 
 func main() {
 	cmd.Run()
 }
 
-func setupFlag() error {
+func setupSetting() error {
+
 	flag.IntVar(&port, "port", 7788, "启动端口7788")
 	flag.StringVar(&runMode, "mode", "debug", "启动模式(debug,prod)")
 	flag.StringVar(&configPath, "config", "./", "配置文件路径,当前路径下")
 	flag.Parse()
 
-	return nil
-}
-
-func setupSetting() error {
 	s, err := config.NewSetting(strings.Split(configPath, ",")...)
 	if err != nil {
 		return err
 	}
-	err = s.ReadSection("Server", &global.ServerSettings)
-	if err != nil {
-		return err
+	sections := map[string]interface{}{
+		"Server": &global.ServerSettings,
+		"App":    &global.APPSettings,
+		"MySQL":  &global.DatabaseSettings,
+		// "SQLITE3":       &global.DatabaseSettings,
+		"Email":         &global.EmailSettings,
+		"SmsService":    &global.SmsServiceSettings,
+		"JWT":           &global.JwtSettings,
+		"Redis":         &global.RedisSettings,
+		"MemoryInCache": &global.MemoryInCacheSettings,
+		"MemCache":      &global.MemCacheSettings,
 	}
-	err = s.ReadSection("App", &global.APPSettings)
-	if err != nil {
-		return err
+	hook := func() {
+		global.APPSettings.DefaultContextTimeout *= time.Second
+		global.ServerSettings.ReadTimeout *= time.Second
+		global.ServerSettings.WriteTimeout *= time.Second
+		global.JwtSettings.Expire *= time.Second
+		global.SmsServiceSettings.DefaultExpireTime *= time.Second
 	}
-	err = s.ReadSection("MySQL", &global.DatabaseSettings)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("SQLITE3", &global.DatabaseSettings)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("Email", &global.EmailSettings)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("SmsService", &global.SmsServiceSettings)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("JWT", &global.JwtSettings)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("Redis", &global.RedisSettings)
-	if err != nil {
-		return err
-	}
-	err = s.ReadSection("MemoryInCache", &global.MemoryInCacheSettings)
-	if err != nil {
-		return err
-	}
-
-	err = s.ReadSection("MemCache", &global.MemCacheSettings)
-	if err != nil {
-		return err
-	}
-
-	// 将时间单位ns转化为s
-	global.APPSettings.DefaultContextTimeout *= time.Second
-	global.ServerSettings.ReadTimeout *= time.Second
-	global.ServerSettings.WriteTimeout *= time.Second
-	global.JwtSettings.Expire *= time.Second
-	global.SmsServiceSettings.DefaultExpireTime *= time.Second
-
+	s.ReadSections(sections, hook)
 	return err
 }
 
@@ -193,6 +164,9 @@ func setupSmsService() error {
 	if err != nil {
 		return err
 	}
+	if global.Cacher == nil {
+		log.Fatal("setup SmsService error: global.cacher is nil")
+	}
 	srv, err := sms.NewSmsCodeService(global.Cacher, cli, ls.DefaultExpireTime, ls.Prefix, ls.CodeLen)
 	global.SmsService = srv
 	return err
@@ -207,4 +181,24 @@ func setupSentry() error {
 		TracesSampleRate: 1.0,
 	})
 	return err
+}
+
+func setupLogger() error {
+	cfg := *global.APPSettings
+	fileName := cfg.LogSavePath + "/" + cfg.LogFileName + cfg.LogFileExt
+	global.Logger = logrus.New()
+	if cfg.LogFormat == "json" {
+		global.Logger.SetFormatter(&logrus.JSONFormatter{})
+	}
+	out := &lumberjack.Logger{
+		Filename:   fileName,
+		MaxSize:    cfg.LogMaxSize, // megabytes
+		MaxBackups: cfg.LogMaxBackup,
+		MaxAge:     cfg.LogMaxAge,   //days
+		Compress:   cfg.LogCompress, // disabled by default
+		LocalTime:  cfg.LocalTime,
+	}
+	global.Logger.SetOutput(out)
+
+	return nil
 }
