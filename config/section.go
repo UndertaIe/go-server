@@ -56,6 +56,10 @@ type SmsServiceSetting struct {
 	CodeLen           int
 }
 
+type SentrySetting struct {
+	Dsn string
+}
+
 type JWTSetting struct {
 	Secret string
 	Issuer string

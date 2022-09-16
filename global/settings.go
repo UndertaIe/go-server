@@ -16,6 +16,7 @@ var (
 	RedisSettings         *config.RedisSetting
 	MemoryInCacheSettings *config.MemoryInCacheSetting
 	MemCacheSettings      *config.MemCacheSetting
+	SentrySettings        *config.SentrySetting
 )
 
 type Globals struct{}

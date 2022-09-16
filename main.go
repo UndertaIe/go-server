@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"log"
 	"strings"
@@ -15,6 +16,7 @@ import (
 	"github.com/UndertaIe/passwd/pkg/sms"
 	"github.com/UndertaIe/passwd/pkg/tracer"
 	"github.com/getsentry/sentry-go"
+	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -89,6 +91,7 @@ func setupSetting() error {
 		"Email":         &global.EmailSettings,
 		"SmsService":    &global.SmsServiceSettings,
 		"JWT":           &global.JwtSettings,
+		"Sentry":        &global.SentrySettings,
 		"Redis":         &global.RedisSettings,
 		"MemoryInCache": &global.MemoryInCacheSettings,
 		"MemCache":      &global.MemCacheSettings,
@@ -173,12 +176,17 @@ func setupSmsService() error {
 }
 
 func setupSentry() error {
+	mode := gin.Mode()
+	isDebug := true
+	if mode == gin.ReleaseMode {
+		isDebug = false
+	}
+	if global.SentrySettings.Dsn == "" {
+		return errors.New("sentry Dsn is nil")
+	}
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: "https://8a5adff2f48d407da9992ce08c1254ec@o1401849.ingest.sentry.io/6733237", // TODO: 需要初始化
-		// Set TracesSampleRate to 1.0 to capture 100%
-		// of transactions for performance monitoring.
-		// We recommend adjusting this value in production,
-		TracesSampleRate: 1.0,
+		Dsn:   global.SentrySettings.Dsn,
+		Debug: isDebug,
 	})
 	return err
 }
