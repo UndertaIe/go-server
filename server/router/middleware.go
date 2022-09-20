@@ -8,6 +8,7 @@ import (
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 const (
@@ -15,6 +16,7 @@ const (
 	UTCTime        = false
 	TimeFormat     = time.RFC3339
 	SentryRepanic  = false
+	ServiceName    = "passwd"
 )
 
 func SetMiddlewares(r *gin.Engine) {
@@ -27,6 +29,7 @@ func SetMiddlewares(r *gin.Engine) {
 	case gin.ReleaseMode:
 		r.Use(sentrygin.New(sentrygin.Options{Repanic: SentryRepanic})) // sentry异常处理
 		r.Use(middleware.ContextTimeout(ContextTimeOut))                // 超时处理
-		r.Use(ginrus.Ginrus(global.Logger, TimeFormat, UTCTime))        // TODO: 没有做异常处理
+		r.Use(ginrus.Ginrus(global.Logger, TimeFormat, UTCTime))
+		r.Use(otelgin.Middleware(ServiceName)) // add tracing
 	}
 }

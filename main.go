@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -14,10 +15,16 @@ import (
 	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/pkg/com/alibaba"
 	"github.com/UndertaIe/passwd/pkg/sms"
-	"github.com/UndertaIe/passwd/pkg/tracer"
 	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/jaeger"
+	stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -95,6 +102,7 @@ func setupSetting() error {
 		"Redis":         &global.RedisSettings,
 		"MemoryInCache": &global.MemoryInCacheSettings,
 		"MemCache":      &global.MemCacheSettings,
+		"Tracing":       &global.TracingSettings,
 	}
 	hook := func() {
 		global.APPSettings.DefaultContextTimeout *= time.Second
@@ -114,8 +122,42 @@ func setupDBEngine() error {
 }
 
 func setupTracer() error {
-	tracer, _, err := tracer.NewJaegerTracer("passwd-service", "127.0.0.1:6831")
-	global.Tracer = tracer
+	// tracer, _, err := tracer.NewJaegerTracer("passwd-service", "127.0.0.1:6831")
+	// global.Tracer = tracer
+	var err error
+	var exporter sdktrace.SpanExporter
+	if gin.Mode() == gin.DebugMode {
+		var f *os.File
+		f, err = os.Open(global.APPSettings.TraceSavePath)
+		if err != nil {
+			return err
+		}
+		exporter, err = stdout.New(
+			stdout.WithWriter(f),
+			stdout.WithPrettyPrint(),
+			stdout.WithoutTimestamps(),
+		)
+	} else {
+		exporter, err = jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(global.TracingSettings.EndPoint)))
+	}
+	if err != nil {
+		return err
+	}
+	r, err := resource.Merge(resource.Default(), resource.NewWithAttributes(
+		semconv.SchemaURL,
+		semconv.ServiceNameKey.String("passwd"),
+		semconv.ServiceVersionKey.String("v1.0.0"),
+	))
+	if err != nil {
+		return err
+	}
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(r),
+	)
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 	return err
 }
 
