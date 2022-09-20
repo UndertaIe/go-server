@@ -9,6 +9,7 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/plugin/opentelemetry/tracing"
 )
 
 type BaseModel struct {
@@ -34,7 +35,9 @@ func NewDBEngine(dbSetting *config.DatabaseSetting) (*gorm.DB, error) {
 	if global.ServerSettings.RunMode == config.Debug {
 		db = db.Debug()
 	}
-
+	if global.TracingSettings.Enabled {
+		db.Use(tracing.NewPlugin())
+	}
 	db.Callback().Create().Replace("gorm:before_create", createCallback) //替换gorm的全局钩子函数
 	db.Callback().Update().Replace("gorm:before_update", updateCallback)
 	return db, nil
