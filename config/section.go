@@ -22,6 +22,7 @@ type AppSetting struct {
 	DefaultPageSize       int
 	MaxPageSize           int
 	DefaultContextTimeout time.Duration
+	TraceSavePath         string
 	LocalTime             bool
 	LogSavePath           string
 	LogFileName           string
@@ -93,6 +94,11 @@ type MemoryInCacheSetting struct {
 type MemCacheSetting struct {
 	Hosts             []string
 	DefaultExpireTime int
+}
+
+type TracingSetting struct {
+	Enabled  bool
+	EndPoint string
 }
 
 var sections = make(map[string]interface{})

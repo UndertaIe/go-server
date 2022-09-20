@@ -17,6 +17,7 @@ var (
 	MemoryInCacheSettings *config.MemoryInCacheSetting
 	MemCacheSettings      *config.MemCacheSetting
 	SentrySettings        *config.SentrySetting
+	TracingSettings       *config.TracingSetting
 )
 
 type Globals struct{}
