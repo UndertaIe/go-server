@@ -20,13 +20,12 @@ const (
 )
 
 func SetMiddlewares(r *gin.Engine) {
-	// gin.SetMode(gin.ReleaseMode)
-	// export GIN_MODE=release
+	gin.SetMode(gin.ReleaseMode)
 	switch gin.Mode() {
 	case gin.DebugMode:
 		r.Use(gin.Logger())
 		r.Use(gin.Recovery())
-	case gin.ReleaseMode:
+	case gin.ReleaseMode: // export GIN_MODE=release
 		r.Use(sentrygin.New(sentrygin.Options{Repanic: SentryRepanic})) // sentry异常处理
 		r.Use(middleware.ContextTimeout(ContextTimeOut))                // 超时处理
 		r.Use(ginrus.Ginrus(global.Logger, TimeFormat, UTCTime))

@@ -34,20 +34,20 @@ var (
 	configPath string
 )
 
-func init() { // 初始化工作
+func init() { // 初始化工作(有序初始化)
 	var err error
 
 	err = setupSetting()
 	if err != nil {
 		log.Fatalf("init.setupSetting err: %v", err)
 	}
-	err = setupDBEngine()
-	if err != nil {
-		log.Fatalf("init.setupDBEngine err: %v", err)
-	}
 	err = setupTracer()
 	if err != nil {
 		log.Fatalf("init.setupTracer err: %v", err)
+	}
+	err = setupDBEngine()
+	if err != nil {
+		log.Fatalf("init.setupDBEngine err: %v", err)
 	}
 	err = setupCacher()
 	if err != nil {
@@ -128,7 +128,7 @@ func setupTracer() error {
 	var exporter sdktrace.SpanExporter
 	if gin.Mode() == gin.DebugMode {
 		var f *os.File
-		f, err = os.Open(global.APPSettings.TraceSavePath)
+		f, err = os.Create(global.APPSettings.TraceSavePath)
 		if err != nil {
 			return err
 		}
