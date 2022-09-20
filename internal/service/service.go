@@ -15,6 +15,6 @@ type Service struct {
 func NewService(ctx context.Context) *Service {
 	return &Service{
 		Ctx: ctx,
-		Db:  global.DBEngine,
+		Db:  global.DBEngine.WithContext(ctx), // otel context propagation
 	}
 }
