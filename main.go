@@ -145,8 +145,8 @@ func setupTracer() error {
 	}
 	r, err := resource.Merge(resource.Default(), resource.NewWithAttributes(
 		semconv.SchemaURL,
-		semconv.ServiceNameKey.String("passwd"),
-		semconv.ServiceVersionKey.String("v1.0.0"),
+		semconv.ServiceNameKey.String(ServiceName),
+		semconv.ServiceVersionKey.String(ServiceVersion),
 	))
 	if err != nil {
 		return err
