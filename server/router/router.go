@@ -49,8 +49,18 @@ func NewRouter() *gin.Engine {
 	AuthRouters(r)
 	CacheRouters(r)
 	SentryRouters(r)
+	OtelRouters(r)
 
 	return r
+}
+
+func OtelRouters(r *gin.Engine) {
+	c := r.Group("/otel/api/")
+	c.GET("/now", demo.Now)
+	c.GET("/cnow", middleware.CachePageWithTracing(global.Cacher, cache.DEFAULT, demo.CacheNow))
+	c.GET("/user/:id", middleware.CachePageWithTracing(global.Cacher, cache.DEFAULT, demo.GetUser))
+	c.DELETE("/user/:id", demo.DeleteUserWithTracing)
+	c.PUT("/user/:id", demo.DeleteUserWithTracing)
 }
 
 func SentryRouters(r *gin.Engine) {
