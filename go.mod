@@ -15,6 +15,7 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-programming-tour-book/blog-service v0.0.0-20211007070625-fc62a2672eb7
 	github.com/gomodule/redigo v1.8.9
+	github.com/juju/ratelimit v1.0.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/robfig/go-cache v0.0.0-20130306151617-9fc39e0dbf62
@@ -28,6 +29,7 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.10.0
 	go.opentelemetry.io/otel/sdk v1.10.0
 	go.opentelemetry.io/otel/trace v1.10.0
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gorm.io/driver/mysql v1.3.6
 	gorm.io/gorm v1.23.8
@@ -80,7 +82,10 @@ require (
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/juju/ratelimit v1.0.1 => github.com/UndertaIe/ratelimit v1.3.0

@@ -145,8 +145,8 @@ func setupTracer() error {
 	}
 	r, err := resource.Merge(resource.Default(), resource.NewWithAttributes(
 		semconv.SchemaURL,
-		semconv.ServiceNameKey.String(ServiceName),
-		semconv.ServiceVersionKey.String(ServiceVersion),
+		semconv.ServiceNameKey.String(global.ServiceName),
+		semconv.ServiceVersionKey.String(global.ServiceVersion),
 	))
 	if err != nil {
 		return err
@@ -162,16 +162,16 @@ func setupTracer() error {
 }
 
 func setupCacher() error {
-	// cc := func() map[string]any {
-	// 	return map[string]any{``
-	// 		"host": global.RedisSettings.Host,
-	// 		"db":   global.RedisSettings.Db,
-	// 		// "password":          global.RedisSettings.Password,
-	// 		"defaultExpireTime": global.RedisSettings.DefaultExpireTime,
-	// 	}
-	// }
-	// cacher, err := cache.NewCache(cache.RedisT, cc)
-	cacher, err := cache.NewCache(cache.RedisT, nil) //使用默认配置
+	cc := func() map[string]any {
+		return map[string]any{
+			"host":              global.RedisSettings.Host,
+			"db":                global.RedisSettings.Db,
+			"password":          global.RedisSettings.Password,
+			"defaultExpireTime": global.RedisSettings.DefaultExpireTime,
+		}
+	}
+	cacher, err := cache.NewCache(cache.RedisT, cc)
+	// cacher, err := cache.NewCache(cache.RedisT, nil) //使用默认配置
 	global.Cacher = cacher
 	return err
 }
