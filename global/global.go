@@ -8,6 +8,11 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	ServiceName    = "passwd"
+	ServiceVersion = "v1.0.0"
+)
+
 var (
 	DBEngine   *gorm.DB
 	Tracer     opentracing.Tracer
