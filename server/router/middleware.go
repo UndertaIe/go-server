@@ -31,6 +31,6 @@ func SetMiddlewares(r *gin.Engine) {
 		r.Use(cache.GinCache(global.Cacher))                            // cache context propagation
 		r.Use(middleware.ContextTimeout(ContextTimeOut))
 		r.Use(ginrus.Ginrus(global.Logger, TimeFormat, UTCTime))
-		r.Use(otelgin.Middleware(ServiceName)) // 添加 tracing
+		r.Use(otelgin.Middleware(ServiceName)) // 添加 tracing TODO: 增加 trace_id字段
 	}
 }
