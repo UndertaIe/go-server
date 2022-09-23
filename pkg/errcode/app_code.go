@@ -11,5 +11,5 @@ var (
 	UnauthorizedTokenTimeout          = NewError(1007, "鉴权失败，Token超时")
 	UnauthorizedTokenGenerate         = NewError(1008, "鉴权失败，Token生成失败")
 	UnauthorizedTokenSignatureInvalid = NewError(1009, "鉴权失败，Token签名异常")
-	TooManyRequests                   = NewError(1010, "请求过多")
+	TooManyRequests                   = NewError(1010, "请求过多，请稍后重试")
 )
