@@ -51,5 +51,5 @@ var defaultBucketOption = BucketOption{
 	fillInterval: time.Minute,
 	capacity:     1000,
 	quantum:      100,
-	idleInterval: time.Hour,
+	idleInterval: time.Minute * 10,
 }

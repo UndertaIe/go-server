@@ -15,7 +15,6 @@ type sig struct{}
 type rateLimiter struct {
 	buckets     map[string]Bucket
 	pool        *sync.Pool
-	keyFunc     KeyFunc
 	stopRefresh chan sig
 	mux         sync.RWMutex
 	cfg         LimiterOption
@@ -32,10 +31,10 @@ func NewRateLimiter(options ...Option) *rateLimiter {
 		stopRefresh: make(chan sig, 1),
 		cfg:         cfg,
 	}
-	if cfg.poolEnabled {
+	if cfg.PoolEnabled() {
 		cl.pool = &sync.Pool{
 			New: func() any {
-				return newBucketer(*cfg.defaultBucketOption)
+				return newBucketer(cfg.BucketOption)
 			},
 		}
 	}
@@ -53,7 +52,7 @@ type LimiterOption struct {
 	// 定时刷新间隔
 	refreshInterval time.Duration
 	// 默认bucket配置
-	defaultBucketOption *BucketOption
+	BucketOption
 }
 
 func (lo *LimiterOption) PoolEnabled() bool {
@@ -65,8 +64,20 @@ func (lo *LimiterOption) RefreshEnabled() bool {
 func (lo *LimiterOption) RefreshInterval() time.Duration {
 	return lo.refreshInterval
 }
-func (lo *LimiterOption) DefaultBucketOption() *BucketOption {
-	return lo.defaultBucketOption
+func (lo *LimiterOption) DefaultBucketOption() BucketOption {
+	return lo.BucketOption
+}
+func (lo *LimiterOption) FillInterval() time.Duration {
+	return lo.fillInterval
+}
+func (lo *LimiterOption) Capacity() int {
+	return lo.capacity
+}
+func (lo *LimiterOption) Quantum() int {
+	return lo.quantum
+}
+func (lo *LimiterOption) IdleInterval() time.Duration {
+	return lo.idleInterval
 }
 
 // 默认刷新时间间隔
@@ -79,18 +90,17 @@ func (lo *LimiterOption) ensureInit() {
 	if lo.refreshInterval == 0 {
 		lo.refreshInterval = defaultRefreshInterval
 	}
-	bopt := lo.defaultBucketOption
-	if bopt.fillInterval == 0 {
-		bopt.fillInterval = defaultBucketOption.fillInterval
+	if lo.fillInterval == 0 {
+		lo.fillInterval = defaultBucketOption.fillInterval
 	}
-	if bopt.capacity == 0 {
-		bopt.capacity = defaultBucketOption.capacity
+	if lo.capacity == 0 {
+		lo.capacity = defaultBucketOption.capacity
 	}
-	if bopt.quantum == 0 {
-		bopt.quantum = defaultBucketOption.quantum
+	if lo.quantum == 0 {
+		lo.quantum = defaultBucketOption.quantum
 	}
-	if bopt.idleInterval == 0 {
-		bopt.idleInterval = defaultBucketOption.idleInterval
+	if lo.idleInterval == 0 {
+		lo.idleInterval = defaultBucketOption.idleInterval
 	}
 }
 
@@ -122,19 +132,8 @@ func WithPool() Option {
 }
 
 func (bo BucketOption) apply(lo LimiterOption) LimiterOption {
-	lo.defaultBucketOption = &bo
+	lo.BucketOption = bo
 	return lo
-}
-
-type KeyFunc func(c context.Context) string
-
-func (f KeyFunc) apply(lo LimiterOption) LimiterOption {
-	lo.keyFunc = f
-	return lo
-}
-
-func WithKeyFunc(f func(c context.Context) string) Option {
-	return KeyFunc(f)
 }
 
 func WithBucketOption(bo BucketOption) Option {
@@ -142,7 +141,7 @@ func WithBucketOption(bo BucketOption) Option {
 }
 
 func (cl *rateLimiter) Key(c context.Context) string {
-	return cl.keyFunc(c)
+	return cl.cfg.keyFunc(c)
 }
 
 func (cl *rateLimiter) GetBucket(key string) (Bucket, bool) {
@@ -169,11 +168,28 @@ func (cl *rateLimiter) addBucketWithPool(opt BucketOption) {
 }
 
 func (cl *rateLimiter) addBucket(opt BucketOption) {
+	opt = cl.ensureBucketOption(opt)
 	if cl.cfg.PoolEnabled() {
 		cl.addBucketWithPool(opt)
 		return
 	}
 	cl.buckets[opt.Key] = newBucketer(opt)
+}
+
+func (cl *rateLimiter) ensureBucketOption(opt BucketOption) BucketOption {
+	if opt.fillInterval == 0 {
+		opt.fillInterval = cl.cfg.FillInterval()
+	}
+	if opt.capacity == 0 {
+		opt.capacity = cl.cfg.Capacity()
+	}
+	if opt.quantum == 0 {
+		opt.quantum = cl.cfg.Quantum()
+	}
+	if opt.idleInterval == 0 {
+		opt.idleInterval = cl.cfg.IdleInterval()
+	}
+	return opt
 }
 
 func (cl *rateLimiter) ShutDown() bool {
@@ -211,6 +227,30 @@ func (cl *rateLimiter) refresh() {
 		}
 		cl.mux.Unlock()
 	}
+}
+
+func NewBucketOption() BucketOption {
+	return BucketOption{}
+}
+
+func (bo BucketOption) WithBucketFillInterval(fillInterval time.Duration) BucketOption {
+	bo.fillInterval = fillInterval
+	return bo
+}
+
+func (bo BucketOption) WithBucketcCapacity(capacity int) BucketOption {
+	bo.capacity = capacity
+	return bo
+}
+
+func (bo BucketOption) WithBucketQuantum(quantum int) BucketOption {
+	bo.quantum = quantum
+	return bo
+}
+
+func (bo BucketOption) WithBucketIdleInterval(idleInterval time.Duration) BucketOption {
+	bo.idleInterval = idleInterval
+	return bo
 }
 
 var _ Bucket = (*Bucketer)(nil)
