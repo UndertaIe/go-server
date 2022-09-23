@@ -1,8 +1,11 @@
 package router
 
 import (
+	"time"
+
 	"github.com/UndertaIe/passwd/global"
 	"github.com/UndertaIe/passwd/pkg/cache"
+	"github.com/UndertaIe/passwd/pkg/ratelimiter"
 	"github.com/UndertaIe/passwd/server/middleware"
 	"github.com/UndertaIe/passwd/server/router/demo"
 	v1 "github.com/UndertaIe/passwd/server/router/v1"
@@ -14,7 +17,7 @@ func NewRouter() *gin.Engine {
 	SetMiddlewares(r)
 	apiv1 := r.Group("api/v1")
 	{
-		user := v1.User{}
+		user := v1.NewUser()
 		apiv1.GET("/user/:id", user.Get)
 		apiv1.GET("/user", user.List)
 		apiv1.POST("/user", user.Create)
@@ -50,8 +53,44 @@ func NewRouter() *gin.Engine {
 	CacheRouters(r)
 	SentryRouters(r)
 	OtelRouters(r)
+	RateLimitRouters(r)
 
 	return r
+}
+
+func RateLimitRouters(r *gin.Engine) {
+	igroup := r.Group("/limit/ip/")
+	igroup.Use(
+		middleware.RateLimit(
+			ratelimiter.NewRateLimiter(
+				ratelimiter.WithIPKey(),
+				// ratelimiter.WithPool(),
+				ratelimiter.WithRefreshInterval(time.Minute),
+			),
+		),
+	)
+	{ // 同一个ip访问r1,r2,r3接口使用一个Group的ip限流
+		igroup.GET("/r1", demo.RateLimit)
+		igroup.GET("/r2", demo.RateLimit)
+	}
+
+	igroup2 := r.Group("/limit/router/")
+	igroup2.Use(
+		middleware.RateLimit(
+			ratelimiter.NewRateLimiter(
+				ratelimiter.WithRouterKey(),
+				ratelimiter.WithPool(),
+				ratelimiter.WithRefreshInterval(time.Minute),
+			),
+		),
+	)
+	{ // 同一个ip访问r1,r2,r3接口使用一个Group的ip限流
+		igroup2.GET("/r1", demo.RateLimit)
+		igroup2.GET("/r2", demo.RateLimit)
+		user := v1.NewUser()
+		igroup2.GET("/user/:id", user.Get)
+		igroup2.GET("/user", user.List)
+	}
 }
 
 func OtelRouters(r *gin.Engine) {

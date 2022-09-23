@@ -16,7 +16,7 @@ const (
 	ContextTimeOut = time.Second * 60
 	UTCTime        = false
 	TimeFormat     = time.RFC3339
-	SentryRepanic  = false
+	SentryRepanic  = true
 	ServiceName    = "passwd"
 )
 
