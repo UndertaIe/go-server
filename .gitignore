@@ -18,4 +18,6 @@ config.yaml
 
 storage
 
+log
+
 __debug_bin
