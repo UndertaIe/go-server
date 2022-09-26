@@ -77,9 +77,9 @@ func init() { // 初始化工作(有序初始化)
 
 // @title          passwd API
 // @version        1.0
-// @description    This is a passwd server.
+// @description    This is a passwd server, for saving platform password.
 // @termsOfService http://swagger.io/terms/
-
+// @tag.name restful api
 // @contact.name  API Support
 // @contact.url   http://www.swagger.io/support
 // @contact.email support@swagger.io

@@ -16,7 +16,17 @@ func NewUser() User {
 	return User{}
 }
 
-// @params user_id int
+// Get godoc
+// @Summary     获取单个文章
+// @Description  通过user_id获取单个文章
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "user ID"
+// @Success      200  {object}  service.User  "成功"
+// @Failure      400  {object}  errcode.Error "请求错误"
+// @Failure      500  {object}  errcode.Error "内部错误"
+// @Router       /api/v1/user/{id} [get]
 func (u User) Get(c *gin.Context) {
 	user_id, err := strconv.Atoi(c.Param("id"))
 	resp := app.Response{Ctx: c}
@@ -38,6 +48,15 @@ func (u User) Get(c *gin.Context) {
 	resp.To(user)
 }
 
+// List godoc
+// @Summary     获取多个用户
+// @Description  获取用户分页
+// @Tags         User
+// @Produce      json
+// @Success      200  {object}  service.User  "成功"
+// @Failure      400  {object}  errcode.Error "请求错误"
+// @Failure      500  {object}  errcode.Error "内部错误"
+// @Router       /api/v1/user [get]
 func (u User) List(c *gin.Context) {
 	srv := service.NewService(c.Request.Context())
 
@@ -54,6 +73,21 @@ func (u User) List(c *gin.Context) {
 	resp.ToList(user, pager)
 }
 
+// Create godoc
+// @Summary     创建用户
+// @Description  通过一些字段创建用户
+// @Tags         User
+// @Accept       json
+// @Param user_name 	body string true  "用户名"
+// @Param password 		body string true  "用户密码"
+// @Param phone_number  body string true  "手机号码"
+// @Param email 		body string false "电子邮件"
+// @Param sex 			body int 	false "性别"
+// @Param description   body string false "用户简介"
+// @Success      200  {string}  string        "成功"
+// @Failure      400  {object}  errcode.Error "请求错误"
+// @Failure      500  {object}  errcode.Error "内部错误"
+// @Router       /api/v1/user [post]
 func (u User) Create(c *gin.Context) {
 	param := new(service.UserCreateRequest)
 	err := c.ShouldBind(param)
@@ -75,6 +109,22 @@ func (u User) Create(c *gin.Context) {
 	resp.Ok()
 }
 
+// Update godoc
+// @Summary     更新单个用户
+// @Description  通过user_id和一些model字段更新单个用户
+// @Tags         User
+// @Accept       json
+// @Param        id   path      int  true  "user ID"
+// @Param user_name 	body string true  "用户名"
+// @Param password 		body string true  "用户密码"
+// @Param phone_number  body string true  "手机号码"
+// @Param email 		body string false "电子邮件"
+// @Param sex 			body int 	false "性别"
+// @Param description   body string false "用户简介"
+// @Success      200  {string}  string   "成功"
+// @Failure      400  {object}  errcode.Error "请求错误"
+// @Failure      500  {object}  errcode.Error "内部错误"
+// @Router       /api/v1/user/{id} [put]
 func (u User) Update(c *gin.Context) {
 	params := new(service.UserUpdateRequest)
 	user_id, err0 := strconv.Atoi(c.Param("id"))
@@ -97,6 +147,15 @@ func (u User) Update(c *gin.Context) {
 	resp.Ok()
 }
 
+// Delete godoc
+// @Summary     删除单个用户
+// @Description  通过user_id删除单个用户
+// @Tags         User
+// @Param        id   path      int  true  "user ID"
+// @Success      200  {string}  string  "成功"
+// @Failure      400  {object}  errcode.Error "请求错误"
+// @Failure      500  {object}  errcode.Error "内部错误"
+// @Router       /api/v1/user/{id} [delete]
 func (u User) Delete(c *gin.Context) {
 	user_id, err := strconv.Atoi(c.Param("id"))
 	resp := app.Response{Ctx: c}

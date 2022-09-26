@@ -3,15 +3,15 @@ package router
 import (
 	"time"
 
+	_ "github.com/UndertaIe/passwd/docs"
 	"github.com/UndertaIe/passwd/global"
 	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/pkg/ratelimiter"
+	"github.com/UndertaIe/passwd/pkg/swagger"
 	"github.com/UndertaIe/passwd/server/middleware"
 	"github.com/UndertaIe/passwd/server/router/demo"
 	v1 "github.com/UndertaIe/passwd/server/router/v1"
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"     // swagger embed files
-	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 func NewRouter() *gin.Engine {
@@ -67,7 +67,7 @@ func Demo(r *gin.Engine) {
 }
 
 func SwaggerRouters(r *gin.Engine) {
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/*any", swagger.HandlerFunc)
 }
 
 func RateLimitRouters(r *gin.Engine) {
