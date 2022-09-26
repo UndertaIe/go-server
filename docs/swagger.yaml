@@ -1,6 +1,25 @@
 definitions:
   errcode.Error:
     type: object
+  service.Platform:
+    properties:
+      abbr:
+        type: string
+      description:
+        type: string
+      domain:
+        type: string
+      img_url:
+        type: string
+      login_url:
+        type: string
+      name:
+        type: string
+      platform_id:
+        type: integer
+      type:
+        type: string
+    type: object
   service.User:
     properties:
       description:
@@ -26,6 +45,201 @@ info:
   title: passwd API
   version: "1.0"
 paths:
+  /api/v1/platform:
+    get:
+      description: 获取平台分页
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            items:
+              $ref: '#/definitions/service.Platform'
+            type: array
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取多个平台
+      tags:
+      - Platform
+    post:
+      consumes:
+      - application/json
+      description: 通过一些字段创建平台
+      parameters:
+      - description: 平台名
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: 平台简称
+        in: body
+        name: abbr
+        required: true
+        schema:
+          type: string
+      - description: 用户类型
+        in: body
+        name: type
+        schema:
+          type: string
+      - description: 平台介绍
+        in: body
+        name: description
+        schema:
+          type: string
+      - description: 平台域名
+        in: body
+        name: domain
+        schema:
+          type: string
+      - description: 平台登录URL
+        in: body
+        name: login_url
+        schema:
+          type: string
+      - description: 平台图片
+        in: body
+        name: img_url
+        schema:
+          type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 创建平台
+      tags:
+      - Platform
+  /api/v1/platform/{id}:
+    delete:
+      description: 通过id删除单个平台
+      parameters:
+      - description: platform ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 删除单个平台
+      tags:
+      - Platform
+    get:
+      description: 通过id获取单个平台
+      parameters:
+      - description: platform ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/service.User'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取单个平台
+      tags:
+      - Platform
+    put:
+      consumes:
+      - application/json
+      description: 通过id和一些model字段更新单个平台
+      parameters:
+      - description: user ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 平台名
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: 平台简称
+        in: body
+        name: abbr
+        required: true
+        schema:
+          type: string
+      - description: 用户类型
+        in: body
+        name: type
+        schema:
+          type: string
+      - description: 平台介绍
+        in: body
+        name: description
+        schema:
+          type: string
+      - description: 平台域名
+        in: body
+        name: domain
+        schema:
+          type: string
+      - description: 平台登录URL
+        in: body
+        name: login_url
+        schema:
+          type: string
+      - description: 平台图片
+        in: body
+        name: img_url
+        schema:
+          type: string
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 更新单个平台
+      tags:
+      - Platform
   /api/v1/user:
     get:
       description: 获取用户分页
@@ -35,7 +249,9 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/service.User'
+            items:
+              $ref: '#/definitions/service.User'
+            type: array
         "400":
           description: 请求错误
           schema:
@@ -103,7 +319,7 @@ paths:
       - User
   /api/v1/user/{id}:
     delete:
-      description: 通过user_id删除单个用户
+      description: 通过id删除单个用户
       parameters:
       - description: user ID
         in: path
@@ -129,7 +345,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 通过user_id获取单个文章
+      description: 通过id获取单个文章
       parameters:
       - description: user ID
         in: path
@@ -157,7 +373,7 @@ paths:
     put:
       consumes:
       - application/json
-      description: 通过user_id和一些model字段更新单个用户
+      description: 通过id和一些model字段更新单个用户
       parameters:
       - description: user ID
         in: path
