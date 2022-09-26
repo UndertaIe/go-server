@@ -18,7 +18,7 @@ func NewUser() User {
 
 // Get godoc
 // @Summary     获取单个文章
-// @Description  通过user_id获取单个文章
+// @Description  通过id获取单个文章
 // @Tags         User
 // @Accept       json
 // @Produce      json
@@ -111,7 +111,7 @@ func (u User) Create(c *gin.Context) {
 
 // Update godoc
 // @Summary     更新单个用户
-// @Description  通过user_id和一些model字段更新单个用户
+// @Description  通过id和一些model字段更新单个用户
 // @Tags         User
 // @Accept       json
 // @Param        id   path      int  true  "user ID"
@@ -149,7 +149,7 @@ func (u User) Update(c *gin.Context) {
 
 // Delete godoc
 // @Summary     删除单个用户
-// @Description  通过user_id删除单个用户
+// @Description  通过id删除单个用户
 // @Tags         User
 // @Param        id   path      int  true  "user ID"
 // @Success      200  {string}  string  "成功"
