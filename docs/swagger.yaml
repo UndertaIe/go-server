@@ -35,6 +35,29 @@ definitions:
       user_name:
         type: string
     type: object
+  service.UserAccount:
+    properties:
+      abbr:
+        type: string
+      description:
+        type: string
+      domain:
+        type: string
+      img_url:
+        type: string
+      login_url:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      platform_id:
+        type: integer
+      type:
+        type: string
+      user_id:
+        type: integer
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -429,6 +452,228 @@ paths:
       summary: 更新单个用户
       tags:
       - User
+  /api/v1/userpasswd:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            items:
+              $ref: '#/definitions/service.UserAccount'
+            type: array
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取所有的平台密码
+      tags:
+      - UserPasswd
+  /userpasswd:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户 id
+        in: body
+        name: user_id
+        required: true
+        schema:
+          type: string
+      - description: 平台 id
+        in: body
+        name: platform_id
+        required: true
+        schema:
+          type: string
+      - description: 用户平台密码
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 创建单个用户的单个平台密码
+      tags:
+      - UserPasswd
+  /userpasswd/:user_id:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户 id
+        in: body
+        name: user_id
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 删除单个用户的单个平台密码
+      tags:
+      - UserPasswd
+    get:
+      parameters:
+      - description: user ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/service.UserAccount'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取单个用户的平台密码分页
+      tags:
+      - UserPasswd
+  /userpasswd/:user_id/:platform_id:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户 id
+        in: body
+        name: user_id
+        required: true
+        schema:
+          type: string
+      - description: 平台 id
+        in: body
+        name: platform_id
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 删除单个用户的单个平台密码
+      tags:
+      - UserPasswd
+    get:
+      parameters:
+      - description: user ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: platform ID
+        in: path
+        name: platform_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/service.UserAccount'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取单个用户的单个平台密码
+      tags:
+      - UserPasswd
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户 id
+        in: body
+        name: user_id
+        required: true
+        schema:
+          type: string
+      - description: 平台 id
+        in: body
+        name: platform_id
+        required: true
+        schema:
+          type: string
+      - description: 用户平台密码
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 更新单个用户的单个平台密码
+      tags:
+      - UserPasswd
 swagger: "2.0"
 tags:
-- name: restful api
+- name: Go Eden
