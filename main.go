@@ -75,6 +75,14 @@ func init() { // 初始化工作(有序初始化)
 	}
 }
 
+// @title          passwd API
+// @version        1.0
+// @description    This is a passwd server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name  API Support
+// @contact.url   http://www.swagger.io/support
+// @contact.email support@swagger.io
 func main() {
 	cmd.Run()
 }

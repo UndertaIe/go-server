@@ -1,0 +1,11 @@
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a passwd server.
+  termsOfService: http://swagger.io/terms/
+  title: passwd API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

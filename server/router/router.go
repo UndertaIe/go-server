@@ -10,6 +10,8 @@ import (
 	"github.com/UndertaIe/passwd/server/router/demo"
 	v1 "github.com/UndertaIe/passwd/server/router/v1"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 func NewRouter() *gin.Engine {
@@ -48,14 +50,24 @@ func NewRouter() *gin.Engine {
 		apiv1.PUT("/userpasswd/:user_id/:platform_id", userPasswd.Update)
 	}
 
+	Demo(r)
+
+	return r
+}
+
+// module demo
+func Demo(r *gin.Engine) {
 	SmsRouters(r)
 	AuthRouters(r)
 	CacheRouters(r)
 	SentryRouters(r)
 	OtelRouters(r)
 	RateLimitRouters(r)
+	SwaggerRouters(r)
+}
 
-	return r
+func SwaggerRouters(r *gin.Engine) {
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 
 func RateLimitRouters(r *gin.Engine) {
