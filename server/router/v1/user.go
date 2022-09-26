@@ -53,7 +53,7 @@ func (u User) Get(c *gin.Context) {
 // @Description  获取用户分页
 // @Tags         User
 // @Produce      json
-// @Success      200  {object}  service.User  "成功"
+// @Success      200  {object}  []service.User  "成功"
 // @Failure      400  {object}  errcode.Error "请求错误"
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/user [get]
