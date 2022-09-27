@@ -68,6 +68,64 @@ info:
   title: passwd API
   version: "1.0"
 paths:
+  /api/v1//user/email:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户email
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 判断email是否已经被注册
+      tags:
+      - UserSignUp
+  /api/v1//user/name:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户名
+        in: body
+        name: user_name
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 判断用户名是否已经被注册
+      tags:
+      - UserSignUp
   /api/v1/platform:
     get:
       description: 获取平台分页
@@ -344,7 +402,7 @@ paths:
     delete:
       description: 通过id删除单个用户
       parameters:
-      - description: user ID
+      - description: 用户 ID
         in: path
         name: id
         required: true
@@ -368,9 +426,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: 通过id获取单个文章
+      description: 通过id获取单个用户
       parameters:
-      - description: user ID
+      - description: 用户 ID
         in: path
         name: id
         required: true
@@ -390,7 +448,7 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/errcode.Error'
-      summary: 获取单个文章
+      summary: 获取单个用户
       tags:
       - User
     put:
@@ -398,7 +456,7 @@ paths:
       - application/json
       description: 通过id和一些model字段更新单个用户
       parameters:
-      - description: user ID
+      - description: 用户 ID
         in: path
         name: id
         required: true
@@ -452,6 +510,35 @@ paths:
       summary: 更新单个用户
       tags:
       - User
+  /api/v1/user/phone:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 手机号
+        in: body
+        name: phone_number
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 判断手机号是否已经被注册
+      tags:
+      - UserSignUp
   /api/v1/userpasswd:
     get:
       produces:

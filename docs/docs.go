@@ -21,6 +21,96 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1//user/email": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserSignUp"
+                ],
+                "summary": "判断email是否已经被注册",
+                "parameters": [
+                    {
+                        "description": "用户email",
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1//user/name": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserSignUp"
+                ],
+                "summary": "判断用户名是否已经被注册",
+                "parameters": [
+                    {
+                        "description": "用户名",
+                        "name": "user_name",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/platform": {
             "get": {
                 "description": "获取平台分页",
@@ -438,9 +528,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user/phone": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UserSignUp"
+                ],
+                "summary": "判断手机号是否已经被注册",
+                "parameters": [
+                    {
+                        "description": "手机号",
+                        "name": "phone_number",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/{id}": {
             "get": {
-                "description": "通过id获取单个文章",
+                "description": "通过id获取单个用户",
                 "consumes": [
                     "application/json"
                 ],
@@ -450,11 +585,11 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "获取单个文章",
+                "summary": "获取单个用户",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "user ID",
+                        "description": "用户 ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -493,7 +628,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "user ID",
+                        "description": "用户 ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -580,7 +715,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "user ID",
+                        "description": "用户 ID",
                         "name": "id",
                         "in": "path",
                         "required": true
