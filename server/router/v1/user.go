@@ -17,12 +17,12 @@ func NewUser() User {
 }
 
 // Get godoc
-// @Summary     获取单个文章
-// @Description  通过id获取单个文章
+// @Summary     获取单个用户
+// @Description  通过id获取单个用户
 // @Tags         User
 // @Accept       json
 // @Produce      json
-// @Param        id   path      int  true  "user ID"
+// @Param        id   path      int  true  "用户 ID"
 // @Success      200  {object}  service.User  "成功"
 // @Failure      400  {object}  errcode.Error "请求错误"
 // @Failure      500  {object}  errcode.Error "内部错误"
@@ -114,7 +114,7 @@ func (u User) Create(c *gin.Context) {
 // @Description  通过id和一些model字段更新单个用户
 // @Tags         User
 // @Accept       json
-// @Param        id   path      int  true  "user ID"
+// @Param        id   path      int  true  "用户 ID"
 // @Param user_name 	body string true  "用户名"
 // @Param password 		body string true  "用户密码"
 // @Param phone_number  body string true  "手机号码"
@@ -151,7 +151,7 @@ func (u User) Update(c *gin.Context) {
 // @Summary     删除单个用户
 // @Description  通过id删除单个用户
 // @Tags         User
-// @Param        id   path      int  true  "user ID"
+// @Param        id   path      int  true  "用户 ID"
 // @Success      200  {string}  string  "成功"
 // @Failure      400  {object}  errcode.Error "请求错误"
 // @Failure      500  {object}  errcode.Error "内部错误"
