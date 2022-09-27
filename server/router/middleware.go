@@ -19,7 +19,7 @@ const (
 )
 
 func SetMiddlewares(r *gin.Engine) {
-	gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.ReleaseMode)
 	switch gin.Mode() {
 	case gin.DebugMode:
 		r.Use(gin.Logger())

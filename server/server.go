@@ -29,12 +29,19 @@ func NewServer() *http.Server {
 
 func RunServe(cmd *cobra.Command, args []string) {
 	s := NewServer()
+	cfg := *global.ServerSettings
+
 	go func() {
-		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		var err error
+		if cfg.EnabledTls {
+			err = s.ListenAndServeTLS(cfg.CertFile, cfg.KeyFile)
+		} else {
+			err = s.ListenAndServe()
+		}
+		if err != nil && err != http.ErrServerClosed {
 			log.Fatalf("s.ListenAndServe err: %v", err)
 		}
 	}()
-
 	quit := make(chan os.Signal, 1) // 捕获SIGINT/SIGTERM信号
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	log.Println("server running...")

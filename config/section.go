@@ -16,6 +16,9 @@ type ServerSetting struct {
 	HttpPort     int
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
+	EnabledTls   bool
+	CertFile     string
+	KeyFile      string
 }
 
 type AppSetting struct {
