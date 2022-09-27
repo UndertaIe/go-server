@@ -41,6 +41,10 @@ func init() { // 初始化工作(有序初始化)
 	if err != nil {
 		log.Fatalf("init.setupSetting err: %v", err)
 	}
+	err = setupLogger()
+	if err != nil {
+		log.Fatalf("init.setupLogger err: %v", err)
+	}
 	err = setupTracer()
 	if err != nil {
 		log.Fatalf("init.setupTracer err: %v", err)
@@ -68,10 +72,6 @@ func init() { // 初始化工作(有序初始化)
 	err = setupSentry()
 	if err != nil {
 		log.Fatalf("init.setupSentry err: %v", err)
-	}
-	err = setupLogger()
-	if err != nil {
-		log.Fatalf("init.setupLogger err: %v", err)
 	}
 }
 
@@ -238,6 +238,7 @@ func setupSentry() error {
 		Dsn:   global.SentrySettings.Dsn,
 		Debug: isDebug,
 	})
+	sentry.Logger.SetOutput(global.Logger.Out)
 	return err
 }
 

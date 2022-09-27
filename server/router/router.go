@@ -55,6 +55,7 @@ func NewRouter() *gin.Engine {
 	return r
 }
 
+//
 // module demo
 func Demo(r *gin.Engine) {
 	SmsRouters(r)
@@ -64,6 +65,12 @@ func Demo(r *gin.Engine) {
 	OtelRouters(r)
 	RateLimitRouters(r)
 	SwaggerRouters(r)
+	TimeoutRouters(r)
+}
+
+func TimeoutRouters(r *gin.Engine) {
+	r.GET("/context/timeout", demo.ContextTimeout)
+	r.GET("/context/notimeout", demo.ContextNoTimeout)
 }
 
 func SwaggerRouters(r *gin.Engine) {
