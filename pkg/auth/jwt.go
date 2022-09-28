@@ -1,84 +1,63 @@
 package auth
 
 import (
-	"crypto"
-
-	"github.com/UndertaIe/passwd/pkg/utils"
 	"github.com/dgrijalva/jwt-go"
 )
 
-type Claims struct {
-	AppKey    string `json:"app_key"`
-	AppSecret string `json:"app_secret"`
-	jwt.StandardClaims
-}
-
-type ClaimsInterface interface { // 外部调用时需要实现的接口（用于控制token失效时间、JWT密钥和颁发者等参数）
+type JwtOptions interface { // 外部调用时需要实现的接口（用于控制token失效时间、JWT密钥和颁发者等参数）
 	GetJWTSecret() []byte
 	GetJWTIssuer() string
 	GetJWTExpireTime() int64
 }
 
-func GenerateToken(appKey, appSecret string, i ClaimsInterface) (string, error) {
-	md5 := utils.NewHasher(crypto.MD5)
-	claims := Claims{
-		AppKey:    md5.Hash(appKey),
-		AppSecret: md5.Hash(appSecret),
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: i.GetJWTExpireTime(),
-			Issuer:    i.GetJWTIssuer(),
-		},
-	}
-	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := tokenClaims.SignedString(i.GetJWTSecret())
-	return token, err
-}
-
-func ParseToken(token string, i ClaimsInterface) (*Claims, error) {
-	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return i.GetJWTSecret(), nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	if tokenClaims != nil {
-		claims, ok := tokenClaims.Claims.(*Claims)
-		if ok && tokenClaims.Valid {
-			return claims, nil
-		}
-	}
-
-	return nil, err
-}
-
-// TODO: 待优化
-type UserClaims struct {
-	UserId int `json:"user_id"`
+type RoleClaims struct {
+	Role
 	jwt.StandardClaims
 }
 
-func GenerateUserToken(user_id int, i ClaimsInterface) (string, error) {
-	claims := UserClaims{
-		UserId: user_id,
+type Role struct {
+	UserId int `json:"user_id"`
+	RoleId int `json:"role_id"`
+}
+
+type RoleLevel int
+
+const (
+	Public RoleLevel = iota - 1
+	User
+	Admin
+)
+
+func (r RoleLevel) Pass(level int) bool {
+	return r <= RoleLevel(level)
+}
+
+func (r RoleLevel) IsPublic() bool {
+	return r == Public
+}
+
+func GenerateJwtToken(r Role, opt JwtOptions) (string, error) {
+	claims := RoleClaims{
+		Role: r,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: i.GetJWTExpireTime(),
-			Issuer:    i.GetJWTIssuer(),
+			ExpiresAt: opt.GetJWTExpireTime(),
+			Issuer:    opt.GetJWTIssuer(),
 		},
 	}
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := tokenClaims.SignedString(i.GetJWTSecret())
+	token, err := tokenClaims.SignedString(opt.GetJWTSecret())
 	return token, err
 }
 
-func ParseUserToken(token string, i ClaimsInterface) (*UserClaims, error) {
-	tokenClaims, err := jwt.ParseWithClaims(token, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return i.GetJWTSecret(), nil
+func ParseJwtToken(token string, opt JwtOptions) (*RoleClaims, error) {
+	tokenClaims, err := jwt.ParseWithClaims(token, &RoleClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return opt.GetJWTSecret(), nil
 	})
 	if err != nil {
 		return nil, err
 	}
 	if tokenClaims != nil {
-		claims, ok := tokenClaims.Claims.(*UserClaims)
+		claims, ok := tokenClaims.Claims.(*RoleClaims)
 		if ok && tokenClaims.Valid {
 			if claims.UserId == 0 {
 				return nil, &jwt.ValidationError{}

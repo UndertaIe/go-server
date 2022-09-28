@@ -38,7 +38,8 @@ func (srv *Service) UserAuth(param *UserAuthRequest) (token string, err *errcode
 	// 此时已查找到对应user_id的用户，进行鉴权生成token返回客户端
 	if utils.EqualPassword(param.Password, u.Salt, u.Password) {
 		var nErr error
-		token, nErr = auth.GenerateUserToken(param.UserId, global.NewGlobal())
+		r := auth.Role{UserId: u.UserId, RoleId: u.Role}
+		token, nErr = auth.GenerateJwtToken(r, global.NewGlobal())
 		if err != nil {
 			err = errcode.UnauthorizedTokenGenerate.WithDetails(nErr.Error())
 		}

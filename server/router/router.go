@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/UndertaIe/passwd/docs"
 	"github.com/UndertaIe/passwd/global"
+	"github.com/UndertaIe/passwd/pkg/auth"
 	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/pkg/ratelimiter"
 	"github.com/UndertaIe/passwd/pkg/swagger"
@@ -21,42 +22,42 @@ func NewRouter() *gin.Engine {
 	cached := middleware.DefaultCachePageWithTracing //  add cache decorater by default cacher, expire, log
 	dcache := middleware.DeleteCachePageWithTracing  // delete cache decorater by default cacher, expire, log
 
-	adminAuth := middleware.UserJwt()
-	userAuth := middleware.UserJwt()
-	publicAuth := middleware.UserJwt()
+	adminAuth := middleware.RoleAuth(auth.Admin) // 管理员权限
+	userAuth := middleware.RoleAuth(auth.User)   // 用户权限
+	public := middleware.RoleAuth(auth.Public)   // 公共权限
 
 	apiv1 := r.Group("api/v1")
 	{
 		user := v1.NewUser()
-		apiv1.POST("/user", user.Create, publicAuth)
-		apiv1.GET("/user/:id", cached(user.Get), userAuth)
-		apiv1.GET("/user", cached(user.List), adminAuth)
-		apiv1.PUT("/user/:id", dcache(user.Update), userAuth)
-		apiv1.DELETE("/user/:id", dcache(user.Delete), userAuth)
+		apiv1.POST("/user", public, user.Create)
+		apiv1.GET("/user/:id", userAuth, cached(user.Get))
+		apiv1.GET("/user", adminAuth, cached(user.List))
+		apiv1.PUT("/user/:id", userAuth, dcache(user.Update))
+		apiv1.DELETE("/user/:id", userAuth, dcache(user.Delete))
 
-		apiv1.POST("/user/auth", demo.UserAuth, publicAuth) // 使用user_id password获取token
-		apiv1.POST("/user/phone/exists", user.PhoneExists, publicAuth)
-		apiv1.POST("/user/email/exists", user.EmailExists, publicAuth)
-		apiv1.POST("/user/name/exists", user.UserNameExists, publicAuth)
+		apiv1.POST("/user/auth", public, demo.UserAuth)
+		apiv1.POST("/user/phone/exists", public, user.PhoneExists)
+		apiv1.POST("/user/email/exists", public, user.EmailExists)
+		apiv1.POST("/user/name/exists", public, user.UserNameExists)
 
 	}
 	{
 		platform := v1.NewPlatform()
-		apiv1.POST("/platform", platform.Create, adminAuth)
-		apiv1.GET("/platform/:id", cached(platform.Get), publicAuth)
-		apiv1.GET("/platform", cached(platform.List), publicAuth)
-		apiv1.PUT("/platform/:id", dcache(platform.Update), adminAuth)
-		apiv1.DELETE("/platform/:id", dcache(platform.Delete), adminAuth)
+		apiv1.POST("/platform", adminAuth, platform.Create)
+		apiv1.GET("/platform/:id", public, cached(platform.Get))
+		apiv1.GET("/platform", public, cached(platform.List))
+		apiv1.PUT("/platform/:id", adminAuth, dcache(platform.Update))
+		apiv1.DELETE("/platform/:id", adminAuth, dcache(platform.Delete))
 	}
 	{
 		userPasswd := v1.NewUserPasswd()
-		apiv1.POST("/userpasswd", userPasswd.Create, userAuth)
-		apiv1.GET("/userpasswd", cached(userPasswd.All), userAuth)
-		apiv1.GET("/userpasswd/:user_id", cached(userPasswd.List), userAuth)
-		apiv1.GET("/userpasswd/:user_id/:platform_id", cached(userPasswd.Get), userAuth)
-		apiv1.PUT("/userpasswd/:user_id/:platform_id", dcache(userPasswd.Update), userAuth)
-		apiv1.DELETE("/userpasswd/:user_id/:platform_id", dcache(userPasswd.Delete), userAuth)
-		apiv1.DELETE("/userpasswd/:user_id", dcache(userPasswd.DeleteList), userAuth)
+		apiv1.POST("/userpasswd", userAuth, userPasswd.Create)
+		apiv1.GET("/userpasswd", userAuth, cached(userPasswd.All))
+		apiv1.GET("/userpasswd/:user_id", userAuth, cached(userPasswd.List))
+		apiv1.GET("/userpasswd/:user_id/:platform_id", userAuth, cached(userPasswd.Get))
+		apiv1.PUT("/userpasswd/:user_id/:platform_id", userAuth, dcache(userPasswd.Update))
+		apiv1.DELETE("/userpasswd/:user_id/:platform_id", userAuth, dcache(userPasswd.Delete))
+		apiv1.DELETE("/userpasswd/:user_id", userAuth, dcache(userPasswd.DeleteList))
 	}
 
 	Demo(r)
@@ -150,8 +151,8 @@ func AuthRouters(r *gin.Engine) {
 	}
 	{
 		uAuth := r.Group("/jwt/")
-		r.POST("/user/auth", demo.UserAuth) // 使用user_id password获取token
-		uAuth.Use(middleware.UserJwt())     // 使用jwt鉴权并在ctx中设置 user_id值
+		r.POST("/user/auth", demo.UserAuth)         // 使用user_id password获取token
+		uAuth.Use(middleware.RoleAuth(auth.Public)) // 使用jwt鉴权并在ctx中设置 user_id值
 		uAuth.GET("/user/secret", demo.PassUserAuth)
 		uAuth.POST("/user/secret", demo.PassUserAuth)
 	}

@@ -37,15 +37,20 @@ func JWT() gin.HandlerFunc {
 	}
 }
 
+var g = global.NewGlobal()
+
 // 优化：将GetHeader ParseUserToken等方法抽象为接口作为参数传入
-func UserJwt() gin.HandlerFunc {
+func RoleAuth(level auth.RoleLevel) gin.HandlerFunc {
+	if level.IsPublic() {
+		return func(c *gin.Context) { c.Next() }
+	}
 	return func(c *gin.Context) {
 		err := errcode.Success
 		token := c.GetHeader("Bearer")
-		var uClaims *auth.UserClaims
+		var rClaims *auth.RoleClaims
 		var parseErr error
 		if token != "" {
-			uClaims, parseErr = auth.ParseUserToken(token, global.NewGlobal())
+			rClaims, parseErr = auth.ParseJwtToken(token, g)
 			if parseErr != nil {
 				switch parseErr.(*jwt.ValidationError).Errors {
 				case jwt.ValidationErrorExpired:
@@ -57,14 +62,20 @@ func UserJwt() gin.HandlerFunc {
 				}
 			}
 		} else {
-			err = errcode.InvalidParams
+			err = errcode.UnauthorizedTokenError
 		}
 		if err != errcode.Success {
 			app.NewResponse(c).ToError(err)
 			c.Abort()
 			return
 		}
-		c.Set("user_id", uClaims.UserId)
+		if !level.Pass(rClaims.RoleId) {
+			app.NewResponse(c).ToError(errcode.UnauthorizedUserError)
+			c.Abort()
+			return
+		}
+		c.Set("user_id", rClaims.UserId)
+		c.Set("role_id", rClaims.RoleId)
 		c.Next()
 	}
 }
