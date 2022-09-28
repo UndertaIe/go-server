@@ -140,7 +140,7 @@ func setupTracer() error {
 	// global.Tracer = tracer
 	var err error
 	var exporter sdktrace.SpanExporter
-	if global.ServerSettings.RunMode == config.Debug {
+	if config.IsDebug(global.ServerSettings.RunMode) {
 		var f *os.File
 		f, err = os.Create(global.APPSettings.TraceSavePath)
 		if err != nil {
