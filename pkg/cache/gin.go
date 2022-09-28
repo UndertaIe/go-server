@@ -127,7 +127,7 @@ func GinCache(store Cache, key ...string) gin.HandlerFunc {
 	}
 }
 
-func SiteCache(store Cache, expire time.Duration) gin.HandlerFunc {
+func SiteCache(store Cache) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var cache responseCache
 		key := CacheKey(c)
