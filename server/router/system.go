@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Get(c *gin.Context) {
+func healthz(c *gin.Context) {
 	resp := app.Response{Ctx: c}
 	resp.Ok()
 }
