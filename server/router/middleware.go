@@ -18,6 +18,7 @@ const (
 	SentryRepanic = false
 )
 
+// TODO: 打印middlewares
 func SetMiddlewares(r *gin.Engine) {
 	// gin.SetMode(gin.ReleaseMode)
 	switch gin.Mode() {
