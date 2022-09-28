@@ -12,3 +12,11 @@ import (
 func CachePage(store cache.Cache, expire time.Duration, handle gin.HandlerFunc) gin.HandlerFunc {
 	return cache.CachePage(store, expire, global.Logger, handle)
 }
+
+const (
+	defaultExpire = time.Minute * 5
+)
+
+func DefaultCachePage(handle gin.HandlerFunc) gin.HandlerFunc {
+	return cache.CachePage(global.Cacher, defaultExpire, global.Logger, handle)
+}

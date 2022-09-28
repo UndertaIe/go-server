@@ -17,37 +17,46 @@ import (
 func NewRouter() *gin.Engine {
 	r := gin.New()
 	SetMiddlewares(r)
+	SetHandlerLogger()
+	cached := middleware.DefaultCachePageWithTracing //  add cache decorater by default cacher, expire, log
+	dcache := middleware.DeleteCachePageWithTracing  // delete cache decorater by default cacher, expire, log
+
+	adminAuth := middleware.UserJwt()
+	userAuth := middleware.UserJwt()
+	publicAuth := middleware.UserJwt()
+
 	apiv1 := r.Group("api/v1")
 	{
 		user := v1.NewUser()
-		apiv1.GET("/user/:id", user.Get)
-		apiv1.GET("/user", user.List)
-		apiv1.POST("/user", user.Create)
-		apiv1.DELETE("/user/:id", user.Delete)
-		apiv1.PUT("/user/:id", user.Update)
+		apiv1.POST("/user", user.Create, publicAuth)
+		apiv1.GET("/user/:id", cached(user.Get), userAuth)
+		apiv1.GET("/user", cached(user.List), adminAuth)
+		apiv1.PUT("/user/:id", dcache(user.Update), userAuth)
+		apiv1.DELETE("/user/:id", dcache(user.Delete), userAuth)
 
-		userSignup := v1.NewUserSignUp()
-		apiv1.POST("/user/phone", userSignup.PhoneExists)
-		apiv1.POST("/user/email", userSignup.EmailExists)
-		apiv1.POST("/user/name", userSignup.UserNameExists)
+		apiv1.POST("/user/auth", demo.UserAuth, publicAuth) // 使用user_id password获取token
+		apiv1.POST("/user/phone/exists", user.PhoneExists, publicAuth)
+		apiv1.POST("/user/email/exists", user.EmailExists, publicAuth)
+		apiv1.POST("/user/name/exists", user.UserNameExists, publicAuth)
+
 	}
 	{
 		platform := v1.NewPlatform()
-		apiv1.GET("/platform/:id", platform.Get)
-		apiv1.GET("/platform", platform.List)
-		apiv1.POST("/platform", platform.Create)
-		apiv1.DELETE("/platform/:id", platform.Delete)
-		apiv1.PUT("/platform/:id", platform.Update)
+		apiv1.POST("/platform", platform.Create, adminAuth)
+		apiv1.GET("/platform/:id", cached(platform.Get), publicAuth)
+		apiv1.GET("/platform", cached(platform.List), publicAuth)
+		apiv1.PUT("/platform/:id", dcache(platform.Update), adminAuth)
+		apiv1.DELETE("/platform/:id", dcache(platform.Delete), adminAuth)
 	}
 	{
 		userPasswd := v1.NewUserPasswd()
-		apiv1.GET("/userpasswd", userPasswd.All)
-		apiv1.GET("/userpasswd/:user_id", userPasswd.List)
-		apiv1.GET("/userpasswd/:user_id/:platform_id", userPasswd.Get)
-		apiv1.POST("/userpasswd", userPasswd.Create)
-		apiv1.DELETE("/userpasswd/:user_id/:platform_id", userPasswd.Delete)
-		apiv1.DELETE("/userpasswd/:user_id", userPasswd.DeleteList)
-		apiv1.PUT("/userpasswd/:user_id/:platform_id", userPasswd.Update)
+		apiv1.POST("/userpasswd", userPasswd.Create, userAuth)
+		apiv1.GET("/userpasswd", cached(userPasswd.All), userAuth)
+		apiv1.GET("/userpasswd/:user_id", cached(userPasswd.List), userAuth)
+		apiv1.GET("/userpasswd/:user_id/:platform_id", cached(userPasswd.Get), userAuth)
+		apiv1.PUT("/userpasswd/:user_id/:platform_id", dcache(userPasswd.Update), userAuth)
+		apiv1.DELETE("/userpasswd/:user_id/:platform_id", dcache(userPasswd.Delete), userAuth)
+		apiv1.DELETE("/userpasswd/:user_id", dcache(userPasswd.DeleteList), userAuth)
 	}
 
 	Demo(r)
@@ -152,8 +161,7 @@ func AuthRouters(r *gin.Engine) {
 func CacheRouters(r *gin.Engine) {
 	{ // redis cache
 		c := r.Group("/cache/api/")
-		c.Use(cache.GinCache(global.Cacher)) // c.Keys["cache"] = global.Cacher
-		// c.Use(cache.SiteCache())
+		// c.Use(cache.GinCache(global.Cacher)) // c.Keys["cache"] = global.Cacher
 		c.GET("/now", demo.Now)
 		c.GET("/cnow", middleware.CachePage(global.Cacher, cache.DEFAULT, demo.CacheNow))
 		c.GET("/user/:id", middleware.CachePage(global.Cacher, cache.DEFAULT, demo.GetUser))
@@ -178,4 +186,9 @@ func CacheRouters(r *gin.Engine) {
 		c3.DELETE("/user/:id", demo.DeleteUser)
 		c3.PUT("/user/:id", demo.UpdateUser)
 	}
+}
+
+func SetHandlerLogger() {
+	v1.Log(global.Logger)
+	demo.Log(global.Logger)
 }

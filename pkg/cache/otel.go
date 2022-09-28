@@ -16,9 +16,7 @@ var cacheSpanName = "cache.decorator"
 func DeleteCacheWithTracing(c *gin.Context, cacheName ...string) error {
 	_, span := otel.GetTracerProvider().Tracer(cacheTracerName).Start(c.Request.Context(), deleteSpanName, trace.WithSpanKind(trace.SpanKindClient))
 	defer span.End()
-	key := CacheKey(c)
-	err := GetCache(c, cacheName...).Delete(key)
-	return err
+	return DeleteCache(c)
 }
 
 func CachePageWithTracing(store Cache, expire time.Duration, log logger.Log, handle gin.HandlerFunc) gin.HandlerFunc {
@@ -28,5 +26,14 @@ func CachePageWithTracing(store Cache, expire time.Duration, log logger.Log, han
 		defer span.End()
 
 		cb(c)
+	}
+}
+
+func DeleteCachePageWithTracing(handle gin.HandlerFunc, cacheName ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		handle(c)
+		_, span := otel.GetTracerProvider().Tracer(cacheTracerName).Start(c.Request.Context(), deleteSpanName, trace.WithSpanKind(trace.SpanKindClient))
+		defer span.End()
+		DeleteCache(c, cacheName...)
 	}
 }

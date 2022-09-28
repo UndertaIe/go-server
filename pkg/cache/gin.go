@@ -158,10 +158,18 @@ func GetCache(c *gin.Context, cacheName ...string) Cache {
 	return c.Keys[name].(Cache)
 }
 
-// for restful api
+// for call in gin.HandlerFunc
 func DeleteCache(c *gin.Context, cacheName ...string) error {
 	key := CacheKey(c)
 	return GetCache(c, cacheName...).Delete(key)
+}
+
+// for DeleteCache Decorator
+func DeleteCachePage(handle gin.HandlerFunc, cacheName ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		handle(c)
+		DeleteCache(c, cacheName...)
+	}
 }
 
 // Cache Decorator

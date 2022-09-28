@@ -175,3 +175,102 @@ func (u User) Delete(c *gin.Context) {
 	}
 	resp.Ok()
 }
+
+// PhoneExists godoc
+// @Summary     判断手机号是否已经被注册
+// @Tags         UserSignUp
+// @Accept       json
+// @Produce      json
+// @Param        phone_number   body	string		true	"手机号"
+// @Success      200  {string}  string 			"成功"
+// @Failure      400  {object}  errcode.Error 	"请求错误"
+// @Failure      500  {object}  errcode.Error 	"内部错误"
+// @Router       /api/v1/user/phone [post]
+func (User) PhoneExists(c *gin.Context) {
+	srv := service.NewService(c)
+	param := &service.UserPhoneExistsRequest{}
+	err := c.Bind(param)
+	resp := app.Response{Ctx: c}
+	if err != nil {
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
+		return
+	}
+	has, err := srv.IsExistsUserPhone(param)
+	if err != nil {
+		newErr := errcode.ErrorService.WithDetails(err.Error())
+		resp.ToError(newErr)
+		return
+	}
+	if has {
+		resp.ToError(errcode.UserPhoneExists) // 手机号已存在
+		return
+	}
+	resp.Ok()
+}
+
+// EmailExists godoc
+// @Summary     判断email是否已经被注册
+// @Tags         UserSignUp
+// @Accept       json
+// @Produce      json
+// @Param        email   body	string		true	"用户email"
+// @Success      200  {string}  string 			"成功"
+// @Failure      400  {object}  errcode.Error 	"请求错误"
+// @Failure      500  {object}  errcode.Error 	"内部错误"
+// @Router       /api/v1//user/email [post]
+func (User) EmailExists(c *gin.Context) {
+	srv := service.NewService(c)
+	param := &service.UserEmailExistsRequest{}
+	err := c.Bind(param)
+	resp := app.Response{Ctx: c}
+	if err != nil {
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
+		return
+	}
+	has, err := srv.IsExistsUserEmail(param)
+	if err != nil {
+		newErr := errcode.ErrorService.WithDetails(err.Error())
+		resp.ToError(newErr)
+		return
+	}
+	if has {
+		resp.ToError(errcode.UserEmailExists) // 邮箱已存在
+		return
+	}
+	resp.Ok()
+}
+
+// UserNameExists godoc
+// @Summary     判断用户名是否已经被注册
+// @Tags         UserSignUp
+// @Accept       json
+// @Produce      json
+// @Param        user_name   body	string		true	"用户名"
+// @Success      200  {string}  string 			"成功"
+// @Failure      400  {object}  errcode.Error 	"请求错误"
+// @Failure      500  {object}  errcode.Error 	"内部错误"
+// @Router       /api/v1//user/name [post]
+func (User) UserNameExists(c *gin.Context) {
+	srv := service.NewService(c)
+	param := &service.UserNameExistsRequest{}
+	err := c.Bind(param)
+	resp := app.Response{Ctx: c}
+	if err != nil {
+		newErr := errcode.InvalidParams.WithDetails(err.Error())
+		resp.ToError(newErr)
+		return
+	}
+	has, err := srv.IsExistsUserName(param)
+	if err != nil {
+		newErr := errcode.ErrorService.WithDetails(err.Error())
+		resp.ToError(newErr)
+		return
+	}
+	if has {
+		resp.ToError(errcode.UserNameExists) // 用户名已存在
+		return
+	}
+	resp.Ok()
+}

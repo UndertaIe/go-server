@@ -34,7 +34,7 @@ func GetUser(c *gin.Context) {
 	}
 	param := service.UserGetRequest{UserId: user_id}
 	srv := service.NewService(c.Request.Context())
-	fmt.Println("缓存未命中，访问数据库...")
+	log.Info("缓存未命中，访问数据库...")
 	user, err := srv.GetUser(&param)
 
 	if err != nil {

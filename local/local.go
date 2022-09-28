@@ -1,11 +1,11 @@
 package local
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 )
 
 func RunLocal(cmd *cobra.Command, args []string) {
-	fmt.Println("this is local")
+	log.Println("this is local")
 }

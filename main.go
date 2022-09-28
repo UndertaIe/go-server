@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -16,7 +17,6 @@ import (
 	"github.com/UndertaIe/passwd/pkg/com/alibaba"
 	"github.com/UndertaIe/passwd/pkg/sms"
 	"github.com/getsentry/sentry-go"
-	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
@@ -89,7 +89,7 @@ func main() {
 
 func setupSetting() error {
 
-	flag.IntVar(&port, "port", 7788, "启动端口7788")
+	flag.IntVar(&port, "port", 8000, "默认启动端口8000")
 	flag.StringVar(&runMode, "mode", "debug", "启动模式(debug,prod)")
 	flag.StringVar(&configPath, "config", "./", "配置文件路径,当前路径下")
 	flag.Parse()
@@ -112,14 +112,20 @@ func setupSetting() error {
 		"MemCache":      &global.MemCacheSettings,
 		"Tracing":       &global.TracingSettings,
 	}
-	hook := func() {
+	hooks := func() {
 		global.APPSettings.DefaultContextTimeout *= time.Second
-		global.ServerSettings.ReadTimeout *= time.Second
+		global.ServerSettings.ReadTimeout *= time.Second // TODO: viper支持time.Duration为Seconds？
 		global.ServerSettings.WriteTimeout *= time.Second
 		global.JwtSettings.Expire *= time.Second
 		global.SmsServiceSettings.DefaultExpireTime *= time.Second
+		if port != 0 {
+			global.ServerSettings.HttpPort = port
+		}
+		if runMode != "" {
+			global.ServerSettings.RunMode = config.Mode(runMode)
+		}
 	}
-	s.ReadSections(sections, hook)
+	s.ReadSections(sections, hooks)
 	return err
 }
 
@@ -134,7 +140,7 @@ func setupTracer() error {
 	// global.Tracer = tracer
 	var err error
 	var exporter sdktrace.SpanExporter
-	if gin.Mode() == gin.DebugMode {
+	if global.ServerSettings.RunMode == config.Debug {
 		var f *os.File
 		f, err = os.Create(global.APPSettings.TraceSavePath)
 		if err != nil {
@@ -226,11 +232,7 @@ func setupSmsService() error {
 }
 
 func setupSentry() error {
-	mode := gin.Mode()
-	isDebug := true
-	if mode == gin.ReleaseMode {
-		isDebug = false
-	}
+	isDebug := config.IsDebug(global.ServerSettings.RunMode)
 	if global.SentrySettings.Dsn == "" {
 		return errors.New("sentry Dsn is nil")
 	}
@@ -249,13 +251,18 @@ func setupLogger() error {
 	if cfg.LogFormat == "json" {
 		global.Logger.SetFormatter(&logrus.JSONFormatter{})
 	}
-	out := &lumberjack.Logger{
-		Filename:   fileName,
-		MaxSize:    cfg.LogMaxSize, // megabytes
-		MaxBackups: cfg.LogMaxBackup,
-		MaxAge:     cfg.LogMaxAge,   //days
-		Compress:   cfg.LogCompress, // disabled by default
-		LocalTime:  cfg.LocalTime,
+	var out io.Writer
+	if global.ServerSettings.RunMode == config.Production {
+		out = &lumberjack.Logger{
+			Filename:   fileName,
+			MaxSize:    cfg.LogMaxSize, // megabytes
+			MaxBackups: cfg.LogMaxBackup,
+			MaxAge:     cfg.LogMaxAge,   //days
+			Compress:   cfg.LogCompress, // disabled by default
+			LocalTime:  cfg.LocalTime,
+		}
+	} else {
+		out = os.Stdout
 	}
 	global.Logger.SetOutput(out)
 

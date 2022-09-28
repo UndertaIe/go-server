@@ -4,15 +4,34 @@ import (
 	"time"
 )
 
-type Mode string
+type mode string
 
 const (
-	Debug      Mode = "debug"
-	Production Mode = "prod"
+	Debug      mode = "debug"
+	Production mode = "prod"
 )
 
+func Mode(m string) mode {
+	switch mode(m) {
+	case Debug:
+		return Debug
+	case Production:
+		return Production
+	default:
+		return Debug
+	}
+}
+
+func IsDebug(m mode) bool {
+	return m == Debug
+}
+
+func IsProduction(m mode) bool {
+	return m == Production
+}
+
 type ServerSetting struct {
-	RunMode      Mode // debug or prod; default: debug
+	RunMode      mode // debug or prod; default: debug
 	HttpPort     int
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
