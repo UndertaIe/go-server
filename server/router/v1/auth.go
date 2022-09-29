@@ -86,8 +86,8 @@ func SendEmailCode(c *gin.Context) {
 }
 
 // SendEmailCode godoc
-// @Summary      发送验证码
-// @Description  用户请求验证码发送到邮箱，用于后续登录认证
+// @Summary      求验证链接
+// @Description  用户请求验证链接发送到邮箱，用于后续登录认证
 // @Tags         Auth
 // @Produce      json
 // @Param        email	body	string  true  "邮箱"
