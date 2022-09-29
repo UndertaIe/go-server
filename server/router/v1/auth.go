@@ -19,7 +19,7 @@ import (
 // @Param        email   		 body     string  false  "邮件"
 // @Param        password  	 	 body     string  false  "用户密码"
 // @Param        code   		 body     string  false  "验证码"
-// @Success      200  {object}  gin.H  		"成功"
+// @Success      200  {object}  string  		"成功"
 // @Failure      400  {object}  errcode.Error "请求错误"
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/auth [post]
@@ -48,7 +48,7 @@ func Auth(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        phone_number	body	string  true  "手机号"
-// @Success      200  {object}  gin.H  		"成功"
+// @Success      200  {object}  string 		"成功"
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/auth/phone [post]
 func SendPhoneCode(c *gin.Context) {
@@ -70,7 +70,7 @@ func SendPhoneCode(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        email	body	string  true  "邮箱"
-// @Success      200  {object}  gin.H  		"成功"
+// @Success      200  {object}  string  		"成功"
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/auth/email [post]
 func SendEmailCode(c *gin.Context) {
@@ -91,7 +91,7 @@ func SendEmailCode(c *gin.Context) {
 // @Tags         Auth
 // @Produce      json
 // @Param        email	body	string  true  "邮箱"
-// @Success      200  {object}  gin.H  		"成功"
+// @Success      200  {object} string 		"成功"
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/auth/link/:link [get]
 func SendEmailLink(c *gin.Context) {
