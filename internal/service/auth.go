@@ -48,6 +48,12 @@ type AuthParam struct {
 
 var g = global.NewGlobal()
 
+const (
+	AuthEmailLinkExpireTime = time.Minute * 30
+	AuthLinkSuffixLen       = 32
+	AuthLink                = "http://192.168.3.200:8000/apiv1/auth/link/"
+)
+
 // 用户认证服务入口
 func (srv *Service) Auth(param *AuthParam, authType AuthType) (string, *errcode.Error) {
 	switch authType {
@@ -133,8 +139,8 @@ func (srv *Service) SendEmailLink(param SendEmailLinkParam) *errcode.Error {
 	if !ok {
 		return errcode.ErrorUserEmailNotExists
 	}
-	code := utils.GetRandomString(utils.CHARS, 32)
-	err = global.Cacher.Add(param.Email, code, time.Minute*10)
+	code := utils.GetRandomString(utils.CHARS, AuthLinkSuffixLen)
+	err = global.Cacher.Add(param.Email, code, AuthEmailLinkExpireTime)
 	if cache.KeyExistsError.Equal(err) {
 		return errcode.ErrorAuthLinkExists
 	}
@@ -142,7 +148,7 @@ func (srv *Service) SendEmailLink(param SendEmailLinkParam) *errcode.Error {
 		return errcode.ServerError.WithDetails(err.Error())
 	}
 	sb := strings.Builder{}
-	sb.WriteString("http://192.168.3.200:8000/apiv1/auth/")
+	sb.WriteString(AuthLink)
 	sb.WriteString(code)
 	req := email.Request{
 		MailTo:  param.Email,

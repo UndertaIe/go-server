@@ -50,6 +50,8 @@ func (e *Error) WithDetails(details ...string) *Error {
 	return &newError
 }
 
+// TODO: 区分业务error和系统error，比较code
+//	业务error返回携带error结构的200状态码，系统error返回对应的状态码
 func (e *Error) StatusCode() int {
 	switch e.Code() {
 	case Success.Code():
