@@ -25,6 +25,39 @@ func Auth(c *gin.Context) {
 	resp.To(gin.H{"token": token})
 }
 
-func AuthByUserEmailLink(c *gin.Context) {
-
+func SendPhoneCode(c *gin.Context) {
+	resp := app.NewResponse(c)
+	srv := service.NewService(c)
+	param := service.SendPhoneCodeParam{}
+	err := srv.SendPhoneCode(param)
+	if err != nil {
+		resp.ToError(err)
+		return
+	}
+	resp.Ok()
 }
+
+func SendEmailCode(c *gin.Context) {
+	resp := app.NewResponse(c)
+	srv := service.NewService(c)
+	param := service.SendEmailCodeParam{}
+	err := srv.SendEmailCode(param)
+	if err != nil {
+		resp.ToError(err)
+		return
+	}
+	resp.Ok()
+}
+
+func SendEmailLink(c *gin.Context) {
+	resp := app.NewResponse(c)
+	srv := service.NewService(c)
+	param := service.SendEmailLinkParam{}
+	err := srv.SendEmailLink(param)
+	if err != nil {
+		resp.ToError(err)
+		return
+	}
+	resp.Ok()
+}
+

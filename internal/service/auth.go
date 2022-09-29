@@ -1,6 +1,7 @@
 package service
 
 import (
+	"strings"
 	"time"
 
 	"github.com/UndertaIe/passwd/global"
@@ -140,11 +141,13 @@ func (srv *Service) SendEmailLink(param SendEmailLinkParam) *errcode.Error {
 	if err != nil {
 		return errcode.ServerError.WithDetails(err.Error())
 	}
-	verifiedUrl := "http://192.168.3.200:8000/apiv1/auth/" + code
+	sb := strings.Builder{}
+	sb.WriteString("http://192.168.3.200:8000/apiv1/auth/")
+	sb.WriteString(code)
 	req := email.Request{
 		MailTo:  param.Email,
 		Subject: "验证链接",
-		Body:    verifiedUrl,
+		Body:    sb.String(),
 	}
 	err = global.EmailClient.Send(&req)
 	if err != nil {
