@@ -4,6 +4,7 @@ import (
 	"github.com/UndertaIe/passwd/internal/model"
 	"github.com/UndertaIe/passwd/pkg/page"
 	"github.com/UndertaIe/passwd/pkg/utils"
+	"gorm.io/gorm"
 )
 
 type User struct {
@@ -121,4 +122,55 @@ func (srv *Service) DeleteUser(params *UserDeleteRequest) error {
 	user := model.User{UserId: params.UserId}
 	err := user.Delete(srv.Db)
 	return err
+}
+
+type UserPhoneExistsParam struct {
+	PhoneNumber string `json:"phone_number" binding:"required"`
+}
+
+// 用户手机号是否已存在
+func (srv *Service) IsExistsUserPhone(uper *UserPhoneExistsParam) (bool, error) {
+	user := model.User{PhoneNumber: uper.PhoneNumber}
+	_, err := user.GetUserByPhone(srv.Db)
+	if err == gorm.ErrRecordNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+type UserEmailExistsParam struct {
+	Email string `json:"email" binding:"required"`
+}
+
+// 用户邮箱是否已存在
+func (srv *Service) IsExistsUserEmail(param *UserEmailExistsParam) (bool, error) {
+	user := model.User{Email: param.Email}
+	_, err := user.GetUserByEmail(srv.Db)
+	if err == gorm.ErrRecordNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+type UserNameExistsParam struct {
+	UserName string `json:"user_name" binding:"required"`
+}
+
+// 用户名是否已存在
+func (srv *Service) IsExistsUserName(param *UserNameExistsParam) (bool, error) {
+	user := model.User{UserName: param.UserName}
+	_, err := user.GetUserByName(srv.Db)
+	if err == gorm.ErrRecordNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

@@ -13,5 +13,10 @@ var (
 	ErrorSendVerifyCode           = NewError(20009, "发送验证码失败")
 	ErrorCheckCode                = NewError(20010, "验证异常")
 	ErrorVerifyCodeFailed         = NewError(20011, "验证失败")
-	ErrorUnknownService           = NewError(29999, "未知的服务异常，请联系负责人排查异常")
+	ErrorAuthLinkExpired          = NewError(20012, "认证链接失效")
+	ErrorAuthLinkExists           = NewError(20013, "认证链接已存在")
+	ErrorUserPhoneNotExists       = NewError(20014, "当前手机号未绑定账户")
+	ErrorUserEmailNotExists       = NewError(20015, "当前邮箱未绑定账户")
+	//
+	ErrorUnknownService = NewError(29999, "未知的服务异常，请联系负责人排查异常")
 )

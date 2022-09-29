@@ -15,6 +15,7 @@ import (
 	"github.com/UndertaIe/passwd/global"
 	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/pkg/com/alibaba"
+	"github.com/UndertaIe/passwd/pkg/email"
 	"github.com/UndertaIe/passwd/pkg/sms"
 	"github.com/getsentry/sentry-go"
 	"github.com/sirupsen/logrus"
@@ -227,8 +228,20 @@ func setupSmsService() error {
 		log.Fatal("setup SmsService error: global.cacher is nil")
 	}
 	srv, err := sms.NewSmsCodeService(global.Cacher, cli, ls.DefaultExpireTime, ls.Prefix, ls.CodeLen)
-	global.SmsService = srv
+	global.AuthCodeService = srv
 	return err
+}
+
+func setupEmailService() error {
+	cfg := global.EmailSettings
+	opt := email.Options{
+		MailHost: cfg.Host,
+		MailPort: cfg.Port,
+		MailUser: cfg.UserName,
+		MailPass: cfg.Password,
+	}
+	global.EmailClient = email.NewEmailClient(opt)
+	return nil
 }
 
 func setupSentry() error {

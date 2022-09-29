@@ -14,4 +14,5 @@ var (
 	UnauthorizedUserError             = NewError(1010, "鉴权失败，当前用户无访问权限")
 	TooManyRequests                   = NewError(1011, "请求过多，请稍后重试")
 	RequestTimeout                    = NewError(1012, "请求超时，请稍后重试")
+	UnKnownAuthType                   = NewError(1013, "未知的认证方式")
 )

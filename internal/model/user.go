@@ -35,6 +35,28 @@ func (u User) GetUserByPhone(db *gorm.DB) (User, error) {
 	return u, err
 }
 
+func (u User) PhoneExists(db *gorm.DB) (bool, error) {
+	err := db.Where("phone_number = ? AND is_deleted = ?", u.PhoneNumber, false).Take(&u).Error
+	if err == gorm.ErrRecordNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (u User) EmailExists(db *gorm.DB) (bool, error) {
+	err := db.Where("email = ? AND is_deleted = ?", u.Email, false).Take(&u).Error
+	if err == gorm.ErrRecordNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 func (u User) GetUserByEmail(db *gorm.DB) (User, error) {
 	err := db.Where("email = ? AND is_deleted = ?", u.Email, false).Take(&u).Error
 	return u, err

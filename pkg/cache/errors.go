@@ -29,3 +29,14 @@ func (c CacheError) WithDetails(ds ...string) CacheError {
 	c.details = append(c.details, ds...)
 	return c
 }
+
+func (c CacheError) Code() int {
+	return c.code
+}
+
+func (c CacheError) Equal(c2 error) bool {
+	if err, ok := c2.(CacheError); ok {
+		return c.code == err.code
+	}
+	return false
+}

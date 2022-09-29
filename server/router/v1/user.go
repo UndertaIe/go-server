@@ -188,7 +188,7 @@ func (u User) Delete(c *gin.Context) {
 // @Router       /api/v1/user/phone [post]
 func (User) PhoneExists(c *gin.Context) {
 	srv := service.NewService(c)
-	param := &service.UserPhoneExistsRequest{}
+	param := &service.UserPhoneExistsParam{}
 	err := c.Bind(param)
 	resp := app.Response{Ctx: c}
 	if err != nil {
@@ -221,7 +221,7 @@ func (User) PhoneExists(c *gin.Context) {
 // @Router       /api/v1//user/email [post]
 func (User) EmailExists(c *gin.Context) {
 	srv := service.NewService(c)
-	param := &service.UserEmailExistsRequest{}
+	param := &service.UserEmailExistsParam{}
 	err := c.Bind(param)
 	resp := app.Response{Ctx: c}
 	if err != nil {
@@ -254,7 +254,7 @@ func (User) EmailExists(c *gin.Context) {
 // @Router       /api/v1//user/name [post]
 func (User) UserNameExists(c *gin.Context) {
 	srv := service.NewService(c)
-	param := &service.UserNameExistsRequest{}
+	param := &service.UserNameExistsParam{}
 	err := c.Bind(param)
 	resp := app.Response{Ctx: c}
 	if err != nil {

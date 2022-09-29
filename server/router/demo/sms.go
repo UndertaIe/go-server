@@ -21,12 +21,12 @@ func (s SMS) PhoneCode(c *gin.Context) {
 		resp.ToError(errcode.ErrorVerifyCodeNoPhoneNumbers)
 		return
 	}
-	req, err := global.SmsService.SmsRequest(phone)
+	req, err := global.AuthCodeService.SmsRequest(phone)
 	if err != nil {
 		resp.ToError(errcode.ErrorGenerateVerifyCode.WithDetails(err.Error()))
 		return
 	}
-	err = global.SmsService.Send(req)
+	err = global.AuthCodeService.Send(req)
 	if err != nil {
 		resp.ToError(errcode.ErrorSendVerifyCode.WithDetails(err.Error()))
 		return
@@ -47,7 +47,7 @@ func (s SMS) PhoneAuth(c *gin.Context) {
 		resp.ToError(errcode.InvalidParams.WithDetails(err.Error()))
 		return
 	}
-	verified, err := global.SmsService.Check(params.Phone, params.Code)
+	verified, err := global.AuthCodeService.Check(params.Phone, params.Code)
 	if err != nil {
 		resp.ToError(errcode.ErrorCheckCode.WithDetails(err.Error()))
 		return
