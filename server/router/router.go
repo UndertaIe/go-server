@@ -30,8 +30,11 @@ func NewRouter() *gin.Engine {
 		apiv1.GET("/user", adminAuth, cached(user.List))
 		apiv1.PUT("/user/:id", userAuth, dcache(user.Update))
 		apiv1.DELETE("/user/:id", userAuth, dcache(user.Delete))
-
-		apiv1.POST("/user/auth", public, demo.UserAuth)
+		// TODO: need test
+		apiv1.POST("/user/auth", public, user.Auth)
+		apiv1.POST("/user/auth/phone", public, user.SendPhoneCode)
+		apiv1.POST("/user/auth/email", public, user.SendEmailCode)
+		apiv1.POST("/user/auth/link/:link", public, user.SendEmailLink)
 		apiv1.POST("/user/phone/exists", public, user.PhoneExists)
 		apiv1.POST("/user/email/exists", public, user.EmailExists)
 		apiv1.POST("/user/name/exists", public, user.UserNameExists)

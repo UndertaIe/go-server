@@ -23,7 +23,7 @@ import (
 // @Failure      400  {object}  errcode.Error "请求错误"
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/auth [post]
-func Auth(c *gin.Context) {
+func (User) Auth(c *gin.Context) {
 	resp := app.NewResponse(c)
 	srv := service.NewService(c)
 	param := service.AuthParam{}
@@ -51,7 +51,7 @@ func Auth(c *gin.Context) {
 // @Success      200  {object}  string 		"成功"
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/auth/phone [post]
-func SendPhoneCode(c *gin.Context) {
+func (User) SendPhoneCode(c *gin.Context) {
 	resp := app.NewResponse(c)
 	srv := service.NewService(c)
 	param := service.SendPhoneCodeParam{}
@@ -73,7 +73,7 @@ func SendPhoneCode(c *gin.Context) {
 // @Success      200  {object}  string  		"成功"
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/auth/email [post]
-func SendEmailCode(c *gin.Context) {
+func (User) SendEmailCode(c *gin.Context) {
 	resp := app.NewResponse(c)
 	srv := service.NewService(c)
 	param := service.SendEmailCodeParam{}
@@ -94,7 +94,7 @@ func SendEmailCode(c *gin.Context) {
 // @Success      200  {object} string 		"成功"
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/auth/link/:link [get]
-func SendEmailLink(c *gin.Context) {
+func (User) SendEmailLink(c *gin.Context) {
 	resp := app.NewResponse(c)
 	srv := service.NewService(c)
 	param := service.SendEmailLinkParam{}

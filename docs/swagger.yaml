@@ -126,6 +126,136 @@ paths:
       summary: 判断用户名是否已经被注册
       tags:
       - UserSignUp
+  /api/v1/auth:
+    post:
+      consumes:
+      - application/json
+      description: 通过账号密码或验证码等方式登录
+      parameters:
+      - description: 用户 ID
+        in: body
+        name: user_id
+        schema:
+          type: integer
+      - description: 用户名
+        in: body
+        name: user_name
+        schema:
+          type: string
+      - description: 手机号
+        in: body
+        name: phone_number
+        schema:
+          type: string
+      - description: 邮件
+        in: body
+        name: email
+        schema:
+          type: string
+      - description: 用户密码
+        in: body
+        name: password
+        schema:
+          type: string
+      - description: 验证码
+        in: body
+        name: code
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 用户登录/认证
+      tags:
+      - Auth
+  /api/v1/auth/email:
+    post:
+      consumes:
+      - application/json
+      description: 用户请求验证码发送到邮箱，用于后续登录认证
+      parameters:
+      - description: 邮箱
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 发送验证码
+      tags:
+      - Auth
+  /api/v1/auth/link/:link:
+    get:
+      description: 用户请求验证链接发送到邮箱，用于后续登录认证
+      parameters:
+      - description: 邮箱
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 求验证链接
+      tags:
+      - Auth
+  /api/v1/auth/phone:
+    post:
+      consumes:
+      - application/json
+      description: 用户请求验证码发送到手机，用于后续登录认证
+      parameters:
+      - description: 手机号
+        in: body
+        name: phone_number
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 发送验证码
+      tags:
+      - Auth
   /api/v1/platform:
     get:
       description: 获取平台分页
