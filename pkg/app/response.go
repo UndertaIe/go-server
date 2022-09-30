@@ -5,7 +5,6 @@ import (
 	"reflect"
 
 	"github.com/UndertaIe/passwd/pkg/errcode"
-	"github.com/UndertaIe/passwd/pkg/page"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,7 +27,7 @@ func (resp *Response) To(data interface{}) {
 	resp.Ctx.JSON(http.StatusOK, data)
 }
 
-func (resp *Response) ToList(x interface{}, pager *page.Pager) {
+func (resp *Response) ToList(x interface{}, pager *Pager) {
 	v := reflect.ValueOf(x)
 	if v.Kind() != reflect.Slice { // 判断是否是切片
 		panic("x type must be slice")
