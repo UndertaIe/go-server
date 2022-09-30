@@ -84,7 +84,7 @@ func (srv *Service) SendPhoneCode(param SendPhoneCodeParam) *errcode.Error {
 	u := model.User{PhoneNumber: param.PhoneNumber}
 	ok, err2 := u.PhoneExists(srv.Db)
 	if err2 != nil {
-		return errcode.ServerError.WithDetails(err2.Error())
+		return errcode.ErrorService.WithDetails(err2.Error())
 	}
 	if !ok {
 		return errcode.ErrorUserPhoneNotExists
@@ -108,7 +108,7 @@ func (srv *Service) SendEmailCode(param SendEmailCodeParam) *errcode.Error {
 	u := model.User{Email: param.Email}
 	ok, err := u.PhoneExists(srv.Db)
 	if err != nil {
-		return errcode.ServerError.WithDetails(err.Error())
+		return errcode.ErrorService.WithDetails(err.Error())
 	}
 	if !ok {
 		return errcode.ErrorUserEmailNotExists
@@ -134,7 +134,7 @@ func (srv *Service) SendEmailLink(param SendEmailLinkParam) *errcode.Error {
 	u := model.User{Email: param.Email}
 	ok, err := u.PhoneExists(srv.Db)
 	if err != nil {
-		return errcode.ServerError.WithDetails(err.Error())
+		return errcode.ErrorService.WithDetails(err.Error())
 	}
 	if !ok {
 		return errcode.ErrorUserEmailNotExists
@@ -145,7 +145,7 @@ func (srv *Service) SendEmailLink(param SendEmailLinkParam) *errcode.Error {
 		return errcode.ErrorAuthLinkExists
 	}
 	if err != nil {
-		return errcode.ServerError.WithDetails(err.Error())
+		return errcode.ErrorService.WithDetails(err.Error())
 	}
 	sb := strings.Builder{}
 	sb.WriteString(AuthLink)

@@ -27,7 +27,7 @@ type CacheConfig func() map[string]interface{}
 var supportedCacheType = []string{string(MemoryInT), string(RedisT), string(MemCacheT)}
 
 // supported cache type: Redis，MemCache，MemoryIn
-func NewCache(c cacheType, cc CacheConfig) (Cache, error) {
+func NewCache(c cacheType, cc CacheConfig) (Cache, error) { // TODO:  replace cc with Option
 	switch c {
 	case RedisT:
 		return NewRedisCache(cc)

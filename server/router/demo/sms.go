@@ -15,7 +15,7 @@ func NewSMS() SMS {
 
 // 接入短信服务
 func (s SMS) PhoneCode(c *gin.Context) {
-	resp := app.Response{Ctx: c}
+	resp := app.NewResponse(c)
 	phone, exists := c.Params.Get("phone")
 	if !exists {
 		resp.ToError(errcode.ErrorVerifyCodeNoPhoneNumbers)
@@ -40,7 +40,7 @@ type SmsUserRequest struct {
 }
 
 func (s SMS) PhoneAuth(c *gin.Context) {
-	resp := app.Response{Ctx: c}
+	resp := app.NewResponse(c)
 	params := new(SmsUserRequest)
 	err := c.Bind(params)
 	if err != nil {

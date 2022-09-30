@@ -1,9 +1,8 @@
 package app
 
 import (
-	// TODO: can’t
+	conv "github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
-	"github.com/go-programming-tour-book/blog-service/pkg/convert"
 )
 
 type Pager struct {
@@ -26,11 +25,11 @@ var opt = PagerOption{
 }
 
 func NewPager(c *gin.Context) *Pager {
-	pn, err := convert.StrTo(c.Query("pn")).Int()
+	pn, err := conv.Int(c.Query("pn"))
 	if err != nil || pn <= 0 {
 		pn = 1
 	}
-	ps, err := convert.StrTo(c.Query("ps")).Int()
+	ps, err := conv.Int(c.Query("ps"))
 	if err != nil {
 		ps = opt.DefaultPageSize
 	}

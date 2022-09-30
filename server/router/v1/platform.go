@@ -1,12 +1,10 @@
 package v1
 
 import (
-	"strconv"
-
 	"github.com/UndertaIe/passwd/internal/service"
 	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/errcode"
-	"github.com/UndertaIe/passwd/pkg/page"
+	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,19 +26,17 @@ func NewPlatform() Platform {
 // @Router       /api/v1/platform/{id} [get]
 func (up Platform) Get(c *gin.Context) {
 	srv := service.NewService(c)
-	resp := app.Response{Ctx: c}
-	pId, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	resp := app.NewResponse(c)
+	pid, binderr := conv.Int(c.Param("id"))
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	params := service.Platform{PlatformId: pId}
-	platform, err := srv.GetPlatform(params)
+	param := service.Platform{PlatformId: pid}
+	platform, err := srv.GetPlatform(param)
 
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.To(platform)
@@ -57,21 +53,19 @@ func (up Platform) Get(c *gin.Context) {
 // @Router       /api/v1/platform [get]
 func (up Platform) List(c *gin.Context) {
 	srv := service.NewService(c)
-	resp := app.Response{Ctx: c}
-	params := new(service.Platform)
-	err := c.Bind(params)
+	resp := app.NewResponse(c)
+	param := new(service.Platform)
+	binderr := c.Bind(param)
 
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	pager := page.NewPager(c)
-	platforms, err := srv.GetPlatformList(*params, pager)
+	pager := app.NewPager(c)
+	platforms, err := srv.GetPlatformList(*param, pager)
 
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.ToList(platforms, pager)
@@ -95,19 +89,17 @@ func (up Platform) List(c *gin.Context) {
 // @Router       /api/v1/platform [post]
 func (up Platform) Create(c *gin.Context) {
 	srv := service.NewService(c)
-	resp := app.Response{Ctx: c}
-	params := new(service.Platform)
-	err := c.Bind(params)
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	resp := app.NewResponse(c)
+	param := service.Platform{}
+	binderr := c.Bind(&param)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	_, err = srv.CreatePlatform(*params)
+	err := srv.CreatePlatform(param)
 
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.Ok()
@@ -132,18 +124,16 @@ func (up Platform) Create(c *gin.Context) {
 // @Router       /api/v1/platform/{id} [put]
 func (up Platform) Update(c *gin.Context) {
 	srv := service.NewService(c)
-	resp := app.Response{Ctx: c}
-	params := new(service.Platform)
-	err := c.Bind(params)
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	resp := app.NewResponse(c)
+	param := service.Platform{}
+	binderr := c.Bind(&param)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	_, err = srv.UpdatePlatform(*params)
+	err := srv.UpdatePlatform(param)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(errcode.ErrorService)
 		return
 	}
 	resp.Ok()
@@ -160,19 +150,17 @@ func (up Platform) Update(c *gin.Context) {
 // @Router       /api/v1/platform/{id} [delete]
 func (up Platform) Delete(c *gin.Context) {
 	srv := service.NewService(c)
-	pId, err := strconv.Atoi(c.Param("id"))
-	resp := app.Response{Ctx: c}
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	pId, binderr := conv.Int(c.Param("id"))
+	resp := app.NewResponse(c)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	params := &service.Platform{PlatformId: pId}
-	err = srv.DeletePlatform(*params)
+	param := service.Platform{PlatformId: pId}
+	err := srv.DeletePlatform(param)
 
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.Ok()

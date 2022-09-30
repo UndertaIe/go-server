@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/UndertaIe/passwd/database"
-	"github.com/UndertaIe/passwd/pkg/page"
+	"github.com/UndertaIe/passwd/pkg/app"
 	"gorm.io/gorm"
 )
 
@@ -30,7 +30,7 @@ func (ua UserAccount) TableName() string {
 	return "passwd_user_account"
 }
 
-func (ua UserAccount) GetAll(db *gorm.DB, pager *page.Pager) ([]UserAccountRow, error) {
+func (ua UserAccount) GetAll(db *gorm.DB, pager *app.Pager) ([]UserAccountRow, error) {
 	var resp []UserAccountRow
 	db = db.Offset(pager.Offset()).Limit(pager.Limit())
 	err := db.Model(&ua).Where(
@@ -69,7 +69,7 @@ func (ua UserAccount) DeleteList(db *gorm.DB) error {
 	return err
 }
 
-func (ua UserAccount) GetAccountsByUserID(db *gorm.DB, pager *page.Pager) ([]UserAccountRow, error) {
+func (ua UserAccount) GetAccountsByUserID(db *gorm.DB, pager *app.Pager) ([]UserAccountRow, error) {
 	var resp []UserAccountRow
 	db = db.Offset(pager.Offset()).Limit(pager.Limit())
 	err := db.Model(&ua).Where(

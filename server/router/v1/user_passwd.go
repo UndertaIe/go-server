@@ -1,12 +1,10 @@
 package v1
 
 import (
-	"strconv"
-
 	"github.com/UndertaIe/passwd/internal/service"
 	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/errcode"
-	"github.com/UndertaIe/passwd/pkg/page"
+	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,13 +24,12 @@ func NewUserPasswd() UserPasswd {
 // @Router       /api/v1/userpasswd [get]
 func (up UserPasswd) All(c *gin.Context) {
 	srv := service.NewService(c)
-	pager := page.NewPager(c)
+	pager := app.NewPager(c)
 	userAccounts, err := srv.GetAllUserAccount(pager)
 
-	resp := app.Response{Ctx: c}
+	resp := app.NewResponse(c)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.ToList(userAccounts, pager)
@@ -50,27 +47,23 @@ func (up UserPasswd) All(c *gin.Context) {
 // @Router       /userpasswd/:user_id/:platform_id [get]
 func (up UserPasswd) Get(c *gin.Context) {
 	srv := service.NewService(c)
+	resp := app.NewResponse(c)
 
-	uId, err0 := strconv.Atoi(c.Param("user_id"))
-	pId, err1 := strconv.Atoi(c.Param("platform_id"))
-	resp := app.Response{Ctx: c}
-	if err0 != nil || err1 != nil {
-		newErr := errcode.InvalidParams
-		if err0 != nil {
-			newErr = newErr.WithDetails(err0.Error())
-		}
-		if err1 != nil {
-			newErr = newErr.WithDetails(err1.Error())
-		}
-		resp.ToError(newErr)
+	uid, binderr0 := conv.Int(c.Param("user_id"))
+	if binderr0 != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	params := &service.UserAccountGetRequest{UserId: uId, PlatformId: pId}
-	userAccount, err := srv.GetUserAccount(*params)
+	pid, binderr1 := conv.Int(c.Param("platform_id"))
+	if binderr1 != nil {
+		resp.ToError(errcode.InvalidParams)
+		return
+	}
 
+	param := service.UserAccountGetParam{UserId: uid, PlatformId: pid}
+	userAccount, err := srv.GetUserAccount(param)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.To(userAccount)
@@ -87,20 +80,18 @@ func (up UserPasswd) Get(c *gin.Context) {
 // @Router       /userpasswd/:user_id [get]
 func (up UserPasswd) List(c *gin.Context) {
 	srv := service.NewService(c)
-	user_id, err := strconv.Atoi(c.Param("user_id"))
-	resp := app.Response{Ctx: c}
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	user_id, binderr := conv.Int(c.Param("user_id"))
+	resp := app.NewResponse(c)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	params := service.UserAccountGetRequest{UserId: user_id}
-	pager := page.NewPager(c)
+	param := service.UserAccountGetParam{UserId: user_id}
+	pager := app.NewPager(c)
 
-	userAccounts, err := srv.GetUserAccountList(params, pager)
+	userAccounts, err := srv.GetUserAccountList(param, pager)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.ToList(userAccounts, pager)
@@ -120,19 +111,17 @@ func (up UserPasswd) List(c *gin.Context) {
 // @Router       /userpasswd [post]
 func (up UserPasswd) Create(c *gin.Context) {
 	srv := service.NewService(c)
-	params := new(service.UserAccountCreateRequest)
-	err := c.Bind(params)
-	resp := app.Response{Ctx: c}
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	param := service.UserAccountCreateParam{}
+	resp := app.NewResponse(c)
+	binderr := c.Bind(&param)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	err = srv.CreateUserAccount(*params)
 
+	err := srv.CreateUserAccount(param)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.Ok()
@@ -153,33 +142,28 @@ func (up UserPasswd) Create(c *gin.Context) {
 // @Router       /userpasswd/:user_id/:platform_id [put]
 func (up UserPasswd) Update(c *gin.Context) {
 	srv := service.NewService(c)
+	resp := app.NewResponse(c)
 
-	uId, err0 := strconv.Atoi(c.Param("user_id"))
-	pId, err1 := strconv.Atoi(c.Param("platform_id"))
-	params := &service.UserAccountCreateRequest{}
-	err := c.Bind(&params)
-	resp := app.Response{Ctx: c}
-	if err0 != nil || err1 != nil || err != nil {
-		newErr := errcode.InvalidParams
-		if err0 != nil {
-			newErr = newErr.WithDetails(err0.Error())
-		}
-		if err1 != nil {
-			newErr = newErr.WithDetails(err1.Error())
-		}
-		if err != nil {
-			newErr = newErr.WithDetails(err.Error())
-		}
-		resp.ToError(newErr)
+	uid, binderr := conv.Int(c.Param("user_id"))
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	params.UserId = uId
-	params.PlatformId = pId
-	err = srv.UpdateUserAccount(*params)
+	pid, binderr := conv.Int(c.Param("platform_id"))
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
+		return
+	}
+	param := service.UserAccountCreateParam{UserId: uid, PlatformId: pid}
+	binderr = c.Bind(&param)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
+		return
+	}
 
+	err := srv.UpdateUserAccount(param)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.Ok()
@@ -198,26 +182,24 @@ func (up UserPasswd) Update(c *gin.Context) {
 // @Router       /userpasswd/:user_id/:platform_id [delete]
 func (up UserPasswd) Delete(c *gin.Context) {
 	srv := service.NewService(c)
-	uId, err0 := strconv.Atoi(c.Param("user_id"))
-	pId, err1 := strconv.Atoi(c.Param("platform_id"))
-	resp := app.Response{Ctx: c}
-	if err0 != nil || err1 != nil {
-		newErr := errcode.InvalidParams
-		if err0 != nil {
-			newErr = newErr.WithDetails(err0.Error())
-		}
-		if err1 != nil {
-			newErr = newErr.WithDetails(err1.Error())
-		}
-		resp.ToError(newErr)
+	resp := app.NewResponse(c)
+
+	uid, binderr0 := conv.Int(c.Param("user_id"))
+	if binderr0 != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	params := &service.UserAccountGetRequest{UserId: uId, PlatformId: pId}
-	err := srv.DeleteUserAccount(*params)
+	pid, binderr1 := conv.Int(c.Param("platform_id"))
+	if binderr1 != nil {
+		resp.ToError(errcode.InvalidParams)
+		return
+	}
+
+	param := &service.UserAccountGetParam{UserId: uid, PlatformId: pid}
+	err := srv.DeleteUserAccount(*param)
 
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.Ok()
@@ -235,19 +217,17 @@ func (up UserPasswd) Delete(c *gin.Context) {
 // @Router       /userpasswd/:user_id [delete]
 func (up UserPasswd) DeleteList(c *gin.Context) {
 	srv := service.NewService(c)
-	uId, err := strconv.Atoi(c.Param("user_id"))
-	resp := app.Response{Ctx: c}
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	uid, binderr := conv.Int(c.Param("user_id"))
+	resp := app.NewResponse(c)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	params := &service.UserAccountGetRequest{UserId: uId}
-	err = srv.DeleteUserAccountList(*params)
+	param := service.UserAccountGetParam{UserId: uid}
 
+	err := srv.DeleteUserAccountList(param)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.Ok()

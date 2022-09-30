@@ -2,43 +2,42 @@ package demo
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/UndertaIe/passwd/internal/service"
 	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/pkg/errcode"
+	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 )
 
 func Now(c *gin.Context) {
-	resp := app.Response{Ctx: c}
+	resp := app.NewResponse(c)
 	now := time.Now().UTC().GoString()
 	resp.To(now)
 }
 
 func CacheNow(c *gin.Context) {
-	resp := app.Response{Ctx: c}
+	resp := app.NewResponse(c)
 	now := time.Now().UTC().GoString()
 	resp.To(now)
 }
 
 func GetUser(c *gin.Context) {
-	user_id, err := strconv.Atoi(c.Param("id"))
-	resp := app.Response{Ctx: c}
+	user_id, err := conv.Int(c.Param("id"))
+	resp := app.NewResponse(c)
 	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	param := service.UserGetRequest{UserId: user_id}
+	param := service.UserGetParam{UserId: user_id}
 	srv := service.NewService(c.Request.Context())
 	log.Info("缓存未命中，访问数据库...")
-	user, err := srv.GetUser(&param)
+	user, err2 := srv.GetUser(&param)
 
-	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
+	if err2 != nil {
+		newErr := errcode.ErrorService.WithDetails(err2.Error())
 		resp.ToError(newErr)
 		return
 	}
@@ -46,14 +45,14 @@ func GetUser(c *gin.Context) {
 }
 
 func DeleteUser(c *gin.Context) {
-	resp := app.Response{Ctx: c}
+	resp := app.NewResponse(c)
 	user_id := c.Param("id")
 	cache.DeleteCache(c)
 	resp.To(fmt.Sprintf("已清空用户(%s)缓存", user_id))
 }
 
 func UpdateUser(c *gin.Context) {
-	resp := app.Response{Ctx: c}
+	resp := app.NewResponse(c)
 	user_id := c.Param("id")
 	cache.DeleteCache(c)
 	resp.To(fmt.Sprintf("已清空用户(%s)缓存", user_id))

@@ -6,6 +6,6 @@ import (
 )
 
 func healthz(c *gin.Context) {
-	resp := app.Response{Ctx: c}
+	resp := app.NewResponse(c)
 	resp.Ok()
 }

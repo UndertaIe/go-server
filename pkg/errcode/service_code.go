@@ -1,7 +1,8 @@
 package errcode
 
 var (
-	ErrorService                  = NewError(20000, "服务异常，请稍后重试")
+	ErrorService = NewError(20000, "服务异常，请稍后重试")
+
 	ErrorUserRecordNotFound       = NewError(20001, "查询用户不存在")
 	ErrorPlatformRecordNotFound   = NewError(20002, "查询平台不存在")
 	UserPhoneExists               = NewError(20003, "当前手机号已绑定账户")
@@ -17,6 +18,6 @@ var (
 	ErrorAuthLinkExists           = NewError(20013, "认证链接已存在")
 	ErrorUserPhoneNotExists       = NewError(20014, "当前手机号未绑定账户")
 	ErrorUserEmailNotExists       = NewError(20015, "当前邮箱未绑定账户")
-	//
+
 	ErrorUnknownService = NewError(29999, "未知的服务异常，请联系负责人排查异常")
 )

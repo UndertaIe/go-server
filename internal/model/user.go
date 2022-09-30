@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/UndertaIe/passwd/database"
-	"github.com/UndertaIe/passwd/pkg/page"
+	"github.com/UndertaIe/passwd/pkg/app"
 	"gorm.io/gorm"
 )
 
@@ -37,6 +37,17 @@ func (u User) GetUserByPhone(db *gorm.DB) (User, error) {
 
 func (u User) PhoneExists(db *gorm.DB) (bool, error) {
 	err := db.Where("phone_number = ? AND is_deleted = ?", u.PhoneNumber, false).Take(&u).Error
+	if err == gorm.ErrRecordNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (u User) NameExists(db *gorm.DB) (bool, error) {
+	err := db.Where("user_name = ? AND is_deleted = ?", u.UserName, false).Take(&u).Error
 	if err == gorm.ErrRecordNotFound {
 		return false, nil
 	}
@@ -93,7 +104,7 @@ type UserRow struct {
 	Role        int    `json:"role" gorm:"column:role"`
 }
 
-func (u User) GetUserList(db *gorm.DB, pager *page.Pager) ([]UserRow, error) {
+func (u User) GetUserList(db *gorm.DB, pager *app.Pager) ([]UserRow, error) {
 	db = db.Offset(pager.Offset()).Limit(pager.Limit())
 	var users []UserRow
 	tx := db.Model(&User{}).Where(map[string]interface{}{"is_deleted": false}).Find(&users)

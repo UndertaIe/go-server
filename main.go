@@ -13,6 +13,7 @@ import (
 	"github.com/UndertaIe/passwd/config"
 	"github.com/UndertaIe/passwd/database"
 	"github.com/UndertaIe/passwd/global"
+	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/pkg/com/alibaba"
 	"github.com/UndertaIe/passwd/pkg/email"
@@ -58,14 +59,6 @@ func init() { // 初始化工作(有序初始化)
 	if err != nil {
 		log.Fatalf("init.setupCacher err: %v", err)
 	}
-	err = setupMemoryInCacher()
-	if err != nil {
-		log.Fatalf("init.setupMemoryInCacher err: %v", err)
-	}
-	err = setupMemCacher()
-	if err != nil {
-		log.Fatalf("init.setupMemCacher err: %v", err)
-	}
 	err = setupSmsService()
 	if err != nil {
 		log.Fatalf("init.setupSmsService err: %v", err)
@@ -74,6 +67,10 @@ func init() { // 初始化工作(有序初始化)
 	if err != nil {
 		log.Fatalf("init.setupSentry err: %v", err)
 	}
+	setupEmailService()
+
+	setupAppPagination()
+
 }
 
 // @title          passwd API
@@ -115,7 +112,7 @@ func setupSetting() error {
 	}
 	hooks := func() {
 		global.APPSettings.DefaultContextTimeout *= time.Second
-		global.ServerSettings.ReadTimeout *= time.Second // TODO: viper支持time.Duration为Seconds？
+		global.ServerSettings.ReadTimeout *= time.Second // TODO: viper支持time.Duration默认为Seconds？ 不支持打个补丁
 		global.ServerSettings.WriteTimeout *= time.Second
 		global.JwtSettings.Expire *= time.Second
 		global.SmsServiceSettings.DefaultExpireTime *= time.Second
@@ -177,6 +174,7 @@ func setupTracer() error {
 }
 
 func setupCacher() error {
+	var err error
 	cc := func() map[string]any {
 		return map[string]any{
 			"host":              global.RedisSettings.Host,
@@ -185,25 +183,23 @@ func setupCacher() error {
 			"defaultExpireTime": global.RedisSettings.DefaultExpireTime,
 		}
 	}
-	cacher, err := cache.NewCache(cache.RedisT, cc)
+	global.Cacher, err = cache.NewCache(cache.RedisT, cc)
 	// cacher, err := cache.NewCache(cache.RedisT, nil) //使用默认配置
-	global.Cacher = cacher
-	return err
-}
+	if err != nil {
+		return err
+	}
 
-func setupMemoryInCacher() error {
 	// cc := func() map[string]any {
 	// 	return map[string]any{
 	// 		"defaultExpireTime": global.RedisSettings.DefaultExpireTime,
 	// 	}
 	// }
 	// cacher, err := cache.NewCache(cache.RedisT, cc)
-	cacher, err := cache.NewCache(cache.MemoryInT, nil) //使用默认配置
-	global.MemInCacher = cacher
-	return err
-}
+	global.MemInCacher, err = cache.NewCache(cache.MemoryInT, nil) //使用默认配置
+	if err != nil {
+		return err
+	}
 
-func setupMemCacher() error {
 	// cc := func() map[string]any {
 	// 	return map[string]any{``
 	// 		"host": global.RedisSettings.Host,
@@ -213,9 +209,9 @@ func setupMemCacher() error {
 	// 	}
 	// }
 	// cacher, err := cache.NewCache(cache.RedisT, cc)
-	cacher, err := cache.NewCache(cache.MemCacheT, nil) //使用默认配置
-	global.MemCacher = cacher
+	global.MemCacher, err = cache.NewCache(cache.MemCacheT, nil) //使用默认配置
 	return err
+
 }
 
 func setupSmsService() error {
@@ -232,7 +228,7 @@ func setupSmsService() error {
 	return err
 }
 
-func setupEmailService() error {
+func setupEmailService() {
 	cfg := global.EmailSettings
 	opt := email.Options{
 		MailHost: cfg.Host,
@@ -241,7 +237,6 @@ func setupEmailService() error {
 		MailPass: cfg.Password,
 	}
 	global.EmailClient = email.NewEmailClient(opt)
-	return nil
 }
 
 func setupSentry() error {
@@ -265,7 +260,7 @@ func setupLogger() error {
 		global.Logger.SetFormatter(&logrus.JSONFormatter{})
 	}
 	var out io.Writer
-	if global.ServerSettings.RunMode == config.Production {
+	if config.IsProduction(global.ServerSettings.RunMode) {
 		out = &lumberjack.Logger{
 			Filename:   fileName,
 			MaxSize:    cfg.LogMaxSize, // megabytes
@@ -274,10 +269,17 @@ func setupLogger() error {
 			Compress:   cfg.LogCompress, // disabled by default
 			LocalTime:  cfg.LocalTime,
 		}
-	} else {
+	} else { // 标准输出
 		out = os.Stdout
 	}
 	global.Logger.SetOutput(out)
 
 	return nil
+}
+
+func setupAppPagination() {
+	app.SetPagerOption(app.PagerOption{
+		DefaultPageSize:    global.APPSettings.DefaultPageSize,
+		DefaultMaxPageSize: global.APPSettings.MaxPageSize,
+	})
 }

@@ -2,10 +2,11 @@ package service
 
 import (
 	"github.com/UndertaIe/passwd/internal/model"
-	"github.com/UndertaIe/passwd/pkg/page"
+	"github.com/UndertaIe/passwd/pkg/app"
+	"github.com/UndertaIe/passwd/pkg/errcode"
 )
 
-type UserAccountGetRequest struct {
+type UserAccountGetParam struct {
 	UserId     int
 	PlatformId int
 }
@@ -23,17 +24,18 @@ type UserAccount struct {
 	PlatformLoginUrl string `json:"login_url"`
 }
 
-type UserAccountCreateRequest struct {
+type UserAccountCreateParam struct {
 	UserId     int    `json:"user_id"`
 	PlatformId int    `json:"platform_id"`
 	Password   string `json:"password"`
 }
 
-func (srv *Service) GetAllUserAccount(pager *page.Pager) ([]UserAccount, error) {
+func (srv *Service) GetAllUserAccount(pager *app.Pager) ([]UserAccount, *errcode.Error) {
 	ua := model.UserAccount{}
 	rts, err := ua.GetAll(srv.Db, pager)
 	if err != nil {
-		return nil, err
+		log.Error(err)
+		return nil, errcode.ErrorService
 	}
 	var resp []UserAccount
 	for _, r := range rts {
@@ -51,14 +53,15 @@ func (srv *Service) GetAllUserAccount(pager *page.Pager) ([]UserAccount, error) 
 		}
 		resp = append(resp, t)
 	}
-	return resp, err
+	return resp, nil
 }
 
-func (srv *Service) GetUserAccount(params UserAccountGetRequest) (*UserAccount, error) {
-	ua := model.UserAccount{UserId: params.UserId, PlatformId: params.PlatformId}
+func (srv *Service) GetUserAccount(param UserAccountGetParam) (*UserAccount, *errcode.Error) {
+	ua := model.UserAccount{UserId: param.UserId, PlatformId: param.PlatformId}
 	r, err := ua.Get(srv.Db)
 	if err != nil {
-		return nil, err
+		log.Error(err)
+		return nil, errcode.ErrorService
 	}
 	return &UserAccount{
 		UserId:           r.UserId,
@@ -71,39 +74,56 @@ func (srv *Service) GetUserAccount(params UserAccountGetRequest) (*UserAccount, 
 		PlatformDomain:   r.PlatformDomain,
 		PlatformImgUrl:   r.PlatformImgUrl,
 		PlatformLoginUrl: r.PlatformLoginUrl,
-	}, err
+	}, nil
 }
 
-func (srv *Service) CreateUserAccount(params UserAccountCreateRequest) error {
-	userAccount := model.UserAccount{UserId: params.UserId, PlatformId: params.PlatformId, Password: params.Password}
+func (srv *Service) CreateUserAccount(param UserAccountCreateParam) *errcode.Error {
+	userAccount := model.UserAccount{UserId: param.UserId, PlatformId: param.PlatformId, Password: param.Password}
 	userAccount, err := userAccount.Create(srv.Db)
-	return err
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	return nil
 }
 
-func (srv *Service) DeleteUserAccount(params UserAccountGetRequest) error {
-	userAccount := model.UserAccount{UserId: params.UserId, PlatformId: params.PlatformId}
+func (srv *Service) DeleteUserAccount(param UserAccountGetParam) *errcode.Error {
+	userAccount := model.UserAccount{UserId: param.UserId, PlatformId: param.PlatformId}
 	err := userAccount.Delete(srv.Db)
-	return err
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	return nil
 }
 
-func (srv *Service) DeleteUserAccountList(params UserAccountGetRequest) error {
-	userAccount := model.UserAccount{UserId: params.UserId}
+func (srv *Service) DeleteUserAccountList(param UserAccountGetParam) *errcode.Error {
+	userAccount := model.UserAccount{UserId: param.UserId}
 	err := userAccount.DeleteList(srv.Db)
-	return err
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	return nil
 }
 
-func (srv *Service) UpdateUserAccount(params UserAccountCreateRequest) error {
-	userAccount := model.UserAccount{UserId: params.UserId, PlatformId: params.PlatformId}
-	vals := map[string]interface{}{"password": params.Password}
+func (srv *Service) UpdateUserAccount(param UserAccountCreateParam) *errcode.Error {
+	userAccount := model.UserAccount{UserId: param.UserId, PlatformId: param.PlatformId}
+	vals := map[string]interface{}{"password": param.Password}
 	_, err := userAccount.Update(srv.Db, vals)
-	return err
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	return nil
 }
 
-func (srv *Service) GetUserAccountList(params UserAccountGetRequest, pager *page.Pager) ([]UserAccount, error) {
-	ua := model.UserAccount{UserId: params.UserId}
+func (srv *Service) GetUserAccountList(param UserAccountGetParam, pager *app.Pager) ([]UserAccount, *errcode.Error) {
+	ua := model.UserAccount{UserId: param.UserId}
 	rows, err := ua.GetAccountsByUserID(srv.Db, pager)
 	if err != nil {
-		return nil, err
+		log.Error(err)
+		return nil, errcode.ErrorService
 	}
 	var accounts []UserAccount
 	for _, r := range rows {

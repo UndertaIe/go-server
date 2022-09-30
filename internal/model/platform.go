@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/UndertaIe/passwd/database"
-	"github.com/UndertaIe/passwd/pkg/page"
+	"github.com/UndertaIe/passwd/pkg/app"
 	"gorm.io/gorm"
 )
 
@@ -28,7 +28,7 @@ func (p Platform) Get(db *gorm.DB) (Platform, error) {
 	return pf, err
 }
 
-func (p Platform) GetList(db *gorm.DB, pager *page.Pager) ([]Platform, error) {
+func (p Platform) GetList(db *gorm.DB, pager *app.Pager) ([]Platform, error) {
 	var platforms []Platform
 	db = db.Offset(pager.Offset()).Limit(pager.Limit())
 	err := db.Find(&platforms).Error

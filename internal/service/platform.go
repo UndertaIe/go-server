@@ -2,7 +2,9 @@ package service
 
 import (
 	"github.com/UndertaIe/passwd/internal/model"
-	"github.com/UndertaIe/passwd/pkg/page"
+	"github.com/UndertaIe/passwd/pkg/app"
+	"github.com/UndertaIe/passwd/pkg/errcode"
+	"gorm.io/gorm"
 )
 
 type Platform struct {
@@ -16,7 +18,7 @@ type Platform struct {
 	PlatformLoginUrl string `json:"login_url"`
 }
 
-func (srv *Service) CreatePlatform(params Platform) (*Platform, error) {
+func (srv *Service) CreatePlatform(params Platform) *errcode.Error {
 	p := model.Platform{
 		PlatformName:     params.PlatformName,
 		PlatformAbbr:     params.PlatformAbbr,
@@ -28,27 +30,22 @@ func (srv *Service) CreatePlatform(params Platform) (*Platform, error) {
 	}
 	p, err := p.Create(srv.Db)
 	if err != nil {
-		return nil, err
+		return errcode.ErrorService
 	}
-	return &Platform{
-		PlatformId:       p.PlatformId,
-		PlatformName:     p.PlatformName,
-		PlatformAbbr:     p.PlatformAbbr,
-		PlatformType:     p.PlatformType,
-		PlatformDesc:     p.PlatformDesc,
-		PlatformDomain:   p.PlatformDomain,
-		PlatformImgUrl:   p.PlatformImgUrl,
-		PlatformLoginUrl: p.PlatformLoginUrl,
-	}, err
+	return nil
 }
 
-func (srv *Service) GetPlatform(params Platform) (*Platform, error) {
+func (srv *Service) GetPlatform(params Platform) (*Platform, *errcode.Error) {
 	p := model.Platform{
 		PlatformId: params.PlatformId,
 	}
 	p, err := p.Get(srv.Db)
+	if err == gorm.ErrRecordNotFound {
+		return nil, errcode.ErrorPlatformRecordNotFound
+	}
 	if err != nil {
-		return nil, err
+		log.Error(err)
+		return nil, errcode.ErrorService
 	}
 	return &Platform{
 		PlatformId:       p.PlatformId,
@@ -59,14 +56,18 @@ func (srv *Service) GetPlatform(params Platform) (*Platform, error) {
 		PlatformDomain:   p.PlatformDomain,
 		PlatformImgUrl:   p.PlatformImgUrl,
 		PlatformLoginUrl: p.PlatformLoginUrl,
-	}, err
+	}, nil
 }
 
-func (srv *Service) GetPlatformList(params Platform, pager *page.Pager) ([]Platform, error) {
+func (srv *Service) GetPlatformList(params Platform, pager *app.Pager) ([]Platform, *errcode.Error) {
 	p := model.Platform{
 		PlatformId: params.PlatformId,
 	}
 	ps, err := p.GetList(srv.Db, pager)
+	if err != nil {
+		log.Error(err)
+		return nil, errcode.ErrorService
+	}
 	var platforms []Platform
 	for _, e := range ps {
 		platforms = append(platforms, Platform{
@@ -80,10 +81,10 @@ func (srv *Service) GetPlatformList(params Platform, pager *page.Pager) ([]Platf
 			PlatformLoginUrl: e.PlatformLoginUrl,
 		})
 	}
-	return platforms, err
+	return platforms, nil
 }
 
-func (srv *Service) UpdatePlatform(params Platform) (Platform, error) {
+func (srv *Service) UpdatePlatform(params Platform) *errcode.Error {
 	p := model.Platform{
 		PlatformId: params.PlatformId,
 	}
@@ -107,22 +108,21 @@ func (srv *Service) UpdatePlatform(params Platform) (Platform, error) {
 		vals["platform_desc"] = params.PlatformDesc
 	}
 	err := p.Update(srv.Db, vals)
-	return Platform{
-		PlatformId:       p.PlatformId,
-		PlatformName:     p.PlatformName,
-		PlatformAbbr:     p.PlatformAbbr,
-		PlatformType:     p.PlatformType,
-		PlatformDesc:     p.PlatformDesc,
-		PlatformDomain:   p.PlatformDomain,
-		PlatformImgUrl:   p.PlatformImgUrl,
-		PlatformLoginUrl: p.PlatformLoginUrl,
-	}, err
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	return nil
 }
 
-func (srv *Service) DeletePlatform(params Platform) error {
+func (srv *Service) DeletePlatform(params Platform) *errcode.Error {
 	p := model.Platform{
 		PlatformId: params.PlatformId,
 	}
 	_, err := p.Delete(srv.Db)
-	return err
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	return nil
 }

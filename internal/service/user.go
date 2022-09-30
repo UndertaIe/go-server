@@ -2,7 +2,8 @@ package service
 
 import (
 	"github.com/UndertaIe/passwd/internal/model"
-	"github.com/UndertaIe/passwd/pkg/page"
+	"github.com/UndertaIe/passwd/pkg/app"
+	"github.com/UndertaIe/passwd/pkg/errcode"
 	"github.com/UndertaIe/passwd/pkg/utils"
 	"gorm.io/gorm"
 )
@@ -16,15 +17,16 @@ type User struct {
 	Description string `json:"description"`
 }
 
-type UserGetRequest struct {
+type UserGetParam struct {
 	UserId int
 }
 
-func (srv *Service) GetUser(params *UserGetRequest) (*User, error) {
+func (srv *Service) GetUser(params *UserGetParam) (*User, *errcode.Error) {
 	user := model.User{UserId: params.UserId}
 	user, err := user.Get(srv.Db)
 	if err != nil {
-		return nil, err
+		log.Error(err)
+		return nil, errcode.ErrorService
 	}
 	return &User{
 		UserId:      user.UserId,
@@ -36,11 +38,12 @@ func (srv *Service) GetUser(params *UserGetRequest) (*User, error) {
 	}, nil
 }
 
-func (srv *Service) GetUserList(params *UserGetRequest, pager *page.Pager) ([]User, error) {
+func (srv *Service) GetUserList(pager *app.Pager) ([]User, *errcode.Error) {
 	user := model.User{}
 	userRows, err := user.GetUserList(srv.Db, pager)
 	if err != nil {
-		return nil, err
+		log.Error(err)
+		return nil, errcode.ErrorService
 	}
 	var users []User
 	for _, ur := range userRows {
@@ -57,7 +60,7 @@ func (srv *Service) GetUserList(params *UserGetRequest, pager *page.Pager) ([]Us
 	return users, nil
 }
 
-type UserCreateRequest struct {
+type UserCreateParam struct {
 	UserName    string `json:"user_name" binding:"required"`
 	Password    string `json:"password" binding:"required"`
 	PhoneNumber string `json:"phone_number" binding:"required"`
@@ -66,7 +69,7 @@ type UserCreateRequest struct {
 	Description string `json:"description"`
 }
 
-func (srv *Service) CreateUser(params *UserCreateRequest) error {
+func (srv *Service) CreateUser(params *UserCreateParam) *errcode.Error {
 	pwd, salt := utils.GetPassword(params.Password)
 	user := model.User{
 		UserName:    params.UserName,
@@ -77,14 +80,39 @@ func (srv *Service) CreateUser(params *UserCreateRequest) error {
 		Sex:         params.Sex,
 		Description: params.Description,
 	}
-	err := user.Create(srv.Db)
+	nameExists, err := user.NameExists(srv.Db)
 	if err != nil {
-		return err
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	if nameExists {
+		return errcode.UserNameExists
+	}
+	phoneExists, err := user.PhoneExists(srv.Db)
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	if phoneExists {
+		return errcode.UserPhoneExists
+	}
+	EmailExists, err := user.EmailExists(srv.Db)
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	if EmailExists {
+		return errcode.UserEmailExists
+	}
+	err = user.Create(srv.Db)
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
 	}
 	return nil
 }
 
-type UserUpdateRequest struct {
+type UserUpdateParam struct {
 	UserId      int    `json:"user_id"`
 	UserName    string `json:"user_name"`
 	PhoneNumber string `json:"phone_number"`
@@ -93,8 +121,16 @@ type UserUpdateRequest struct {
 	Description string `json:"description"`
 }
 
-func (srv *Service) UpdateUser(params *UserUpdateRequest) error {
+func (srv *Service) UpdateUser(params *UserUpdateParam) *errcode.Error {
 	user := model.User{UserId: params.UserId}
+	_, err := user.Get(srv.Db)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return errcode.ErrorUserRecordNotFound
+		}
+		return errcode.ErrorService
+
+	}
 	vals := make(map[string]interface{})
 	if params.UserName != "" {
 		vals["user_name"] = params.UserName
@@ -111,17 +147,24 @@ func (srv *Service) UpdateUser(params *UserUpdateRequest) error {
 	if params.Description != "" {
 		vals["description"] = params.Description
 	}
-	return user.Update(srv.Db, vals)
+	if e := user.Update(srv.Db, vals); e != nil {
+		log.Error(e)
+		return errcode.ErrorService
+	}
+	return nil
 }
 
-type UserDeleteRequest struct {
+type UserDeleteParam struct {
 	UserId int
 }
 
-func (srv *Service) DeleteUser(params *UserDeleteRequest) error {
+func (srv *Service) DeleteUser(params *UserDeleteParam) *errcode.Error {
 	user := model.User{UserId: params.UserId}
-	err := user.Delete(srv.Db)
-	return err
+	if e := user.Delete(srv.Db); e != nil {
+		log.Error(e)
+		return errcode.ErrorService
+	}
+	return nil
 }
 
 type UserPhoneExistsParam struct {
@@ -129,14 +172,15 @@ type UserPhoneExistsParam struct {
 }
 
 // 用户手机号是否已存在
-func (srv *Service) IsExistsUserPhone(uper *UserPhoneExistsParam) (bool, error) {
+func (srv *Service) IsExistsUserPhone(uper *UserPhoneExistsParam) (bool, *errcode.Error) {
 	user := model.User{PhoneNumber: uper.PhoneNumber}
 	_, err := user.GetUserByPhone(srv.Db)
 	if err == gorm.ErrRecordNotFound {
 		return false, nil
 	}
 	if err != nil {
-		return false, err
+		log.Error(err)
+		return false, errcode.ErrorService
 	}
 	return true, nil
 }
@@ -146,14 +190,15 @@ type UserEmailExistsParam struct {
 }
 
 // 用户邮箱是否已存在
-func (srv *Service) IsExistsUserEmail(param *UserEmailExistsParam) (bool, error) {
+func (srv *Service) IsExistsUserEmail(param *UserEmailExistsParam) (bool, *errcode.Error) {
 	user := model.User{Email: param.Email}
 	_, err := user.GetUserByEmail(srv.Db)
 	if err == gorm.ErrRecordNotFound {
 		return false, nil
 	}
 	if err != nil {
-		return false, err
+		log.Error(err)
+		return false, errcode.ErrorService
 	}
 	return true, nil
 }
@@ -163,14 +208,15 @@ type UserNameExistsParam struct {
 }
 
 // 用户名是否已存在
-func (srv *Service) IsExistsUserName(param *UserNameExistsParam) (bool, error) {
+func (srv *Service) IsExistsUserName(param *UserNameExistsParam) (bool, *errcode.Error) {
 	user := model.User{UserName: param.UserName}
 	_, err := user.GetUserByName(srv.Db)
 	if err == gorm.ErrRecordNotFound {
 		return false, nil
 	}
 	if err != nil {
-		return false, err
+		log.Error(err)
+		return false, errcode.ErrorService
 	}
 	return true, nil
 }

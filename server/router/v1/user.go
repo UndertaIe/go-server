@@ -1,12 +1,10 @@
 package v1
 
 import (
-	"strconv"
-
 	"github.com/UndertaIe/passwd/internal/service"
 	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/errcode"
-	"github.com/UndertaIe/passwd/pkg/page"
+	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,28 +26,27 @@ func NewUser() User {
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/user/{id} [get]
 func (u User) Get(c *gin.Context) {
-	user_id, err := strconv.Atoi(c.Param("id"))
-	resp := app.Response{Ctx: c}
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	resp := app.NewResponse(c)
+	user_id, binderr := conv.Int(c.Param("id"))
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	param := service.UserGetRequest{UserId: user_id}
+	param := service.UserGetParam{UserId: user_id}
 	srv := service.NewService(c.Request.Context())
 
 	user, err := srv.GetUser(&param)
 
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		log.Error(err)
+		resp.ToError(errcode.ErrorService)
 		return
 	}
 	resp.To(user)
 }
 
 // List godoc
-// @Summary     获取多个用户
+// @Summary     获取用户分页
 // @Description  获取用户分页
 // @Tags         User
 // @Produce      json
@@ -58,16 +55,13 @@ func (u User) Get(c *gin.Context) {
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/user [get]
 func (u User) List(c *gin.Context) {
+	resp := app.NewResponse(c)
+	pager := app.NewPager(c)
 	srv := service.NewService(c.Request.Context())
 
-	param := service.UserGetRequest{}
-	pager := page.NewPager(c)
-	user, err := srv.GetUserList(&param, pager)
-
-	resp := app.Response{Ctx: c}
+	user, err := srv.GetUserList(pager)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.ToList(user, pager)
@@ -89,21 +83,17 @@ func (u User) List(c *gin.Context) {
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/user [post]
 func (u User) Create(c *gin.Context) {
-	param := new(service.UserCreateRequest)
-	err := c.ShouldBind(param)
-	resp := app.Response{Ctx: c}
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	resp := app.NewResponse(c)
+	param := new(service.UserCreateParam)
+	if e := c.ShouldBind(param); e != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
+
 	srv := service.NewService(c.Request.Context())
-
-	err = srv.CreateUser(param)
-
+	err := srv.CreateUser(param)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.Ok()
@@ -126,22 +116,24 @@ func (u User) Create(c *gin.Context) {
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/user/{id} [put]
 func (u User) Update(c *gin.Context) {
-	params := new(service.UserUpdateRequest)
-	user_id, err0 := strconv.Atoi(c.Param("id"))
-	params.UserId = user_id
-	err1 := c.ShouldBind(params)
-	resp := app.Response{Ctx: c}
-	if err0 != nil || err1 != nil {
-		newErr := errcode.InvalidParams.WithDetails(err0.Error()).WithDetails(err1.Error())
-		resp.ToError(newErr)
+	resp := app.NewResponse(c)
+	param := new(service.UserUpdateParam)
+	var binderr error
+	param.UserId, binderr = conv.Int(c.Param("id"))
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
+		return
+	}
+	binderr2 := c.ShouldBind(param)
+	if binderr2 != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
 	srv := service.NewService(c.Request.Context())
-	err := srv.UpdateUser(params)
+	err := srv.UpdateUser(param)
 
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.Ok()
@@ -157,20 +149,18 @@ func (u User) Update(c *gin.Context) {
 // @Failure      500  {object}  errcode.Error "内部错误"
 // @Router       /api/v1/user/{id} [delete]
 func (u User) Delete(c *gin.Context) {
-	user_id, err := strconv.Atoi(c.Param("id"))
-	resp := app.Response{Ctx: c}
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	user_id, binderr := conv.Int(c.Param("id"))
+	resp := app.NewResponse(c)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
-	param := service.UserDeleteRequest{UserId: user_id}
+	param := service.UserDeleteParam{UserId: user_id}
 	srv := service.NewService(c.Request.Context())
 
-	err = srv.DeleteUser(&param)
+	err := srv.DeleteUser(&param)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
 	resp.Ok()
@@ -189,28 +179,26 @@ func (u User) Delete(c *gin.Context) {
 func (User) PhoneExists(c *gin.Context) {
 	srv := service.NewService(c)
 	param := &service.UserPhoneExistsParam{}
-	err := c.Bind(param)
-	resp := app.Response{Ctx: c}
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	binderr := c.Bind(param)
+	resp := app.NewResponse(c)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
 	has, err := srv.IsExistsUserPhone(param)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(err)
 		return
 	}
-	if has {
-		resp.ToError(errcode.UserPhoneExists) // 手机号已存在
+	if has { // 手机号已存在
+		resp.ToError(errcode.UserPhoneExists)
 		return
 	}
 	resp.Ok()
 }
 
 // EmailExists godoc
-// @Summary     判断email是否已经被注册
+// @Summary     判断邮箱是否已经被注册
 // @Tags         UserSignUp
 // @Accept       json
 // @Produce      json
@@ -222,21 +210,19 @@ func (User) PhoneExists(c *gin.Context) {
 func (User) EmailExists(c *gin.Context) {
 	srv := service.NewService(c)
 	param := &service.UserEmailExistsParam{}
-	err := c.Bind(param)
-	resp := app.Response{Ctx: c}
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	binderr := c.Bind(param)
+	resp := app.NewResponse(c)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
 	has, err := srv.IsExistsUserEmail(param)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(errcode.ErrorService)
 		return
 	}
-	if has {
-		resp.ToError(errcode.UserEmailExists) // 邮箱已存在
+	if has { // 邮箱已存在
+		resp.ToError(errcode.UserEmailExists)
 		return
 	}
 	resp.Ok()
@@ -255,21 +241,19 @@ func (User) EmailExists(c *gin.Context) {
 func (User) UserNameExists(c *gin.Context) {
 	srv := service.NewService(c)
 	param := &service.UserNameExistsParam{}
-	err := c.Bind(param)
-	resp := app.Response{Ctx: c}
-	if err != nil {
-		newErr := errcode.InvalidParams.WithDetails(err.Error())
-		resp.ToError(newErr)
+	binderr := c.Bind(param)
+	resp := app.NewResponse(c)
+	if binderr != nil {
+		resp.ToError(errcode.InvalidParams)
 		return
 	}
 	has, err := srv.IsExistsUserName(param)
 	if err != nil {
-		newErr := errcode.ErrorService.WithDetails(err.Error())
-		resp.ToError(newErr)
+		resp.ToError(errcode.ErrorService)
 		return
 	}
-	if has {
-		resp.ToError(errcode.UserNameExists) // 用户名已存在
+	if has { // 用户名已存在
+		resp.ToError(errcode.UserNameExists)
 		return
 	}
 	resp.Ok()
