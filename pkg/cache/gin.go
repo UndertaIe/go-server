@@ -13,8 +13,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var CACHE_MIDDLEWARE_KEY = "gin.cache"
-var PageCachePrefix = "gin.page.cache"
+const (
+	CACHE_MIDDLEWARE_KEY = "gin.cache"
+	PageCachePrefix      = "gin.page.cache"
+	cacheFlag            = "cache.flag"
+)
 
 type responseCache struct {
 	Status int
@@ -46,6 +49,7 @@ var writerPool = newCacheWritePool()
 
 type cachedWriter struct {
 	gin.ResponseWriter
+	ctx     *gin.Context
 	status  int
 	written bool
 	store   Cache
@@ -82,10 +86,11 @@ func (w *cachedWriter) Status() int {
 	return w.status
 }
 
-func (w *cachedWriter) Reset(store Cache, expire time.Duration, writer gin.ResponseWriter, key string, log logger.Log) {
+func (w *cachedWriter) Reset(ctx *gin.Context, store Cache, expire time.Duration, writer gin.ResponseWriter, key string, log logger.Log) {
 	w.status = 0
 	w.written = false
 
+	w.ctx = ctx
 	w.store = store
 	w.expire = expire
 	w.ResponseWriter = writer
@@ -97,9 +102,21 @@ func (w *cachedWriter) Written() bool {
 	return w.written
 }
 
+func (w *cachedWriter) cacheEnabled() bool {
+	if v, ok := w.ctx.Get(cacheFlag); ok {
+		switch v := v.(type) {
+		case CacheFlag:
+			if IsDisableCache(v) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func (w *cachedWriter) Write(data []byte) (int, error) {
 	ret, err := w.ResponseWriter.Write(data)
-	if err == nil {
+	if err == nil && w.cacheEnabled() {
 		//cache response
 		store := w.store
 		val := responseCache{
@@ -113,6 +130,28 @@ func (w *cachedWriter) Write(data []byte) (int, error) {
 		}
 	}
 	return ret, err
+}
+
+type CacheFlag int8
+
+const (
+	enableCache CacheFlag = iota
+	disableCache
+)
+
+func IsDisableCache(f CacheFlag) bool {
+	return f == disableCache
+}
+
+func IsEnableCache(f CacheFlag) bool {
+	return f == enableCache
+}
+
+func EnableCache(c *gin.Context) {
+	c.Set(cacheFlag, enableCache)
+}
+func DisableCache(c *gin.Context) {
+	c.Set(cacheFlag, disableCache)
 }
 
 // Cache Middleware
@@ -155,13 +194,20 @@ func GetCache(c *gin.Context, cacheName ...string) Cache {
 	if len(cacheName) == 1 {
 		name = cacheName[0]
 	}
-	return c.Keys[name].(Cache)
+	if _, ok := c.Keys[name]; ok {
+		return c.Keys[name].(Cache)
+	}
+	return nil
 }
 
 // for call in gin.HandlerFunc
 func DeleteCache(c *gin.Context, cacheName ...string) error {
 	key := CacheKey(c)
-	return GetCache(c, cacheName...).Delete(key)
+	cacheImpl := GetCache(c, cacheName...)
+	if cacheImpl == nil {
+		return nil
+	}
+	return cacheImpl.Delete(key)
 }
 
 // for DeleteCache Decorator
@@ -180,8 +226,9 @@ func CachePage(store Cache, expire time.Duration, log logger.Log, handle gin.Han
 		key := CacheKey(c)
 		if err := store.Get(key, &cache); err != nil {
 			writer := writerPool.Get()
-			writer.Reset(store, expire, c.Writer, key, log)
+			writer.Reset(c, store, expire, c.Writer, key, log)
 			c.Writer = writer // 将responseWriter替换。write方法实现了写入client fd后写入缓存
+			EnableCache(c)
 			handle(c)
 		} else {
 			c.Writer.WriteHeader(cache.Status)
