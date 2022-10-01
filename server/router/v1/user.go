@@ -38,8 +38,7 @@ func (u User) Get(c *gin.Context) {
 	user, err := srv.GetUser(&param)
 
 	if err != nil {
-		log.Error(err)
-		resp.ToError(errcode.ErrorService)
+		resp.ToError(err)
 		return
 	}
 	resp.To(user)
@@ -175,11 +174,11 @@ func (u User) Delete(c *gin.Context) {
 // @Success      200  {string}  string 			"成功"
 // @Failure      400  {object}  errcode.Error 	"请求错误"
 // @Failure      500  {object}  errcode.Error 	"内部错误"
-// @Router       /api/v1/user/phone [post]
+// @Router       /api/v1/user/exists/phone [post]
 func (User) PhoneExists(c *gin.Context) {
 	srv := service.NewService(c)
-	param := &service.UserPhoneExistsParam{}
-	binderr := c.Bind(param)
+	param := service.UserPhoneExistsParam{}
+	binderr := c.Bind(&param)
 	resp := app.NewResponse(c)
 	if binderr != nil {
 		resp.ToError(errcode.InvalidParams)
@@ -209,8 +208,8 @@ func (User) PhoneExists(c *gin.Context) {
 // @Router       /api/v1//user/email [post]
 func (User) EmailExists(c *gin.Context) {
 	srv := service.NewService(c)
-	param := &service.UserEmailExistsParam{}
-	binderr := c.Bind(param)
+	param := service.UserEmailExistsParam{}
+	binderr := c.Bind(&param)
 	resp := app.NewResponse(c)
 	if binderr != nil {
 		resp.ToError(errcode.InvalidParams)
@@ -240,8 +239,8 @@ func (User) EmailExists(c *gin.Context) {
 // @Router       /api/v1//user/name [post]
 func (User) UserNameExists(c *gin.Context) {
 	srv := service.NewService(c)
-	param := &service.UserNameExistsParam{}
-	binderr := c.Bind(param)
+	param := service.UserNameExistsParam{}
+	binderr := c.Bind(&param)
 	resp := app.NewResponse(c)
 	if binderr != nil {
 		resp.ToError(errcode.InvalidParams)
@@ -249,7 +248,7 @@ func (User) UserNameExists(c *gin.Context) {
 	}
 	has, err := srv.IsExistsUserName(param)
 	if err != nil {
-		resp.ToError(errcode.ErrorService)
+		resp.ToError(err)
 		return
 	}
 	if has { // 用户名已存在

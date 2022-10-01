@@ -54,15 +54,8 @@ func (up Platform) Get(c *gin.Context) {
 func (up Platform) List(c *gin.Context) {
 	srv := service.NewService(c)
 	resp := app.NewResponse(c)
-	param := new(service.Platform)
-	binderr := c.Bind(param)
-
-	if binderr != nil {
-		resp.ToError(errcode.InvalidParams)
-		return
-	}
 	pager := app.NewPager(c)
-	platforms, err := srv.GetPlatformList(*param, pager)
+	platforms, err := srv.GetPlatformList(pager)
 
 	if err != nil {
 		resp.ToError(err)

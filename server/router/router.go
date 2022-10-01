@@ -1,8 +1,10 @@
 package router
 
 import (
+	"github.com/UndertaIe/passwd/database"
 	_ "github.com/UndertaIe/passwd/docs"
 	"github.com/UndertaIe/passwd/global"
+	"github.com/UndertaIe/passwd/internal/service"
 	"github.com/UndertaIe/passwd/pkg/auth"
 	"github.com/UndertaIe/passwd/server/middleware"
 	"github.com/UndertaIe/passwd/server/router/demo"
@@ -12,15 +14,19 @@ import (
 )
 
 func NewRouter() *gin.Engine {
+	UseGlobalLogger()
+
 	r := gin.New()
 	SetMiddlewares(r)
-	SetHandlerLogger()
 	cached := middleware.DefaultCachePageWithTracing //  add cache decorater by default cacher, expire, log
 	dcache := middleware.DeleteCachePageWithTracing  // delete cache decorater by default cacher, expire, log
 
-	adminAuth := middleware.RoleAuth(auth.Admin) // 管理员权限
-	userAuth := middleware.RoleAuth(auth.User)   // 用户权限
-	public := middleware.RoleAuth(auth.Public)   // 公共权限
+	// adminAuth := middleware.RoleAuth(auth.Admin) // 管理员权限
+	// userAuth := middleware.RoleAuth(auth.User)   // 用户权限
+	public := middleware.RoleAuth(auth.Public) // 公共权限
+
+	adminAuth := middleware.RoleAuth(auth.Public) // 管理员权限
+	userAuth := middleware.RoleAuth(auth.Public)  // 公共权限
 
 	apiv1 := r.Group("api/v1")
 	{
@@ -30,14 +36,14 @@ func NewRouter() *gin.Engine {
 		apiv1.GET("/user", adminAuth, cached(user.List))
 		apiv1.PUT("/user/:id", userAuth, dcache(user.Update))
 		apiv1.DELETE("/user/:id", userAuth, dcache(user.Delete))
-		// TODO: need test
+
 		apiv1.POST("/user/auth", public, user.Auth)
 		apiv1.POST("/user/auth/phone", public, user.SendPhoneCode)
 		apiv1.POST("/user/auth/email", public, user.SendEmailCode)
 		apiv1.POST("/user/auth/link/:link", public, user.SendEmailLink)
-		apiv1.POST("/user/phone/exists", public, user.PhoneExists)
-		apiv1.POST("/user/email/exists", public, user.EmailExists)
-		apiv1.POST("/user/name/exists", public, user.UserNameExists)
+		apiv1.POST("/user/exists/phone", public, user.PhoneExists)
+		apiv1.POST("/user/exists/email", public, user.EmailExists)
+		apiv1.POST("/user/exists/username", public, user.UserNameExists)
 
 	}
 	{
@@ -58,7 +64,7 @@ func NewRouter() *gin.Engine {
 		apiv1.DELETE("/userpasswd/:user_id/:platform_id", userAuth, dcache(userPasswd.Delete))
 		apiv1.DELETE("/userpasswd/:user_id", userAuth, dcache(userPasswd.DeleteList))
 	}
-	{
+	{ // system api
 		r.GET("/healthz", healthz)
 	}
 
@@ -67,9 +73,16 @@ func NewRouter() *gin.Engine {
 	return r
 }
 
-// set global logger for handler package
-func SetHandlerLogger() {
+// set global logger for handler, gin Writer, service
+func UseGlobalLogger() {
+	gin.DefaultWriter = global.Logger.Out
+	gin.DefaultErrorWriter = global.Logger.Out
+
 	v1.UseLog(global.Logger)
 	v2.UseLog(global.Logger)
 	demo.UseLog(global.Logger)
+
+	service.UseLog(global.Logger)
+
+	database.UselLogger(global.Logger)
 }

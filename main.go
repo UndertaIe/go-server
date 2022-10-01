@@ -87,9 +87,9 @@ func main() {
 
 func setupSetting() error {
 
-	flag.IntVar(&port, "port", 8000, "默认启动端口8000")
-	flag.StringVar(&runMode, "mode", "debug", "启动模式(debug,prod)")
-	flag.StringVar(&configPath, "config", "./", "配置文件路径,当前路径下")
+	flag.IntVar(&port, "port", 0, "默认启动端口0")
+	flag.StringVar(&runMode, "mode", "", "启动模式(debug,prod)")
+	flag.StringVar(&configPath, "config", "./", "配置文件路径:默认当前路径下所有yml文件")
 	flag.Parse()
 
 	s, err := config.NewSetting(strings.Split(configPath, ",")...)
@@ -129,13 +129,11 @@ func setupSetting() error {
 
 func setupDBEngine() error {
 	var err error
-	global.DBEngine, err = database.NewDBEngine(global.DatabaseSettings) // 在对全局变量赋值时不要使用 :=, 否则会导致左侧变量变为nil
+	global.DBEngine, err = database.NewDBEngine(global.DatabaseSettings)
 	return err
 }
 
 func setupTracer() error {
-	// tracer, _, err := tracer.NewJaegerTracer("passwd-service", "127.0.0.1:6831")
-	// global.Tracer = tracer
 	var err error
 	var exporter sdktrace.SpanExporter
 	if config.IsDebug(global.ServerSettings.RunMode) {

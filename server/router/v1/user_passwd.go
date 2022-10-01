@@ -59,7 +59,6 @@ func (up UserPasswd) Get(c *gin.Context) {
 		resp.ToError(errcode.InvalidParams)
 		return
 	}
-
 	param := service.UserAccountGetParam{UserId: uid, PlatformId: pid}
 	userAccount, err := srv.GetUserAccount(param)
 	if err != nil {

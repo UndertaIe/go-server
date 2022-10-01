@@ -44,7 +44,7 @@ func RunServe(cmd *cobra.Command, args []string) {
 	}()
 	quit := make(chan os.Signal, 1) // 捕获SIGINT/SIGTERM信号
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	log.Printf("server running on [%v] \n", s.Addr)
+	log.Printf("server running on [%v]; mode:[%v] \n", s.Addr, global.ServerSettings.RunMode)
 	<-quit
 	log.Println("Shuting down server...")
 

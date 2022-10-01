@@ -4,6 +4,7 @@ import (
 	"github.com/UndertaIe/passwd/internal/model"
 	"github.com/UndertaIe/passwd/pkg/app"
 	"github.com/UndertaIe/passwd/pkg/errcode"
+	"github.com/UndertaIe/passwd/pkg/utils"
 )
 
 type UserAccountGetParam struct {
@@ -37,6 +38,14 @@ func (srv *Service) GetAllUserAccount(pager *app.Pager) ([]UserAccount, *errcode
 		log.Error(err)
 		return nil, errcode.ErrorService
 	}
+	rows, err := ua.Count(srv.Db)
+	pager.SetRowNum(rows)
+	pager.SetCurNum(len(rts))
+
+	if err != nil {
+		log.Error(err)
+		return nil, errcode.ErrorService
+	}
 	var resp []UserAccount
 	for _, r := range rts {
 		t := UserAccount{
@@ -59,9 +68,13 @@ func (srv *Service) GetAllUserAccount(pager *app.Pager) ([]UserAccount, *errcode
 func (srv *Service) GetUserAccount(param UserAccountGetParam) (*UserAccount, *errcode.Error) {
 	ua := model.UserAccount{UserId: param.UserId, PlatformId: param.PlatformId}
 	r, err := ua.Get(srv.Db)
+	exists, err := utils.IsExistsRecord(err)
 	if err != nil {
 		log.Error(err)
 		return nil, errcode.ErrorService
+	}
+	if !exists {
+		return nil, errcode.ErrorRecordNotFound
 	}
 	return &UserAccount{
 		UserId:           r.UserId,
@@ -80,6 +93,9 @@ func (srv *Service) GetUserAccount(param UserAccountGetParam) (*UserAccount, *er
 func (srv *Service) CreateUserAccount(param UserAccountCreateParam) *errcode.Error {
 	userAccount := model.UserAccount{UserId: param.UserId, PlatformId: param.PlatformId, Password: param.Password}
 	userAccount, err := userAccount.Create(srv.Db)
+	if utils.IsDupEntryError(err) {
+		return errcode.ErrorDuplicateEntry
+	}
 	if err != nil {
 		log.Error(err)
 		return errcode.ErrorService
@@ -89,7 +105,15 @@ func (srv *Service) CreateUserAccount(param UserAccountCreateParam) *errcode.Err
 
 func (srv *Service) DeleteUserAccount(param UserAccountGetParam) *errcode.Error {
 	userAccount := model.UserAccount{UserId: param.UserId, PlatformId: param.PlatformId}
-	err := userAccount.Delete(srv.Db)
+	exists, err := userAccount.Exists(srv.Db)
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	if !exists {
+		return errcode.ErrorDeleteRecordNotFound
+	}
+	err = userAccount.Delete(srv.Db)
 	if err != nil {
 		log.Error(err)
 		return errcode.ErrorService
@@ -99,7 +123,15 @@ func (srv *Service) DeleteUserAccount(param UserAccountGetParam) *errcode.Error 
 
 func (srv *Service) DeleteUserAccountList(param UserAccountGetParam) *errcode.Error {
 	userAccount := model.UserAccount{UserId: param.UserId}
-	err := userAccount.DeleteList(srv.Db)
+	exists, err := userAccount.ExistsUserRecord(srv.Db)
+	if err != nil {
+		log.Error(exists)
+		return errcode.ErrorService
+	}
+	if !exists {
+		return errcode.ErrorDeleteRecordNotFound
+	}
+	err = userAccount.DeleteList(srv.Db)
 	if err != nil {
 		log.Error(err)
 		return errcode.ErrorService
@@ -109,8 +141,16 @@ func (srv *Service) DeleteUserAccountList(param UserAccountGetParam) *errcode.Er
 
 func (srv *Service) UpdateUserAccount(param UserAccountCreateParam) *errcode.Error {
 	userAccount := model.UserAccount{UserId: param.UserId, PlatformId: param.PlatformId}
+	exists, err := userAccount.Exists(srv.Db)
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	if !exists {
+		return errcode.ErrorRecordNotFound
+	}
 	vals := map[string]interface{}{"password": param.Password}
-	_, err := userAccount.Update(srv.Db, vals)
+	_, err = userAccount.Update(srv.Db, vals)
 	if err != nil {
 		log.Error(err)
 		return errcode.ErrorService
@@ -125,6 +165,13 @@ func (srv *Service) GetUserAccountList(param UserAccountGetParam, pager *app.Pag
 		log.Error(err)
 		return nil, errcode.ErrorService
 	}
+	count, err := ua.CountUserAccountByUserID(srv.Db)
+	if err != nil {
+		log.Error(err)
+		return nil, errcode.ErrorService
+	}
+	pager.SetCurNum(len(rows))
+	pager.SetRowNum(count)
 	var accounts []UserAccount
 	for _, r := range rows {
 		userAccount := UserAccount{

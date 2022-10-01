@@ -9,8 +9,8 @@ import (
 
 type Platform struct {
 	PlatformId       int    `json:"platform_id"`
-	PlatformName     string `json:"name"`
-	PlatformAbbr     string `json:"abbr"`
+	PlatformName     string `json:"name" binding:"required"`
+	PlatformAbbr     string `json:"abbr" binding:"required"`
 	PlatformType     string `json:"type"`
 	PlatformDesc     string `json:"description"`
 	PlatformDomain   string `json:"domain"`
@@ -28,8 +28,25 @@ func (srv *Service) CreatePlatform(params Platform) *errcode.Error {
 		PlatformImgUrl:   params.PlatformImgUrl,
 		PlatformLoginUrl: params.PlatformLoginUrl,
 	}
-	p, err := p.Create(srv.Db)
+	exists, err := p.IsExistsName(srv.Db)
 	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	if exists {
+		return errcode.ErrorPlatformNameExists
+	}
+	exists, err = p.IsExistsAbbr(srv.Db)
+	if err != nil {
+		log.Error(err)
+		return errcode.ErrorService
+	}
+	if exists {
+		return errcode.ErrorPlatformAbbrExists
+	}
+	p, err = p.Create(srv.Db)
+	if err != nil {
+		log.Error(err)
 		return errcode.ErrorService
 	}
 	return nil
@@ -59,11 +76,16 @@ func (srv *Service) GetPlatform(params Platform) (*Platform, *errcode.Error) {
 	}, nil
 }
 
-func (srv *Service) GetPlatformList(params Platform, pager *app.Pager) ([]Platform, *errcode.Error) {
-	p := model.Platform{
-		PlatformId: params.PlatformId,
-	}
+func (srv *Service) GetPlatformList(pager *app.Pager) ([]Platform, *errcode.Error) {
+	p := model.Platform{}
 	ps, err := p.GetList(srv.Db, pager)
+	if err != nil {
+		log.Error(err)
+		return nil, errcode.ErrorService
+	}
+	rows, err := p.Count(srv.Db)
+	pager.SetRowNum(rows)
+	pager.SetCurNum(len(ps))
 	if err != nil {
 		log.Error(err)
 		return nil, errcode.ErrorService
