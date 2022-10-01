@@ -6,9 +6,11 @@ import (
 
 	"github.com/UndertaIe/passwd/config"
 	"github.com/UndertaIe/passwd/global"
+	"github.com/sirupsen/logrus"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/plugin/opentelemetry/tracing"
 )
 
@@ -32,7 +34,7 @@ func NewDBEngine(dbSetting *config.DatabaseSetting) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	if global.ServerSettings.RunMode == config.Debug {
+	if config.IsDebug(global.ServerSettings.RunMode) {
 		db = db.Debug()
 	}
 	if global.TracingSettings.Enabled {
@@ -52,4 +54,15 @@ func createCallback(db *gorm.DB) {
 func updateCallback(db *gorm.DB) {
 	now := time.Now().Format("2006-01-02 15:04:05")
 	db.Statement.SetColumn("modified_at", now)
+}
+
+func UselLogger(log *logrus.Logger) {
+	logger.Default = logger.New(global.Logger, logger.Config{
+		SlowThreshold:             200 * time.Millisecond,
+		LogLevel:                  logger.Warn,
+		IgnoreRecordNotFoundError: false,
+		Colorful:                  true,
+	})
+
+	logger.Discard = logger.New(global.Logger, logger.Config{})
 }
