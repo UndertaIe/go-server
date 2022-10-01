@@ -3,11 +3,18 @@ package app
 import (
 	conv "github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type Pager struct {
+	// 每页大小 page_size
 	PageSize int `json:"ps"`
-	PageNum  int `json:"pn"`
+	// 当前页数 page_num
+	PageNum int `json:"pn"`
+	// 总记录行数 rows_num
+	RowsNum int `json:"rn"`
+	// 返回记录数 cur_num
+	CurNum int `json:"cn"`
 }
 
 func SetPagerOption(o PagerOption) {
@@ -42,7 +49,7 @@ func NewPager(c *gin.Context) *Pager {
 	}
 }
 
-func (p Pager) Offset() int {
+func (p *Pager) Offset() int {
 	offset := 0
 	if p.PageNum > 0 {
 		offset = (p.PageNum - 1) * p.PageSize
@@ -50,6 +57,18 @@ func (p Pager) Offset() int {
 	return offset
 }
 
-func (p Pager) Limit() int {
+func (p *Pager) Limit() int {
 	return p.PageSize
+}
+
+func (p *Pager) SetRowNum(n int) {
+	p.RowsNum = n
+}
+
+func (p *Pager) SetCurNum(n int) {
+	p.CurNum = n
+}
+
+func (p *Pager) Use(db *gorm.DB) *gorm.DB {
+	return db.Offset(p.Offset()).Limit(p.Limit())
 }

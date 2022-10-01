@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/UndertaIe/passwd/pkg/cache"
 	"github.com/UndertaIe/passwd/pkg/errcode"
 	"github.com/gin-gonic/gin"
 )
@@ -44,6 +45,7 @@ func (resp *Response) ToList(x interface{}, pager *Pager) {
 }
 
 func (resp *Response) ToError(err *errcode.Error) {
+	cache.DisableCache(resp.Ctx) // 错误信息不写入缓存
 	data := gin.H{"code": err.Code(), "msg": err.Msg()}
 	details := err.Details()
 	if len(details) > 0 {
