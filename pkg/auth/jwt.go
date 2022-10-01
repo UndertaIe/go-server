@@ -16,11 +16,11 @@ type RoleClaims struct {
 }
 
 type Role struct {
-	UserId int `json:"user_id"`
-	RoleId int `json:"role_id"`
+	UserId int  `json:"user_id"`
+	RoleId int8 `json:"role_id"`
 }
 
-type RoleLevel int
+type RoleLevel int8
 
 const (
 	Public RoleLevel = iota - 1
@@ -28,7 +28,7 @@ const (
 	Admin
 )
 
-func (r RoleLevel) Pass(level int) bool {
+func (r RoleLevel) Pass(level int8) bool {
 	return r <= RoleLevel(level)
 }
 

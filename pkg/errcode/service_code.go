@@ -18,6 +18,13 @@ var (
 	ErrorAuthLinkExists           = NewError(20013, "认证链接已存在")
 	ErrorUserPhoneNotExists       = NewError(20014, "当前手机号未绑定账户")
 	ErrorUserEmailNotExists       = NewError(20015, "当前邮箱未绑定账户")
+	ErrorPlatformNameExists       = NewError(20016, "平台名已存在")
+	ErrorPlatformAbbrExists       = NewError(20017, "平台简称已存在")
+	ErrorUserNoPlatformPassword   = NewError(20018, "当前用户不存在该平台信息")
+	ErrorRecordNotFound           = NewError(20019, "查询记录不存在")
+	ErrorUpdateRecordNotFound     = NewError(20020, "更新记录不存在")
+	ErrorDeleteRecordNotFound     = NewError(20021, "删除记录不存在")
+	ErrorDuplicateEntry           = NewError(20022, "记录已存在,创建/更新失败")
 
 	ErrorUnknownService = NewError(29999, "未知的服务异常，请联系负责人排查异常")
 )
