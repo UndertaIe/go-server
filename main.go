@@ -98,17 +98,17 @@ func setupSetting() error {
 	}
 	sections := map[string]interface{}{
 		"Server": &global.ServerSettings,
-		"App":    &global.APPSettings,
-		"MySQL":  &global.DatabaseSettings,
-		// "SQLITE3":       &global.DatabaseSettings,
-		"Email":         &global.EmailSettings,
-		"SmsService":    &global.SmsServiceSettings,
-		"JWT":           &global.JwtSettings,
-		"Sentry":        &global.SentrySettings,
-		"Redis":         &global.RedisSettings,
-		"MemoryInCache": &global.MemoryInCacheSettings,
-		"MemCache":      &global.MemCacheSettings,
-		"Tracing":       &global.TracingSettings,
+		// "App":    &global.APPSettings,
+		// "MySQL":  &global.DatabaseSettings,
+		// // "SQLITE3":       &global.DatabaseSettings,
+		// "Email":         &global.EmailSettings,
+		// "SmsService":    &global.SmsServiceSettings,
+		// "JWT":           &global.JwtSettings,
+		// "Sentry":        &global.SentrySettings,
+		// "Redis":         &global.RedisSettings,
+		// "MemoryInCache": &global.MemoryInCacheSettings,
+		// "MemCache":      &global.MemCacheSettings,
+		// "Tracing":       &global.TracingSettings,
 	}
 	hooks := func() {
 		global.APPSettings.DefaultContextTimeout *= time.Second

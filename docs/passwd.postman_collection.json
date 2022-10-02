@@ -1,0 +1,1086 @@
+{
+	"info": {
+		"_postman_id": "c99d54db-1086-4d76-9cac-5f8420b7ee65",
+		"name": "passwd",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "获取用户分页",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json;",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/api/v1/user",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "添加用户",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json;",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user_name\": \"mikasa115\",\r\n    \"password\": \"12345678\",\r\n    \"phone_number\": \"15858811803\",\r\n    \"email\": \"123457@gmail.com\",\r\n    \"share_mode\": 0,\r\n    \"profile_img_url\": \"132465\",\r\n    \"description\": \"desc\",\r\n    \"sex\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/user",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "判断手机号是否已被注册",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json;",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone_number\": \"12345678912\"\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/user/exists/phone",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"exists",
+								"phone"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "判断邮箱是否已被注册",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json;",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"123456@gmail.com\"\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/user/exists/email",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"exists",
+								"email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "修改用户",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json;",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user_name\": \"mikasa119\",\r\n    \"password\": \"12345678\",\r\n    \"phone_number\": \"15858811804\",\r\n    \"email\": \"123458@gmail.com\",\r\n    \"share_mode\": 0,\r\n    \"profile_img_url\": \"132466\",\r\n    \"description\": \"desc 12\",\r\n    \"sex\": 2\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/user/12",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取用户分页(参数)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json;",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/api/v1/user?ps=4&pn=3",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user"
+							],
+							"query": [
+								{
+									"key": "ps",
+									"value": "4"
+								},
+								{
+									"key": "pn",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取用户",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json;",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/api/v1/user/25",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"25"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除用户",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json;",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/api/v1/user/25",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"25"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Platform",
+			"item": [
+				{
+					"name": "获取平台",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/platform/6",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"platform",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除平台",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/platform/5",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"platform",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "添加平台",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"github_deleted2\",\r\n    \"abbr\": \"github_deleted2\",\r\n    \"type\": \"技术\",\r\n    \"description\": \"代码托管和分享平台\",\r\n    \"domain\": \"https://github.com/\",\r\n    \"login_url\": \"https://github.com/login\",\r\n    \"img_url\": \"https://github.githubassets.com/images/modules/site/icons/footer/github-mark.svg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/platform",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"platform"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取平台分页(参数)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/platform?ps=2&pn=1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"platform"
+							],
+							"query": [
+								{
+									"key": "ps",
+									"value": "2"
+								},
+								{
+									"key": "pn",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取平台分页",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/platform",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"platform"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserPasswd",
+			"item": [
+				{
+					"name": "获取单用户单平台密码",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/userpasswd/5/3",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"userpasswd",
+								"5",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "更新单用户单平台密码",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"newnew pwd pwd \"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/userpasswd/6/4",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"userpasswd",
+								"6",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取所有用户平台密码",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/userpasswd",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"userpasswd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取单用户平台密码",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/userpasswd/5",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"userpasswd",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除单个平台密码",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/userpasswd/6/4",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"userpasswd",
+								"6",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除单用户所有平台密码",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/v1/userpasswd/5",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"userpasswd",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "添加平台账号密码",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"user_id\":6, \"platform_id\": 4, \"password\": \"user6's password\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/v1/userpasswd",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"userpasswd"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Demo",
+			"item": [
+				{
+					"name": "jwt/auth",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json;",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"app_key\": \"admin\",\r\n    \"app_secret\": \"admin\"\r\n}"
+						},
+						"url": {
+							"raw": "{{host}}/demo/jwt/auth",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"jwt",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "jwt/admin",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Bearer",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiMjEyMzJmMjk3YTU3YTVhNzQzODk0YTBlNGE4MDFmYzMiLCJhcHBfc2VjcmV0IjoiMjEyMzJmMjk3YTU3YTVhNzQzODk0YTBlNGE4MDFmYzMiLCJleHAiOjE2NjI0NTA1NjEsImlzcyI6InBhc3N3ZCJ9.oJ0ZKUgG-M0PiZQwGdtHlWIqaVnQV5AWZi2jw90GmU4",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/demo/jwt/admin",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"jwt",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "用户认证",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Bearer",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiMjEyMzJmMjk3YTU3YTVhNzQzODk0YTBlNGE4MDFmYzMiLCJhcHBfc2VjcmV0IjoiMjEyMzJmMjk3YTU3YTVhNzQzODk0YTBlNGE4MDFmYzMiLCJleHAiOjE2NjIwNTg3NjYsImlzcyI6InBhc3N3ZCJ9.bHXb_5zHegsJzjzU1TuMattfi1Vu9Liu2mcEwo4WU6c",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user_id\": 21,\r\n    \"password\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/demo/user/auth",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"user",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "用户携带token访问接口",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Bearer",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyMSwiZXhwIjoxNjYyNDUwNjA1LCJpc3MiOiJwYXNzd2QifQ.3wE6xTRuYOAdHZThXKzs7A4E3BJpgGD6di20P5snwWY",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/demo/jwt/user/secret",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"jwt",
+								"user",
+								"secret"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取当前时间",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json;",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}/demo/cache/api/now",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"cache",
+								"api",
+								"now"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取缓存时间",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/cache/api/cnow",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"cache",
+								"api",
+								"cnow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取用户（redis缓存）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/cache/api/user/21",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"cache",
+								"api",
+								"user",
+								"21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取用户（redis缓存） Tracing",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/otel/api/user/21",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"otel",
+								"api",
+								"user",
+								"21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除用户（redis缓存） Tracing",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/otel/api/user/20",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"otel",
+								"api",
+								"user",
+								"20"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取用户（内存内置缓存）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/memorycache/api/user/21",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"memorycache",
+								"api",
+								"user",
+								"21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取用户（memcached缓存）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/memcached/api/user/21",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"memcached",
+								"api",
+								"user",
+								"21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除用户（redis缓存）",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/cache/api/user/21",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"cache",
+								"api",
+								"user",
+								"21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除用户（内存内置缓存）",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/memorycache/api/user/21",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"memorycache",
+								"api",
+								"user",
+								"21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除用户（memcached缓存）",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/memcached/api/user/21",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"memcached",
+								"api",
+								"user",
+								"21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "用户验证-请求验证码",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/sms/code/15858822855",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"sms",
+								"code",
+								"15858822855"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "用户验证-检查验证码",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\": \"15858822855\",\r\n    \"code\": \"794416\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/demo/sms/auth",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"sms",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sentry",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/sentry",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"sentry"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ip限流 /r1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/limit/ip/r1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"limit",
+								"ip",
+								"r1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ip限流 /r2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/limit/ip/r2",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"limit",
+								"ip",
+								"r2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "路由限流 /r1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/limit/router/r1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"limit",
+								"router",
+								"r1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "路由限流  /r2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/limit/router/r2",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"limit",
+								"router",
+								"r2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "swagger接口文档",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/swagger/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"swagger",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "上下文超时",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/context/timeout",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"context",
+								"timeout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "上下文不超时",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/demo/context/notimeout",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"demo",
+								"context",
+								"notimeout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

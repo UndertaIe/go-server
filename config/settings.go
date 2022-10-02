@@ -5,10 +5,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-func NewDBSetting() DatabaseSetting {
-	return DatabaseSetting{}
-}
-
 type Setting struct {
 	vp *viper.Viper // 对配置读取模块自定义封装
 }
