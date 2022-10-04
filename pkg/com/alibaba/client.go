@@ -3,7 +3,7 @@ package alibaba
 import (
 	"fmt"
 
-	"github.com/UndertaIe/passwd/pkg/sms"
+	"github.com/UndertaIe/go-server-env/pkg/sms"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	dysmsapi20170525 "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
 	util "github.com/alibabacloud-go/tea-utils/service"

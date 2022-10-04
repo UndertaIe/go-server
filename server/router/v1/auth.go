@@ -1,9 +1,9 @@
 package v1
 
 import (
-	"github.com/UndertaIe/passwd/internal/service"
-	"github.com/UndertaIe/passwd/pkg/app"
-	"github.com/UndertaIe/passwd/pkg/errcode"
+	"github.com/UndertaIe/go-server-env/internal/service"
+	"github.com/UndertaIe/go-server-env/pkg/app"
+	"github.com/UndertaIe/go-server-env/pkg/errcode"
 	"github.com/gin-gonic/gin"
 )
 

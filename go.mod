@@ -1,4 +1,4 @@
-module github.com/UndertaIe/passwd
+module github.com/UndertaIe/go-server-env
 
 go 1.18
 

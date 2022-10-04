@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/UndertaIe/passwd/pkg/cache"
-	"github.com/UndertaIe/passwd/pkg/utils"
+	"github.com/UndertaIe/go-server-env/pkg/cache"
+	"github.com/UndertaIe/go-server-env/pkg/utils"
 )
 
 // 对接各平台短信服务

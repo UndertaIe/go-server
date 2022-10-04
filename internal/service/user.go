@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/UndertaIe/passwd/internal/model"
-	"github.com/UndertaIe/passwd/pkg/app"
-	"github.com/UndertaIe/passwd/pkg/errcode"
-	"github.com/UndertaIe/passwd/pkg/utils"
+	"github.com/UndertaIe/go-server-env/internal/model"
+	"github.com/UndertaIe/go-server-env/pkg/app"
+	"github.com/UndertaIe/go-server-env/pkg/errcode"
+	"github.com/UndertaIe/go-server-env/pkg/utils"
 	"gorm.io/gorm"
 )
 

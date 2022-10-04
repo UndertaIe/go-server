@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/UndertaIe/passwd/global"
-	"github.com/UndertaIe/passwd/server/router"
+	"github.com/UndertaIe/go-server-env/global"
+	"github.com/UndertaIe/go-server-env/server/router"
 	"github.com/spf13/cobra"
 )
 

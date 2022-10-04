@@ -1,15 +1,15 @@
 package router
 
 import (
-	"github.com/UndertaIe/passwd/database"
-	_ "github.com/UndertaIe/passwd/docs"
-	"github.com/UndertaIe/passwd/global"
-	"github.com/UndertaIe/passwd/internal/service"
-	"github.com/UndertaIe/passwd/pkg/auth"
-	"github.com/UndertaIe/passwd/server/middleware"
-	"github.com/UndertaIe/passwd/server/router/demo"
-	v1 "github.com/UndertaIe/passwd/server/router/v1"
-	v2 "github.com/UndertaIe/passwd/server/router/v2"
+	"github.com/UndertaIe/go-server-env/database"
+	_ "github.com/UndertaIe/go-server-env/docs"
+	"github.com/UndertaIe/go-server-env/global"
+	"github.com/UndertaIe/go-server-env/internal/service"
+	"github.com/UndertaIe/go-server-env/pkg/auth"
+	"github.com/UndertaIe/go-server-env/server/middleware"
+	"github.com/UndertaIe/go-server-env/server/router/demo"
+	v1 "github.com/UndertaIe/go-server-env/server/router/v1"
+	v2 "github.com/UndertaIe/go-server-env/server/router/v2"
 	"github.com/gin-gonic/gin"
 )
 

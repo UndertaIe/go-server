@@ -3,7 +3,7 @@ package auth
 import (
 	"crypto"
 
-	"github.com/UndertaIe/passwd/pkg/utils"
+	"github.com/UndertaIe/go-server-env/pkg/utils"
 	"github.com/dgrijalva/jwt-go"
 )
 

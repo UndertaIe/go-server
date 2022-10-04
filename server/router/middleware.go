@@ -3,9 +3,9 @@ package router
 import (
 	"time"
 
-	"github.com/UndertaIe/passwd/global"
-	"github.com/UndertaIe/passwd/pkg/cache"
-	"github.com/UndertaIe/passwd/server/middleware"
+	"github.com/UndertaIe/go-server-env/global"
+	"github.com/UndertaIe/go-server-env/pkg/cache"
+	"github.com/UndertaIe/go-server-env/server/middleware"
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/UndertaIe/passwd/config"
-	"github.com/UndertaIe/passwd/global"
+	"github.com/UndertaIe/go-server-env/config"
+	"github.com/UndertaIe/go-server-env/global"
 	"github.com/sirupsen/logrus"
 
 	"gorm.io/driver/mysql"

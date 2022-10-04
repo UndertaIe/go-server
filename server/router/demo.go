@@ -3,14 +3,14 @@ package router
 import (
 	"time"
 
-	"github.com/UndertaIe/passwd/global"
-	"github.com/UndertaIe/passwd/pkg/auth"
-	"github.com/UndertaIe/passwd/pkg/cache"
-	"github.com/UndertaIe/passwd/pkg/ratelimiter"
-	"github.com/UndertaIe/passwd/pkg/swagger"
-	"github.com/UndertaIe/passwd/server/middleware"
-	"github.com/UndertaIe/passwd/server/router/demo"
-	v1 "github.com/UndertaIe/passwd/server/router/v1"
+	"github.com/UndertaIe/go-server-env/global"
+	"github.com/UndertaIe/go-server-env/pkg/auth"
+	"github.com/UndertaIe/go-server-env/pkg/cache"
+	"github.com/UndertaIe/go-server-env/pkg/ratelimiter"
+	"github.com/UndertaIe/go-server-env/pkg/swagger"
+	"github.com/UndertaIe/go-server-env/server/middleware"
+	"github.com/UndertaIe/go-server-env/server/router/demo"
+	v1 "github.com/UndertaIe/go-server-env/server/router/v1"
 	"github.com/gin-gonic/gin"
 )
 

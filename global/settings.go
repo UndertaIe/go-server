@@ -3,7 +3,7 @@ package global
 import (
 	"time"
 
-	"github.com/UndertaIe/passwd/config"
+	"github.com/UndertaIe/go-server-env/config"
 )
 
 var (

@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/UndertaIe/passwd/pkg/logger"
+	"github.com/UndertaIe/go-server-env/pkg/logger"
 	"github.com/gin-gonic/gin"
 )
 

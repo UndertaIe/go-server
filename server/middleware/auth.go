@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"github.com/UndertaIe/passwd/global"
-	"github.com/UndertaIe/passwd/pkg/app"
-	"github.com/UndertaIe/passwd/pkg/auth"
-	"github.com/UndertaIe/passwd/pkg/errcode"
+	"github.com/UndertaIe/go-server-env/global"
+	"github.com/UndertaIe/go-server-env/pkg/app"
+	"github.com/UndertaIe/go-server-env/pkg/auth"
+	"github.com/UndertaIe/go-server-env/pkg/errcode"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
