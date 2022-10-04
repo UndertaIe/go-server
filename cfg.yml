@@ -1,0 +1,85 @@
+Server:
+  RunMode: debug
+  HttpPort: 8000
+  ReadTimeout: 60
+  WriteTimeout: 60
+  EnabledTls: false
+  CertFile: conf/server.crt
+  KeyFile: conf/server.key
+App: # 
+  DefaultPageSize: 10
+  MaxPageSize: 100
+  DefaultContextTimeout: 10
+  TraceSavePath: log/trace.log
+  LocalTime: true
+  LogSavePath: log/logs
+  LogFileName: passwd
+  LogFileExt: .log
+  LogFormat: json
+  LogMaxSize: 10 # MB
+  LogMaxBackup: 30 # 保存个数
+  LogMaxAge: 30 # 天数
+  LogCompress: true
+  UploadSavePath: storage/uploads
+  UploadServerUrl: http://127.0.0.1:8000/static
+  UploadImageMaxSize: 5  # MB
+  UploadImageAllowExts:
+    - .jpg
+    - .jpeg
+    - .png
+SQLITE3: # 数据存储
+  UserName: xxx
+  Password: xxx
+  DBName: passwd
+  TablePrefix: passwd_
+  Charset: utf8
+  ParseTime: True
+  MaxIdleConns: 10
+  MaxOpenConns: 30
+  FilePath: ~/.passwd/
+MySQL: # 数据存储
+  DBType: mysql
+  UserName: xxx
+  Password: xxx
+  Host: 127.0.0.1:3306
+  DBName: passwd
+  TablePrefix: passwd_
+  Charset: utf8
+  ParseTime: True
+  MaxIdleConns: 10
+  MaxOpenConns: 30
+Redis: #  单点登录，服务缓存，分布式登录、限流
+  Host: 127.0.0.1:6379
+  Db: 0
+  Password: redis
+  DefaultExpireTime: 30
+MemoryInCache: # 进程内置缓存
+  DefaultExpireTime: 30
+MemCache: # memcache
+  Hosts: 127.0.0.1:11211
+  DefaultExpireTime: 30
+Email: # 邮件服务
+  Host: smtp.qq.com
+  Port: 465
+  UserName: xxx
+  Password: xxx
+  IsSSL: true
+  From: ning
+  To:
+    - xxx
+SmsService:  # 短信服务
+  Origin: xxx
+  AccessKey: xxx
+  AccessSecret: xxx
+  DefaultExpireTime: 60 # 默认：秒
+  Prefix: SmsService
+  CodeLen: 6
+JWT:  # 用户鉴权
+  Secret: secret
+  Issuer: server_issuer
+  Expire: 3600 # 默认: 秒
+Sentry:
+  Dsn: xxx
+Tracing:
+  Enabled: true
+  EndPoint: xxx
