@@ -98,17 +98,17 @@ func setupSetting() error {
 	}
 	sections := map[string]interface{}{
 		"Server": &global.ServerSettings,
-		// "App":    &global.APPSettings,
-		// "MySQL":  &global.DatabaseSettings,
-		// // "SQLITE3":       &global.DatabaseSettings,
-		// "Email":         &global.EmailSettings,
-		// "SmsService":    &global.SmsServiceSettings,
-		// "JWT":           &global.JwtSettings,
-		// "Sentry":        &global.SentrySettings,
-		// "Redis":         &global.RedisSettings,
-		// "MemoryInCache": &global.MemoryInCacheSettings,
-		// "MemCache":      &global.MemCacheSettings,
-		// "Tracing":       &global.TracingSettings,
+		"App":    &global.APPSettings,
+		"MySQL":  &global.DatabaseSettings,
+		// "SQLITE3":       &global.DatabaseSettings,
+		"Email":         &global.EmailSettings,
+		"SmsService":    &global.SmsServiceSettings,
+		"JWT":           &global.JwtSettings,
+		"Sentry":        &global.SentrySettings,
+		"Redis":         &global.RedisSettings,
+		"MemoryInCache": &global.MemoryInCacheSettings,
+		"MemCache":      &global.MemCacheSettings,
+		"Tracing":       &global.TracingSettings,
 	}
 	hooks := func() {
 		global.APPSettings.DefaultContextTimeout *= time.Second
@@ -187,26 +187,10 @@ func setupCacher() error {
 		return err
 	}
 
-	// cc := func() map[string]any {
-	// 	return map[string]any{
-	// 		"defaultExpireTime": global.RedisSettings.DefaultExpireTime,
-	// 	}
-	// }
-	// cacher, err := cache.NewCache(cache.RedisT, cc)
 	global.MemInCacher, err = cache.NewCache(cache.MemoryInT, nil) //使用默认配置
 	if err != nil {
 		return err
 	}
-
-	// cc := func() map[string]any {
-	// 	return map[string]any{``
-	// 		"host": global.RedisSettings.Host,
-	// 		"db":   global.RedisSettings.Db,
-	// 		// "password":          global.RedisSettings.Password,
-	// 		"defaultExpireTime": global.RedisSettings.DefaultExpireTime,
-	// 	}
-	// }
-	// cacher, err := cache.NewCache(cache.RedisT, cc)
 	global.MemCacher, err = cache.NewCache(cache.MemCacheT, nil) //使用默认配置
 	return err
 

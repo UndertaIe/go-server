@@ -1,6 +1,9 @@
 package router
 
 import (
+	"reflect"
+	"runtime"
+	"strings"
 	"time"
 
 	"github.com/UndertaIe/go-server-env/global"
@@ -9,6 +12,7 @@ import (
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
@@ -31,5 +35,25 @@ func SetMiddlewares(r *gin.Engine) {
 		r.Use(middleware.ContextTimeout(global.APPSettings.DefaultContextTimeout))
 		r.Use(otelgin.Middleware(global.ServiceName)) // 添加 tracing TODO: 增加 trace_id字段
 		r.Use(cache.GinCache(global.Cacher))
+	}
+	PrintMiddlewares(r)
+
+}
+
+func PrintMiddlewares(r *gin.Engine) {
+	global.Logger.Out.Write([]byte("Gin Using middlewares: \n"))
+	for _, h := range r.Handlers {
+		p := reflect.ValueOf(h).Pointer()
+		rfunc := runtime.FuncForPC(p)
+		fn := rfunc.Name()
+		f, ln := rfunc.FileLine(p)
+		sb := strings.Builder{}
+		sb.WriteString("middleware: ")
+		sb.WriteString(fn)
+		sb.WriteString(" | ")
+		sb.WriteString(f)
+		sb.WriteString("/")
+		sb.WriteString(cast.ToString(ln))
+		global.Logger.Info(sb.String())
 	}
 }
