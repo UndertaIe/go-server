@@ -1,9 +1,9 @@
 package model
 
 import (
-	"github.com/UndertaIe/go-server-env/database"
-	"github.com/UndertaIe/go-server-env/pkg/app"
-	"github.com/UndertaIe/go-server-env/pkg/utils"
+	"github.com/UndertaIe/go-eden/app"
+	"github.com/UndertaIe/go-eden/utils"
+	"github.com/UndertaIe/go-server/database"
 	"gorm.io/gorm"
 )
 

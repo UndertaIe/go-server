@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/UndertaIe/go-server-env/global"
-	"github.com/UndertaIe/go-server-env/pkg/cache"
-	"github.com/UndertaIe/go-server-env/server/middleware"
+	"github.com/UndertaIe/go-eden/cache"
+	"github.com/UndertaIe/go-server/global"
+	"github.com/UndertaIe/go-server/server/middleware"
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"

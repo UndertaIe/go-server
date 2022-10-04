@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/UndertaIe/go-server-env/pkg/app"
+	"github.com/UndertaIe/go-eden/app"
 	"github.com/gin-gonic/gin"
 )
 

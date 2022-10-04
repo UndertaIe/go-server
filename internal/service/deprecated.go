@@ -1,11 +1,11 @@
 package service
 
 import (
-	"github.com/UndertaIe/go-server-env/global"
-	"github.com/UndertaIe/go-server-env/internal/model"
-	"github.com/UndertaIe/go-server-env/pkg/auth"
-	"github.com/UndertaIe/go-server-env/pkg/errcode"
-	"github.com/UndertaIe/go-server-env/pkg/utils"
+	"github.com/UndertaIe/go-eden/auth"
+	"github.com/UndertaIe/go-eden/errcode"
+	"github.com/UndertaIe/go-eden/utils"
+	"github.com/UndertaIe/go-server/global"
+	"github.com/UndertaIe/go-server/internal/model"
 	"gorm.io/gorm"
 )
 

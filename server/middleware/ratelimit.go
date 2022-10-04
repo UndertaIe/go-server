@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"github.com/UndertaIe/go-server-env/pkg/app"
-	"github.com/UndertaIe/go-server-env/pkg/errcode"
-	"github.com/UndertaIe/go-server-env/pkg/ratelimiter"
+	"github.com/UndertaIe/go-eden/app"
+	"github.com/UndertaIe/go-eden/errcode"
+	"github.com/UndertaIe/go-eden/ratelimiter"
 	"github.com/gin-gonic/gin"
 )
 

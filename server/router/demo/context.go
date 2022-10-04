@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/UndertaIe/go-server-env/global"
-	"github.com/UndertaIe/go-server-env/pkg/app"
-	"github.com/UndertaIe/go-server-env/pkg/errcode"
+	"github.com/UndertaIe/go-eden/app"
+	"github.com/UndertaIe/go-eden/errcode"
+	"github.com/UndertaIe/go-server/global"
 	"github.com/gin-gonic/gin"
 )
 

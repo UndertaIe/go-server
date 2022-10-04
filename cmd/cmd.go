@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/UndertaIe/go-server-env/local"
-	"github.com/UndertaIe/go-server-env/server"
+	"github.com/UndertaIe/go-server/local"
+	"github.com/UndertaIe/go-server/server"
 	"github.com/spf13/cobra"
 )
 

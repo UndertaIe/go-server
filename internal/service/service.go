@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/UndertaIe/go-server-env/global"
+	"github.com/UndertaIe/go-server/global"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )

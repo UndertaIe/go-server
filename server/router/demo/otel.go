@@ -3,8 +3,8 @@ package demo
 import (
 	"fmt"
 
-	"github.com/UndertaIe/go-server-env/pkg/app"
-	"github.com/UndertaIe/go-server-env/pkg/cache"
+	"github.com/UndertaIe/go-eden/app"
+	"github.com/UndertaIe/go-eden/cache"
 	"github.com/gin-gonic/gin"
 )
 
